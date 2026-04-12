@@ -1,0 +1,12 @@
+{
+  "name": "things-you-dont-learn",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.8.1",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @workspace/api-server --filter @workspace/large-file-upload dev",
+    "dev:server": "pnpm --filter @workspace/api-server dev",
+    "dev:large-file-upload": "pnpm --filter @workspace/large-file-upload dev",
+    "build": "pnpm -r build"
+  }
+}

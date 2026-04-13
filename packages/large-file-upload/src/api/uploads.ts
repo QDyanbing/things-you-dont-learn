@@ -25,7 +25,7 @@ export interface UploadResponse {
   upload: UploadDto;
 }
 
-interface CompleteUploadResponse {
+export interface CompleteUploadResponse {
   upload: UploadDto;
   file: {
     url: string;

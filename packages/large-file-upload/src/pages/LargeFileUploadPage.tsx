@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Button,
@@ -18,235 +18,259 @@ import {
   message,
 } from 'antd';
 import {
-  completeUpload,
-  createUpload,
-  getUpload,
-  getUploadParts,
-  putUploadPart,
-  type UploadDto,
-} from '../api/uploads';
+  createDemoUploadAdapter,
+  LargeFileUploader,
+  type DemoUploadResult,
+  type DemoUploadServerContext,
+  type UploadSnapshot,
+} from '../utils/large-file-upload';
 
 const DEFAULT_PART_SIZE_MB = 5;
 const DEFAULT_CONCURRENCY = 3;
 
-interface FilePart {
-  partNumber: number;
-  size: number;
-  partHash: string;
-}
-
-type UploadStatus = 'idle' | 'hashing' | 'ready' | 'uploading' | 'paused' | 'completed';
-
-function sleep(ms: number) {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, ms);
-  });
-}
-
-async function hashText(text: string) {
-  const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-  return Array.from(new Uint8Array(buffer))
-    .map((value) => value.toString(16).padStart(2, '0'))
-    .join('');
-}
-
-async function buildFileHash(file: File) {
-  return hashText(`${file.name}:${file.size}:${file.lastModified}`);
-}
-
-function createParts(file: File, partSize: number): FilePart[] {
-  const parts: FilePart[] = [];
-  let offset = 0;
-  let index = 0;
-
-  while (offset < file.size) {
-    const end = Math.min(offset + partSize, file.size);
-    parts.push({
-      partNumber: index + 1,
-      size: end - offset,
-      partHash: `${file.name}-${index + 1}-${end - offset}`,
-    });
-    offset = end;
-    index += 1;
+function formatBytes(bytes: number) {
+  if (bytes <= 0) {
+    return '0 B';
   }
 
-  return parts;
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  const value = bytes / 1024 ** index;
+  return `${value.toFixed(value >= 100 || index === 0 ? 0 : 2)} ${units[index]}`;
 }
+
+function formatDuration(ms: number | null) {
+  if (!ms || ms <= 0) {
+    return '-';
+  }
+
+  const totalSeconds = Math.ceil(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m ${seconds}s`;
+  }
+
+  if (minutes > 0) {
+    return `${minutes}m ${seconds}s`;
+  }
+
+  return `${seconds}s`;
+}
+
+function getStatusTagColor(status: UploadSnapshot['status']) {
+  switch (status) {
+    case 'completed':
+      return 'success';
+    case 'uploading':
+      return 'processing';
+    case 'paused':
+      return 'warning';
+    case 'error':
+      return 'error';
+    case 'canceled':
+      return 'default';
+    default:
+      return 'blue';
+  }
+}
+
+function getPendingPartSize(file: File | null, partNumber: number, partSize: number) {
+  if (!file) {
+    return 0;
+  }
+
+  const start = (partNumber - 1) * partSize;
+  const end = Math.min(file.size, start + partSize);
+  return Math.max(0, end - start);
+}
+
+const initialSnapshot: UploadSnapshot<DemoUploadResult, DemoUploadServerContext> = {
+  status: 'idle',
+  partSize: DEFAULT_PART_SIZE_MB * 1024 * 1024,
+  totalParts: 0,
+  uploadedPartNumbers: [],
+  pendingPartNumbers: [],
+  completedParts: [],
+  progress: {
+    hashingPercent: 0,
+    uploadPercent: 0,
+    overallPercent: 0,
+    uploadedBytes: 0,
+    confirmedUploadedBytes: 0,
+    totalBytes: 0,
+    speedBps: 0,
+    remainingBytes: 0,
+    estimatedRemainingMs: null,
+  },
+  flags: {
+    resumedFromCheckpoint: false,
+    resumedFromRemote: false,
+    instantUpload: false,
+  },
+};
 
 export function LargeFileUploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [fileHash, setFileHash] = useState('');
-  const [status, setStatus] = useState<UploadStatus>('idle');
   const [partSizeMb, setPartSizeMb] = useState(DEFAULT_PART_SIZE_MB);
   const [concurrency, setConcurrency] = useState(DEFAULT_CONCURRENCY);
-  const [upload, setUpload] = useState<UploadDto | null>(null);
-  const [uploadedPartNumbers, setUploadedPartNumbers] = useState<number[]>([]);
-  const [resultUrl, setResultUrl] = useState('');
+  const [snapshot, setSnapshot] = useState<UploadSnapshot<DemoUploadResult, DemoUploadServerContext>>(initialSnapshot);
   const [apiMessage, setApiMessage] = useState('');
-  const pauseRef = useRef(false);
+  const [resultUrl, setResultUrl] = useState('');
+  const uploaderRef = useRef<LargeFileUploader<DemoUploadServerContext, DemoUploadResult> | null>(null);
 
-  const partSize = useMemo(() => partSizeMb * 1024 * 1024, [partSizeMb]);
-  const parts = useMemo(() => {
-    if (!selectedFile) {
-      return [];
-    }
-    return createParts(selectedFile, partSize);
-  }, [selectedFile, partSize]);
-
-  const pendingParts = useMemo(
-    () => parts.filter((part) => !uploadedPartNumbers.includes(part.partNumber)),
-    [parts, uploadedPartNumbers],
-  );
-
-  const beforeUpload = async (file: File) => {
-    setSelectedFile(file);
-    setStatus('hashing');
-    setApiMessage('');
-    setResultUrl('');
-    setUpload(null);
-    setUploadedPartNumbers([]);
-
-    const nextFileHash = await buildFileHash(file);
-    setFileHash(nextFileHash);
-    setStatus('ready');
-    return false;
-  };
-
-  const syncUpload = async (uploadId: string) => {
-    const [uploadResponse, partsResponse] = await Promise.all([
-      getUpload(uploadId),
-      getUploadParts(uploadId),
-    ]);
-
-    setUpload(uploadResponse.upload);
-    setUploadedPartNumbers(partsResponse.parts.map((item) => item.partNumber));
-    return uploadResponse.upload;
-  };
-
-  const prepareUpload = async () => {
-    if (!selectedFile || !fileHash) {
-      message.warning('请先选择文件');
-      return null;
-    }
-
-    const response = await createUpload({
-      fileName: selectedFile.name,
-      fileHash,
-      fileSize: selectedFile.size,
-      partSize,
+  useEffect(() => {
+    let disposed = false;
+    const uploader = new LargeFileUploader<DemoUploadServerContext, DemoUploadResult>({
+      adapter: createDemoUploadAdapter(),
+      partSize: partSizeMb * 1024 * 1024,
+      concurrency,
+      retry: {
+        maxAttempts: 4,
+        baseDelayMs: 800,
+      },
     });
 
-    setUpload(response.upload);
-    setUploadedPartNumbers(response.upload.uploadedPartNumbers);
+    uploaderRef.current = uploader;
+    setSnapshot(uploader.getSnapshot());
 
-    if (response.completed) {
-      setStatus('completed');
-      setApiMessage('服务端已识别为已完成文件，当前展示为秒传效果。');
-      return null;
-    }
-
-    if (response.existed && response.upload.uploadedPartNumbers.length > 0) {
-      setApiMessage('检测到已有上传进度，已按断点续传继续。');
-    } else {
-      setApiMessage('已创建上传任务，准备开始上传。');
-    }
-
-    return response.upload.uploadId;
-  };
-
-  const startUpload = async () => {
-    try {
-      const uploadId = (await prepareUpload()) ?? upload?.uploadId;
-
-      if (!uploadId) {
+    const unsubscribeSnapshot = uploader.on('snapshot', (nextSnapshot) => {
+      if (disposed) {
         return;
       }
 
-      pauseRef.current = false;
-      setStatus('uploading');
-      await runConcurrentUpload(uploadId);
-      const latestUpload = await syncUpload(uploadId);
-
-      if (latestUpload.uploadedPartCount === latestUpload.totalParts) {
-        const completeResult = await completeUpload(uploadId);
-        setUpload(completeResult.upload);
-        setUploadedPartNumbers(completeResult.upload.uploadedPartNumbers);
-        setResultUrl(completeResult.file.url);
-        setStatus('completed');
-        setApiMessage('文件已上传并完成处理。');
-        message.success('上传完成');
-      }
-    } catch (error) {
-      const messageText = error instanceof Error ? error.message : '上传失败';
-      setStatus('ready');
-      setApiMessage(messageText);
-      message.error(messageText);
-    }
-  };
-
-  const runConcurrentUpload = async (uploadId: string) => {
-    const queue = [...pendingParts];
-    const workers = Array.from({ length: Math.min(concurrency, queue.length) }, async () => {
-      while (queue.length > 0 && !pauseRef.current) {
-        const part = queue.shift();
-        if (!part) {
-          return;
-        }
-
-        await sleep(200);
-        const response = await putUploadPart({
-          uploadId,
-          partNumber: part.partNumber,
-          partHash: part.partHash,
-          size: part.size,
-        });
-        setUpload(response.upload);
-        setUploadedPartNumbers(response.upload.uploadedPartNumbers);
+      setSnapshot(nextSnapshot);
+      if (nextSnapshot.result?.fileUrl) {
+        setResultUrl(nextSnapshot.result.fileUrl);
       }
     });
 
-    await Promise.all(workers);
+    if (selectedFile) {
+      setApiMessage('正在进行文件预处理与哈希计算...');
+      setResultUrl('');
+      void uploader
+        .prepare(selectedFile)
+        .then((nextSnapshot) => {
+          if (disposed) {
+            return;
+          }
 
-    if (pauseRef.current) {
-      setStatus('paused');
-      setApiMessage('上传已暂停，可继续恢复。');
+          if (nextSnapshot.flags.resumedFromCheckpoint) {
+            setApiMessage('已读取本地断点记录，可以开始上传或继续续传。');
+            return;
+          }
+
+          setApiMessage('文件预处理完成，可以开始上传。');
+        })
+        .catch((error: unknown) => {
+          if (disposed) {
+            return;
+          }
+
+          const errorMessage = error instanceof Error ? error.message : '文件预处理失败';
+          setApiMessage(errorMessage);
+          message.error(errorMessage);
+        });
+    } else {
+      setApiMessage('');
+      setResultUrl('');
     }
+
+    return () => {
+      disposed = true;
+      unsubscribeSnapshot();
+      uploader.destroy();
+    };
+  }, [selectedFile, partSizeMb, concurrency]);
+
+  const beforeUpload = async (file: File) => {
+    setSelectedFile(file);
+    return false;
   };
 
-  const pauseUpload = () => {
-    pauseRef.current = true;
-  };
-
-  const resumeUpload = async () => {
-    if (!upload) {
+  const startUpload = async () => {
+    if (!uploaderRef.current || !selectedFile) {
+      message.warning('请先选择文件');
       return;
     }
 
-    pauseRef.current = false;
-    setStatus('uploading');
-    setApiMessage('继续上传中...');
+    setApiMessage('正在创建上传任务并上传分片...');
 
     try {
-      await runConcurrentUpload(upload.uploadId);
-      const latestUpload = await syncUpload(upload.uploadId);
+      const result = await uploaderRef.current.start();
+      const nextSnapshot = uploaderRef.current.getSnapshot();
 
-      if (latestUpload.uploadedPartCount === latestUpload.totalParts) {
-        const completeResult = await completeUpload(upload.uploadId);
-        setUpload(completeResult.upload);
-        setUploadedPartNumbers(completeResult.upload.uploadedPartNumbers);
-        setResultUrl(completeResult.file.url);
-        setStatus('completed');
-        setApiMessage('文件已上传并完成处理。');
+      if (nextSnapshot.flags.instantUpload) {
+        setApiMessage('服务端已识别为秒传，当前文件直接命中已上传结果。');
+      } else if (nextSnapshot.flags.resumedFromRemote) {
+        setApiMessage('检测到服务端已有上传进度，已按断点续传继续。');
+      } else {
+        setApiMessage('文件已上传完成。');
       }
+
+      if (result?.fileUrl) {
+        setResultUrl(result.fileUrl);
+      }
+
+      message.success('上传完成');
     } catch (error) {
-      const messageText = error instanceof Error ? error.message : '继续上传失败';
-      setStatus('paused');
-      setApiMessage(messageText);
-      message.error(messageText);
+      const errorMessage = error instanceof Error ? error.message : '上传失败';
+      setApiMessage(errorMessage);
+      message.error(errorMessage);
     }
   };
 
-  const uploadPercent = upload?.progress ?? 0;
+  const pauseUpload = async () => {
+    if (!uploaderRef.current) {
+      return;
+    }
+
+    await uploaderRef.current.pause();
+    setApiMessage('上传已暂停，可继续恢复。');
+  };
+
+  const resumeUpload = async () => {
+    if (!uploaderRef.current) {
+      return;
+    }
+
+    setApiMessage('继续上传中...');
+
+    try {
+      const result = await uploaderRef.current.resume();
+      const nextSnapshot = uploaderRef.current.getSnapshot();
+
+      if (nextSnapshot.flags.instantUpload) {
+        setApiMessage('服务端已识别为秒传，当前文件直接命中已上传结果。');
+      } else {
+        setApiMessage('文件已上传完成。');
+      }
+
+      if (result?.fileUrl) {
+        setResultUrl(result.fileUrl);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '继续上传失败';
+      setApiMessage(errorMessage);
+      message.error(errorMessage);
+    }
+  };
+
+  const resetSelection = () => {
+    setSelectedFile(null);
+    setSnapshot(initialSnapshot);
+    setApiMessage('');
+    setResultUrl('');
+  };
+
+  const canChangeConfig = !selectedFile;
+  const uploadProgressStatus = snapshot.status === 'completed' ? 'success' : snapshot.status === 'error' ? 'exception' : 'active';
+  const pendingParts = snapshot.pendingPartNumbers.slice(0, 20).map((partNumber) => ({
+    partNumber,
+    size: getPendingPartSize(selectedFile, partNumber, snapshot.partSize),
+  }));
 
   return (
     <Space direction="vertical" size={16} style={{ display: 'flex' }}>
@@ -255,15 +279,17 @@ export function LargeFileUploadPage() {
           <Col xs={24} md={12}>
             <Space direction="vertical" style={{ width: '100%' }}>
               <Typography.Text>选择文件</Typography.Text>
-              <Upload beforeUpload={beforeUpload} maxCount={1} showUploadList={false}>
-                <Button type="primary">选择文件</Button>
+              <Upload beforeUpload={beforeUpload} maxCount={1} showUploadList={false} disabled={snapshot.status === 'uploading'}>
+                <Button type="primary" disabled={snapshot.status === 'uploading'}>
+                  选择文件
+                </Button>
               </Upload>
               {selectedFile ? (
                 <Alert
                   type="info"
                   showIcon
                   message={`当前文件：${selectedFile.name}`}
-                  description={`大小：${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`}
+                  description={`大小：${formatBytes(selectedFile.size)}`}
                 />
               ) : null}
             </Space>
@@ -272,20 +298,22 @@ export function LargeFileUploadPage() {
             <Typography.Text>分片大小（MB）</Typography.Text>
             <InputNumber
               min={1}
-              max={20}
+              max={50}
               value={partSizeMb}
               onChange={(value) => setPartSizeMb(value ?? DEFAULT_PART_SIZE_MB)}
               style={{ width: '100%' }}
+              disabled={!canChangeConfig}
             />
           </Col>
           <Col xs={24} md={6}>
             <Typography.Text>并发数</Typography.Text>
             <InputNumber
               min={1}
-              max={6}
+              max={8}
               value={concurrency}
               onChange={(value) => setConcurrency(value ?? DEFAULT_CONCURRENCY)}
               style={{ width: '100%' }}
+              disabled={!canChangeConfig}
             />
           </Col>
         </Row>
@@ -296,34 +324,63 @@ export function LargeFileUploadPage() {
           <Button
             type="primary"
             onClick={() => void startUpload()}
-            disabled={!selectedFile || status === 'hashing' || status === 'uploading'}
+            disabled={!selectedFile || snapshot.status === 'hashing' || snapshot.status === 'uploading'}
           >
             开始上传
           </Button>
-          <Button onClick={pauseUpload} disabled={status !== 'uploading'}>
+          <Button onClick={() => void pauseUpload()} disabled={snapshot.status !== 'uploading'}>
             暂停上传
           </Button>
-          <Button onClick={() => void resumeUpload()} disabled={status !== 'paused'}>
+          <Button onClick={() => void resumeUpload()} disabled={snapshot.status !== 'paused'}>
             继续上传
           </Button>
-          <Tag color="processing">状态：{status}</Tag>
+          <Button onClick={resetSelection} disabled={snapshot.status === 'uploading'}>
+            清空当前文件
+          </Button>
+          <Tag color={getStatusTagColor(snapshot.status)}>状态：{snapshot.status}</Tag>
+          {snapshot.flags.resumedFromCheckpoint ? <Tag color="gold">本地断点</Tag> : null}
+          {snapshot.flags.resumedFromRemote ? <Tag color="cyan">服务端续传</Tag> : null}
+          {snapshot.flags.instantUpload ? <Tag color="success">秒传命中</Tag> : null}
         </Space>
       </Card>
 
       <Card title="上传进度">
         <Row gutter={[16, 16]}>
-          <Col xs={24} md={8}>
-            <Statistic title="总分片数" value={parts.length} />
+          <Col xs={24} md={6}>
+            <Statistic title="总分片数" value={snapshot.totalParts} />
           </Col>
-          <Col xs={24} md={8}>
-            <Statistic title="已上传分片" value={uploadedPartNumbers.length} />
+          <Col xs={24} md={6}>
+            <Statistic title="已完成分片" value={snapshot.uploadedPartNumbers.length} />
           </Col>
-          <Col xs={24} md={8}>
-            <Statistic title="上传进度" value={uploadPercent} suffix="%" precision={2} />
+          <Col xs={24} md={6}>
+            <Statistic title="整体进度" value={snapshot.progress.overallPercent} suffix="%" precision={2} />
+          </Col>
+          <Col xs={24} md={6}>
+            <Statistic title="上传速度" value={formatBytes(snapshot.progress.speedBps)} suffix="/s" />
           </Col>
         </Row>
         <Divider />
-        <Progress percent={uploadPercent} status={status === 'completed' ? 'success' : 'active'} />
+        <Space direction="vertical" style={{ width: '100%' }} size={12}>
+          <div>
+            <Typography.Text>文件预处理 / 哈希进度</Typography.Text>
+            <Progress percent={snapshot.progress.hashingPercent} size="small" />
+          </div>
+          <div>
+            <Typography.Text>分片上传进度</Typography.Text>
+            <Progress percent={snapshot.progress.uploadPercent} status={uploadProgressStatus} />
+          </div>
+          <div>
+            <Typography.Text>综合进度</Typography.Text>
+            <Progress percent={snapshot.progress.overallPercent} status={uploadProgressStatus} />
+          </div>
+        </Space>
+        <Divider />
+        <Descriptions bordered size="small" column={2}>
+          <Descriptions.Item label="已上传字节">{formatBytes(snapshot.progress.uploadedBytes)}</Descriptions.Item>
+          <Descriptions.Item label="待上传字节">{formatBytes(snapshot.progress.remainingBytes)}</Descriptions.Item>
+          <Descriptions.Item label="确认完成字节">{formatBytes(snapshot.progress.confirmedUploadedBytes)}</Descriptions.Item>
+          <Descriptions.Item label="预计剩余时间">{formatDuration(snapshot.progress.estimatedRemainingMs)}</Descriptions.Item>
+        </Descriptions>
         {apiMessage ? <Alert style={{ marginTop: 16 }} type="info" showIcon message={apiMessage} /> : null}
         {resultUrl ? (
           <Alert style={{ marginTop: 16 }} type="success" showIcon message={`处理结果地址：${resultUrl}`} />
@@ -331,15 +388,17 @@ export function LargeFileUploadPage() {
       </Card>
 
       <Card title="上传任务信息">
-        {upload ? (
+        {selectedFile ? (
           <Descriptions bordered column={1} size="small">
-            <Descriptions.Item label="uploadId">{upload.uploadId}</Descriptions.Item>
-            <Descriptions.Item label="fileHash">{upload.fileHash}</Descriptions.Item>
-            <Descriptions.Item label="已上传分片">{upload.uploadedPartNumbers.join(', ') || '-'}</Descriptions.Item>
-            <Descriptions.Item label="状态">{upload.status}</Descriptions.Item>
+            <Descriptions.Item label="uploadId">{snapshot.uploadId ?? '-'}</Descriptions.Item>
+            <Descriptions.Item label="fileHash">{snapshot.fileHash ?? '-'}</Descriptions.Item>
+            <Descriptions.Item label="分片大小">{formatBytes(snapshot.partSize)}</Descriptions.Item>
+            <Descriptions.Item label="并发数">{concurrency}</Descriptions.Item>
+            <Descriptions.Item label="已上传分片">{snapshot.uploadedPartNumbers.join(', ') || '-'}</Descriptions.Item>
+            <Descriptions.Item label="状态">{snapshot.status}</Descriptions.Item>
           </Descriptions>
         ) : (
-          <Alert type="warning" showIcon message="还没有上传任务，请先选择文件并开始上传。" />
+          <Alert type="warning" showIcon message="还没有上传任务，请先选择文件。" />
         )}
       </Card>
 
@@ -347,11 +406,11 @@ export function LargeFileUploadPage() {
         <List
           size="small"
           bordered
-          dataSource={pendingParts.slice(0, 20)}
+          dataSource={pendingParts}
           locale={{ emptyText: '当前没有待上传分片' }}
           renderItem={(item) => (
             <List.Item>
-              分片 #{item.partNumber} / {parts.length} - {(item.size / 1024 / 1024).toFixed(2)} MB
+              分片 #{item.partNumber} / {snapshot.totalParts} - {formatBytes(item.size)}
             </List.Item>
           )}
         />

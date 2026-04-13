@@ -1,4 +1,5 @@
 import { Layout, Typography } from 'antd';
+import { LargeFileUploaderDocs } from './components/LargeFileUploaderDocs';
 import { LargeFileUploadPage } from './pages/LargeFileUploadPage';
 
 const { Header, Content } = Layout;
@@ -18,6 +19,9 @@ export default function App() {
             首个前端项目聚焦大文件上传场景，覆盖分片上传、并发控制、断点续传、秒传判断与上传进度展示。
           </Paragraph>
           <LargeFileUploadPage />
+          <div style={{ marginTop: 24 }}>
+            <LargeFileUploaderDocs />
+          </div>
         </div>
       </Content>
     </Layout>

@@ -15,13 +15,13 @@ export interface UploadDto {
   updatedAt: string;
 }
 
-interface CreateUploadResponse {
+export interface CreateUploadResponse {
   upload: UploadDto;
   existed: boolean;
   completed: boolean;
 }
 
-interface UploadResponse {
+export interface UploadResponse {
   upload: UploadDto;
 }
 

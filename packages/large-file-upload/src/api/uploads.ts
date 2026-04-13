@@ -38,7 +38,7 @@ export interface UploadPartDto {
   size: number;
 }
 
-interface UploadPartsResponse {
+export interface UploadPartsResponse {
   parts: UploadPartDto[];
 }
 

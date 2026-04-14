@@ -268,6 +268,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     };
   }
 
+  /**
+   * Subscribes to uploader events and returns an unsubscribe function.
+   */
   on<TKey extends keyof UploadEventMap<TResult, TServerContext>>(
     eventName: TKey,
     listener: (payload: UploadEventMap<TResult, TServerContext>[TKey]) => void,
@@ -275,10 +278,17 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     return this.emitter.on(eventName, listener);
   }
 
+  /**
+   * Returns a defensive copy of the current snapshot for UI consumption.
+   */
   getSnapshot() {
     return this.cloneSnapshot();
   }
 
+  /**
+   * Prepares a file for upload by resetting local state, restoring checkpoints,
+   * and producing a file hash.
+   */
   async prepare(file: File) {
     this.ensureNotDestroyed();
 
@@ -322,6 +332,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     }
   }
 
+  /**
+   * Starts a fresh upload. If a file is provided, it will be prepared first.
+   */
   async start(file?: File) {
     if (file) {
       await this.prepare(file);
@@ -332,6 +345,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     return this.launchUpload(false);
   }
 
+  /**
+   * Continues an already prepared upload after a pause or page-level re-entry.
+   */
   async resume() {
     if (!this.file) {
       throw new Error('No file selected. Call prepare(file) first.');
@@ -340,6 +356,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     return this.launchUpload(true);
   }
 
+  /**
+   * Requests a pause and waits until in-flight chunk work settles.
+   */
   async pause() {
     this.ensureNotDestroyed();
 
@@ -353,6 +372,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     return this.cloneSnapshot();
   }
 
+  /**
+   * Cancels the current upload and optionally removes the persisted checkpoint.
+   */
   async cancel(options?: { removeCheckpoint?: boolean }) {
     this.ensureNotDestroyed();
 
@@ -386,6 +408,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     return this.cloneSnapshot();
   }
 
+  /**
+   * Tears down the uploader instance and clears all listeners.
+   */
   destroy() {
     if (this.destroyed) {
       return;

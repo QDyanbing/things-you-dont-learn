@@ -42,6 +42,13 @@ function toHex(buffer: ArrayBuffer) {
     .join('');
 }
 
+/**
+ * File hash strategy optimized for large files.
+ *
+ * Small files are hashed in full, while large files are hashed from evenly
+ * distributed samples plus file size metadata. That keeps the hashing stage
+ * fast enough for UI use while still remaining stable for resume/秒传 checks.
+ */
 export class SampledFileHashStrategy implements FileHashStrategy {
   readonly id = 'sampled-sha256-v1';
 
@@ -70,6 +77,7 @@ export class SampledFileHashStrategy implements FileHashStrategy {
     };
 
     if (file.size <= sampleSize * sampleCount) {
+      // Small files are cheap enough to hash fully, which avoids false positives.
       const fullBuffer = await readBlob(file, options?.signal);
       markProgress();
       const digest = await crypto.subtle.digest('SHA-256', fullBuffer);
@@ -77,10 +85,14 @@ export class SampledFileHashStrategy implements FileHashStrategy {
       return toHex(digest);
     }
 
+    // Prefixing file size makes the sampled hash less collision-prone for files
+    // that happen to share the same sampled byte windows.
     const slices: Uint8Array[] = [numberToBytes(file.size)];
     const maxOffset = Math.max(0, file.size - sampleSize);
 
     for (let index = 0; index < sampleCount; index += 1) {
+      // Samples are spread across the whole file so middle and tail changes
+      // affect the result instead of over-weighting the first chunk.
       const ratio = sampleCount === 1 ? 0 : index / (sampleCount - 1);
       const start = Math.min(Math.floor(maxOffset * ratio), maxOffset);
       const end = Math.min(file.size, start + sampleSize);

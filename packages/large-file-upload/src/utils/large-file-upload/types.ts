@@ -1,3 +1,9 @@
+/**
+ * Upload status exposed to UI and adapter consumers.
+ *
+ * The state machine intentionally separates file preprocessing (`hashing`)
+ * from network work (`uploading`) so UI can explain where time is spent.
+ */
 export type UploadStatus =
   | 'idle'
   | 'hashing'
@@ -8,6 +14,12 @@ export type UploadStatus =
   | 'error'
   | 'canceled';
 
+/**
+ * Stable file identity used to locate local checkpoints.
+ *
+ * This is intentionally cheaper than a full file hash so it can be computed
+ * immediately after the user selects a file.
+ */
 export interface UploadFileIdentity {
   signature: string;
   name: string;
@@ -16,6 +28,12 @@ export interface UploadFileIdentity {
   type: string;
 }
 
+/**
+ * Immutable chunk description produced from a file and a part size.
+ *
+ * The descriptor is passed through the whole pipeline so progress tracking,
+ * hash calculation, and adapter uploads all agree on byte ranges.
+ */
 export interface UploadChunkDescriptor {
   index: number;
   partNumber: number;
@@ -24,6 +42,12 @@ export interface UploadChunkDescriptor {
   size: number;
 }
 
+/**
+ * Minimal information needed to treat a chunk as "uploaded".
+ *
+ * Different backends return different confirmation payloads, so optional
+ * metadata such as `etag` and `partHash` are preserved when available.
+ */
 export interface UploadPartRecord {
   partNumber: number;
   size?: number;

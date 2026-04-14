@@ -12,6 +12,13 @@ function toHex(buffer: ArrayBuffer) {
     .join('');
 }
 
+/**
+ * Default per-chunk hash strategy.
+ *
+ * The descriptor metadata is mixed into the digest input so two identical
+ * binary slices from different positions do not accidentally share the same
+ * chunk hash value.
+ */
 export class Sha256ChunkHashStrategy implements ChunkHashStrategy {
   readonly id = 'chunk-sha256-v1';
 
@@ -26,6 +33,8 @@ export class Sha256ChunkHashStrategy implements ChunkHashStrategy {
     const chunkBuffer = await chunk.arrayBuffer();
     assertNotAborted(options?.signal);
 
+    // Including part metadata makes integrity checks deterministic across
+    // resumable uploads even if the backend reorders or inspects parts later.
     const descriptorBuffer = new TextEncoder().encode(
       `${descriptor.partNumber}:${descriptor.start}:${descriptor.end}:${descriptor.size}`,
     );

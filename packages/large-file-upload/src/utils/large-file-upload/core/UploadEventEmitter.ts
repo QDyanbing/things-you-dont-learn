@@ -1,8 +1,18 @@
 type Listener<T> = (payload: T) => void;
 
+/**
+ * Minimal typed event emitter used by `LargeFileUploader`.
+ *
+ * Keeping it local avoids coupling the upload utility to a framework runtime
+ * or a heavier third-party event library.
+ */
 export class UploadEventEmitter<TEventMap extends object> {
   private readonly listeners = new Map<keyof TEventMap, Set<Listener<TEventMap[keyof TEventMap]>>>();
 
+  /**
+   * Registers a listener and returns an unsubscribe function so callers can
+   * clean up inside component unmount hooks.
+   */
   on<TKey extends keyof TEventMap>(eventName: TKey, listener: Listener<TEventMap[TKey]>) {
     const currentListeners = this.listeners.get(eventName) ?? new Set();
     currentListeners.add(listener as Listener<TEventMap[keyof TEventMap]>);
@@ -13,6 +23,9 @@ export class UploadEventEmitter<TEventMap extends object> {
     };
   }
 
+  /**
+   * Removes a single listener for a given event name.
+   */
   off<TKey extends keyof TEventMap>(eventName: TKey, listener: Listener<TEventMap[TKey]>) {
     const currentListeners = this.listeners.get(eventName);
     if (!currentListeners) {
@@ -26,6 +39,9 @@ export class UploadEventEmitter<TEventMap extends object> {
     }
   }
 
+  /**
+   * Emits an event to the current listener snapshot.
+   */
   emit<TKey extends keyof TEventMap>(eventName: TKey, payload: TEventMap[TKey]) {
     const currentListeners = this.listeners.get(eventName);
     if (!currentListeners) {
@@ -37,6 +53,9 @@ export class UploadEventEmitter<TEventMap extends object> {
     }
   }
 
+  /**
+   * Clears every registered listener, typically during uploader teardown.
+   */
   clear() {
     this.listeners.clear();
   }

@@ -723,6 +723,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     });
   }
 
+  /**
+   * Marks the snapshot as completed and optionally clears the stored checkpoint.
+   */
   private completeSnapshot() {
     this.hashProgress = 1;
     this.progressTracker.speedBps = 0;
@@ -738,6 +741,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     this.emitter.emit('success', this.cloneSnapshot());
   }
 
+  /**
+   * Restores local checkpoint data only when it still matches the current chunk layout.
+   */
   private restoreCheckpointProgress() {
     if (!this.checkpoint) {
       return;
@@ -756,6 +762,10 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     this.snapshot.serverContext = this.checkpoint.serverContext;
   }
 
+  /**
+   * Replaces local uploaded-part state from a trusted source such as the backend
+   * or a checkpoint file.
+   */
   private syncUploadedParts(parts: UploadPartRecord[]) {
     const nextParts = normalizeCompletedParts(parts).filter((part) => part.partNumber >= 1 && part.partNumber <= this.chunks.length);
     this.uploadedParts.clear();
@@ -767,6 +777,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     this.refreshSnapshot('progress');
   }
 
+  /**
+   * Adds or updates a single uploaded part after a successful chunk transfer.
+   */
   private upsertUploadedPart(part: UploadPartRecord) {
     this.uploadedParts.set(part.partNumber, part);
     this.refreshSnapshot('progress');
@@ -831,6 +844,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     this.refreshSnapshot('snapshot');
   }
 
+  /**
+   * Rebuilds the derived snapshot fields and emits the corresponding event stream.
+   */
   private refreshSnapshot(eventType: 'snapshot' | 'progress' | 'statusChange') {
     const progress = this.calculateProgress();
     this.snapshot.progress = progress;
@@ -848,6 +864,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     }
   }
 
+  /**
+   * Computes upload progress from confirmed chunks plus in-flight byte counts.
+   */
   private calculateProgress() {
     const totalBytes = this.file?.size ?? 0;
     const confirmedUploadedBytes = Array.from(this.uploadedParts.values()).reduce(
@@ -880,6 +899,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     };
   }
 
+  /**
+   * Keeps a simple instantaneous speed estimate for the current upload run.
+   */
   private calculateSpeed(uploadedBytes: number) {
     if (this.snapshot.status !== 'uploading') {
       return 0;
@@ -930,6 +952,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     this.activeControllers.clear();
   }
 
+  /**
+   * Persists enough information to continue the upload after a refresh.
+   */
   private async persistCheckpoint() {
     if (!this.fileIdentity) {
       return;
@@ -951,6 +976,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     await this.options.checkpointStore.save(this.checkpoint);
   }
 
+  /**
+   * Removes the persisted checkpoint for the current file identity.
+   */
   private async clearCheckpoint() {
     if (!this.fileIdentity) {
       return;

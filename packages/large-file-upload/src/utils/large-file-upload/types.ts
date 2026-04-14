@@ -55,6 +55,12 @@ export interface UploadPartRecord {
   partHash?: string;
 }
 
+/**
+ * Retry policy for a single chunk upload task.
+ *
+ * `factor` and `jitterRatio` are used together to build an exponential backoff
+ * curve that is friendlier to unstable networks and rate-limited backends.
+ */
 export interface UploadRetryPolicy {
   maxAttempts: number;
   baseDelayMs: number;
@@ -63,18 +69,27 @@ export interface UploadRetryPolicy {
   jitterRatio: number;
 }
 
+/**
+ * Derived flags that help the UI explain how the current upload started.
+ */
 export interface UploadFlags {
   resumedFromCheckpoint: boolean;
   resumedFromRemote: boolean;
   instantUpload: boolean;
 }
 
+/**
+ * Serializable error shape stored on snapshots and emitted in events.
+ */
 export interface UploadErrorInfo {
   name: string;
   message: string;
   stack?: string;
 }
 
+/**
+ * Aggregated progress data for both preprocessing and network phases.
+ */
 export interface UploadProgressState {
   hashingPercent: number;
   uploadPercent: number;
@@ -87,6 +102,12 @@ export interface UploadProgressState {
   estimatedRemainingMs: number | null;
 }
 
+/**
+ * Single source of truth for rendering upload state in UI.
+ *
+ * Consumers should prefer binding to this object instead of duplicating
+ * independent flags, progress values, and upload metadata in component state.
+ */
 export interface UploadSnapshot<TResult = unknown, TServerContext = unknown> {
   status: UploadStatus;
   file?: File;
@@ -108,6 +129,9 @@ export interface UploadSnapshot<TResult = unknown, TServerContext = unknown> {
   completedAt?: string;
 }
 
+/**
+ * Persisted checkpoint used for local resume after refresh or route changes.
+ */
 export interface UploadCheckpointRecord<TServerContext = unknown> {
   version: 1;
   fileIdentity: UploadFileIdentity;

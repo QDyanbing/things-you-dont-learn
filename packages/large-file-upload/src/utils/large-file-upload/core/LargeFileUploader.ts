@@ -43,6 +43,9 @@ const DEFAULT_PROGRESS_STATE: UploadProgressState = {
   estimatedRemainingMs: null,
 };
 
+/**
+ * Builds a lightweight identity for checkpoint lookup before the full hash is known.
+ */
 function createFileIdentity(file: File): UploadFileIdentity {
   return {
     signature: `${file.name}__${file.size}__${file.lastModified}`,
@@ -53,6 +56,9 @@ function createFileIdentity(file: File): UploadFileIdentity {
   };
 }
 
+/**
+ * Splits a file into deterministic chunks based on the configured part size.
+ */
 function createChunks(file: File, partSize: number) {
   const chunks: UploadChunkDescriptor[] = [];
   let start = 0;
@@ -84,6 +90,9 @@ function createChunks(file: File, partSize: number) {
   return chunks;
 }
 
+/**
+ * Normalizes numeric progress values for UI rendering.
+ */
 function clampPercent(value: number) {
   if (Number.isNaN(value)) {
     return 0;
@@ -92,6 +101,9 @@ function clampPercent(value: number) {
   return Math.min(100, Math.max(0, Number(value.toFixed(2))));
 }
 
+/**
+ * Converts unknown thrown values into the serializable error shape used by snapshots/events.
+ */
 function toErrorInfo(error: unknown): UploadErrorInfo {
   if (error instanceof Error) {
     return {
@@ -107,16 +119,25 @@ function toErrorInfo(error: unknown): UploadErrorInfo {
   };
 }
 
+/**
+ * Treats DOM aborts as a first-class control flow branch.
+ */
 function isAbortError(error: unknown) {
   return error instanceof DOMException && error.name === 'AbortError';
 }
 
+/**
+ * Uses the browser timer so pause/retry behavior stays in the same environment as uploads.
+ */
 function delay(ms: number) {
   return new Promise<void>((resolve) => {
     window.setTimeout(resolve, ms);
   });
 }
 
+/**
+ * Merges user retry configuration with sane defaults.
+ */
 function mergeRetryPolicy(policy?: Partial<UploadRetryPolicy>): UploadRetryPolicy {
   return {
     ...DEFAULT_RETRY_POLICY,
@@ -124,6 +145,9 @@ function mergeRetryPolicy(policy?: Partial<UploadRetryPolicy>): UploadRetryPolic
   };
 }
 
+/**
+ * Sorts and clones part records so snapshots never expose internal mutable state.
+ */
 function normalizeCompletedParts(parts: UploadPartRecord[]) {
   return [...parts]
     .sort((left, right) => left.partNumber - right.partNumber)
@@ -132,6 +156,9 @@ function normalizeCompletedParts(parts: UploadPartRecord[]) {
     }));
 }
 
+/**
+ * Falls back to localStorage-backed checkpoints when the caller does not inject one.
+ */
 function createCheckpointStore<TServerContext>(store?: UploadCheckpointStore<TServerContext>) {
   if (store) {
     return store;
@@ -140,12 +167,18 @@ function createCheckpointStore<TServerContext>(store?: UploadCheckpointStore<TSe
   return new LocalStorageCheckpointStore<TServerContext>();
 }
 
+/**
+ * Computes exponential backoff with jitter to spread retry spikes across clients.
+ */
 function computeRetryDelay(policy: UploadRetryPolicy, attempt: number) {
   const exponentialDelay = Math.min(policy.maxDelayMs, policy.baseDelayMs * policy.factor ** Math.max(0, attempt - 1));
   const jitterOffset = exponentialDelay * policy.jitterRatio * Math.random();
   return Math.round(exponentialDelay + jitterOffset);
 }
 
+/**
+ * Fully resolved runtime options after defaults are applied.
+ */
 interface ResolvedUploaderOptions<TServerContext, TResult> {
   adapter: UploadAdapter<TServerContext, TResult>;
   partSize: number;
@@ -164,6 +197,10 @@ interface ResolvedUploaderOptions<TServerContext, TResult> {
   };
 }
 
+/**
+ * Framework-agnostic upload orchestrator that owns preprocessing, chunk uploads,
+ * retry behavior, checkpoints, and UI-facing snapshots.
+ */
 export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
   private readonly options: ResolvedUploaderOptions<TServerContext, TResult>;
   private readonly emitter = new UploadEventEmitter<UploadEventMap<TResult, TServerContext>>();

@@ -28,6 +28,9 @@ import {
 const DEFAULT_PART_SIZE_MB = 5;
 const DEFAULT_CONCURRENCY = 3;
 
+/**
+ * Human-readable byte formatter shared across progress cards and list items.
+ */
 function formatBytes(bytes: number) {
   if (bytes <= 0) {
     return '0 B';
@@ -39,6 +42,9 @@ function formatBytes(bytes: number) {
   return `${value.toFixed(value >= 100 || index === 0 ? 0 : 2)} ${units[index]}`;
 }
 
+/**
+ * Formats the estimated remaining time reported by the uploader snapshot.
+ */
 function formatDuration(ms: number | null) {
   if (!ms || ms <= 0) {
     return '-';
@@ -60,6 +66,9 @@ function formatDuration(ms: number | null) {
   return `${seconds}s`;
 }
 
+/**
+ * Maps uploader status to antd tag colors so the badge stays visually consistent.
+ */
 function getStatusTagColor(status: UploadSnapshot['status']) {
   switch (status) {
     case 'completed':
@@ -77,6 +86,9 @@ function getStatusTagColor(status: UploadSnapshot['status']) {
   }
 }
 
+/**
+ * Derives a pending chunk size directly from the current file and part number.
+ */
 function getPendingPartSize(file: File | null, partNumber: number, partSize: number) {
   if (!file) {
     return 0;
@@ -123,6 +135,9 @@ export function LargeFileUploadPage() {
 
   useEffect(() => {
     let disposed = false;
+
+    // Re-create the uploader whenever transport-level configuration changes so
+    // the class instance always matches the current page controls.
     const uploader = new LargeFileUploader<DemoUploadServerContext, DemoUploadResult>({
       adapter: createDemoUploadAdapter(),
       partSize: partSizeMb * 1024 * 1024,
@@ -148,6 +163,8 @@ export function LargeFileUploadPage() {
     });
 
     if (selectedFile) {
+      // Preparing eagerly keeps the "start upload" interaction lightweight and
+      // lets the page show hash/checkpoint progress immediately after selection.
       setApiMessage('正在进行文件预处理与哈希计算...');
       setResultUrl('');
       void uploader

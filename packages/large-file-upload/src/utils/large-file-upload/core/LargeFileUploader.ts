@@ -569,6 +569,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     }
   }
 
+  /**
+   * Runs a bounded worker pool over the remaining chunks.
+   */
   private async uploadPendingChunks(runToken: number) {
     const pendingChunks = this.getPendingChunks();
     const queue = [...pendingChunks];
@@ -606,6 +609,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     }
   }
 
+  /**
+   * Retries one chunk according to the configured backoff policy.
+   */
   private async uploadChunkWithRetry(chunk: UploadChunkDescriptor) {
     for (let attempt = 1; attempt <= this.options.retry.maxAttempts; attempt += 1) {
       try {
@@ -620,6 +626,8 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
           throw error;
         }
 
+        // Retry metadata is emitted before sleeping so UI/logging can reflect
+        // the backoff schedule immediately.
         const delayMs = computeRetryDelay(this.options.retry, attempt);
         this.emitter.emit('chunkRetry', {
           chunk,
@@ -633,6 +641,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     }
   }
 
+  /**
+   * Uploads a single chunk and merges the adapter response back into local state.
+   */
   private async uploadSingleChunk(chunk: UploadChunkDescriptor) {
     if (!this.file || !this.snapshot.fileHash || !this.snapshot.uploadId) {
       throw new Error('Uploader context is incomplete.');
@@ -657,6 +668,8 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
             })
           : undefined;
 
+      // Adapters can either confirm just the current part or return the whole
+      // remote part list after upload; both paths are supported here.
       const result = await this.options.adapter.uploadPart({
         uploadId: this.snapshot.uploadId,
         file: this.file,

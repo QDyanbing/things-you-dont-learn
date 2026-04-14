@@ -423,6 +423,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     this.emitter.clear();
   }
 
+  /**
+   * Ensures only one active upload run exists for the current file context.
+   */
   private async launchUpload(isResume: boolean) {
     this.ensureNotDestroyed();
 
@@ -449,6 +452,9 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     return this.runPromise;
   }
 
+  /**
+   * Coordinates session bootstrap, remote resume discovery, and completion flow.
+   */
   private async runUpload(runToken: number, isResume: boolean) {
     try {
       const session = await this.options.adapter.createUploadSession({
@@ -461,6 +467,7 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
         checkpoint: this.checkpoint,
       });
 
+      // A backend may override part size to enforce storage or multipart constraints.
       if (session.partSize && session.partSize !== this.snapshot.partSize) {
         this.snapshot.partSize = session.partSize;
         this.chunks = createChunks(this.file!, session.partSize);
@@ -470,6 +477,8 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
       this.snapshot.serverContext = session.serverContext;
       this.snapshot.flags.instantUpload = Boolean(session.completed);
 
+      // Prefer parts returned from the create call; otherwise optionally ask the
+      // backend for the current resume state before scheduling more chunks.
       if (session.uploadedParts) {
         this.syncUploadedParts(session.uploadedParts);
       } else if (this.options.verifyRemotePartsOnStart && this.options.adapter.listUploadedParts) {
@@ -485,6 +494,7 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
       this.snapshot.flags.resumedFromRemote = this.uploadedParts.size > 0;
       await this.persistCheckpoint();
 
+      // 秒传 / instant uploads can complete before any chunk worker starts.
       if (session.completed) {
         this.snapshot.result = session.result;
         this.completeSnapshot();
@@ -515,6 +525,8 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
         throw new Error('Upload finished unexpectedly before all chunks were confirmed.');
       }
 
+      // Completion is optional so adapter implementations can support backends
+      // that treat the last part upload as the final step.
       if (this.options.autoComplete && this.options.adapter.completeUpload) {
         const result = await this.options.adapter.completeUpload({
           uploadId: this.snapshot.uploadId!,

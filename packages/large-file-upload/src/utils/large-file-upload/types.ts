@@ -145,12 +145,21 @@ export interface UploadCheckpointRecord<TServerContext = unknown> {
   updatedAt: string;
 }
 
+/**
+ * Storage adapter for persisted checkpoints.
+ *
+ * Implementations may use localStorage, IndexedDB, or even remote storage
+ * depending on the host application requirements.
+ */
 export interface UploadCheckpointStore<TServerContext = unknown> {
   load(fileIdentity: UploadFileIdentity): Promise<UploadCheckpointRecord<TServerContext> | null> | UploadCheckpointRecord<TServerContext> | null;
   save(record: UploadCheckpointRecord<TServerContext>): Promise<void> | void;
   remove(fileSignature: string): Promise<void> | void;
 }
 
+/**
+ * Strategy for producing a stable file hash before the upload begins.
+ */
 export interface FileHashStrategy {
   id: string;
   calculate(
@@ -162,6 +171,9 @@ export interface FileHashStrategy {
   ): Promise<string>;
 }
 
+/**
+ * Strategy for producing a per-chunk integrity hash.
+ */
 export interface ChunkHashStrategy {
   id: string;
   calculate(
@@ -173,6 +185,9 @@ export interface ChunkHashStrategy {
   ): Promise<string>;
 }
 
+/**
+ * Input for bootstrapping or restoring an upload session on the backend.
+ */
 export interface CreateUploadSessionInput<TServerContext = unknown> {
   file: File;
   fileIdentity: UploadFileIdentity;
@@ -184,6 +199,9 @@ export interface CreateUploadSessionInput<TServerContext = unknown> {
   signal?: AbortSignal;
 }
 
+/**
+ * Backend response needed to continue an upload session.
+ */
 export interface CreateUploadSessionResult<TServerContext = unknown, TResult = unknown> {
   uploadId: string;
   partSize?: number;
@@ -193,6 +211,9 @@ export interface CreateUploadSessionResult<TServerContext = unknown, TResult = u
   serverContext?: TServerContext;
 }
 
+/**
+ * Input for querying already confirmed chunks from the backend.
+ */
 export interface ListUploadedPartsInput<TServerContext = unknown> {
   uploadId: string;
   file: File;
@@ -201,12 +222,18 @@ export interface ListUploadedPartsInput<TServerContext = unknown> {
   signal?: AbortSignal;
 }
 
+/**
+ * Normalized progress payload for a single chunk transfer.
+ */
 export interface UploadPartProgress {
   loaded: number;
   total: number;
   progress: number;
 }
 
+/**
+ * Adapter input for sending one chunk to the backend.
+ */
 export interface UploadPartInput<TServerContext = unknown> {
   uploadId: string;
   file: File;
@@ -219,12 +246,18 @@ export interface UploadPartInput<TServerContext = unknown> {
   onProgress?: (progress: UploadPartProgress) => void;
 }
 
+/**
+ * Adapter response after a chunk upload finishes.
+ */
 export interface UploadPartResult<TServerContext = unknown> {
   part?: UploadPartRecord;
   uploadedParts?: UploadPartRecord[];
   serverContext?: TServerContext;
 }
 
+/**
+ * Adapter input for finalizing a multipart upload on the backend.
+ */
 export interface CompleteUploadInput<TServerContext = unknown> {
   uploadId: string;
   file: File;
@@ -236,11 +269,17 @@ export interface CompleteUploadInput<TServerContext = unknown> {
   signal?: AbortSignal;
 }
 
+/**
+ * Final response returned after backend-side merge/complete logic.
+ */
 export interface CompleteUploadResult<TServerContext = unknown, TResult = unknown> {
   result?: TResult;
   serverContext?: TServerContext;
 }
 
+/**
+ * Optional cancellation payload forwarded to the adapter.
+ */
 export interface AbortUploadInput<TServerContext = unknown> {
   uploadId: string;
   file: File;
@@ -248,6 +287,9 @@ export interface AbortUploadInput<TServerContext = unknown> {
   serverContext?: TServerContext;
 }
 
+/**
+ * Protocol boundary between the generic uploader and a concrete backend.
+ */
 export interface UploadAdapter<TServerContext = unknown, TResult = unknown> {
   createUploadSession(
     input: CreateUploadSessionInput<TServerContext>,
@@ -258,6 +300,9 @@ export interface UploadAdapter<TServerContext = unknown, TResult = unknown> {
   abortUpload?(input: AbortUploadInput<TServerContext>): Promise<void>;
 }
 
+/**
+ * Public configuration for `LargeFileUploader`.
+ */
 export interface LargeFileUploaderOptions<TServerContext = unknown, TResult = unknown> {
   adapter: UploadAdapter<TServerContext, TResult>;
   partSize?: number;
@@ -276,16 +321,25 @@ export interface LargeFileUploaderOptions<TServerContext = unknown, TResult = un
   };
 }
 
+/**
+ * Event payload emitted when a chunk-level lifecycle step occurs.
+ */
 export interface UploadChunkEvent<TResult = unknown, TServerContext = unknown> {
   chunk: UploadChunkDescriptor;
   snapshot: UploadSnapshot<TResult, TServerContext>;
 }
 
+/**
+ * Event payload emitted during chunk transfer progress updates.
+ */
 export interface UploadChunkProgressEvent<TResult = unknown, TServerContext = unknown>
   extends UploadChunkEvent<TResult, TServerContext> {
   progress: UploadPartProgress;
 }
 
+/**
+ * Event payload emitted before a chunk retry is scheduled.
+ */
 export interface UploadChunkRetryEvent<TResult = unknown, TServerContext = unknown>
   extends UploadChunkEvent<TResult, TServerContext> {
   attempt: number;
@@ -298,6 +352,9 @@ export interface UploadErrorEvent<TResult = unknown, TServerContext = unknown> {
   snapshot: UploadSnapshot<TResult, TServerContext>;
 }
 
+/**
+ * Complete event contract exposed by the uploader.
+ */
 export interface UploadEventMap<TResult = unknown, TServerContext = unknown> {
   snapshot: UploadSnapshot<TResult, TServerContext>;
   statusChange: UploadSnapshot<TResult, TServerContext>;

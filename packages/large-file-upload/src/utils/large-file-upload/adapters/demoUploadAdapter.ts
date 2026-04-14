@@ -1,20 +1,34 @@
 import { completeUpload, createUpload, getUploadParts, putUploadPart, type UploadDto } from '../../../api/uploads';
 import type { CompleteUploadResult, UploadAdapter, UploadPartRecord } from '../types';
 
+/**
+ * Demo backend state mirrored into uploader snapshots so the page can inspect
+ * the latest upload resource returned by the mock API.
+ */
 export interface DemoUploadServerContext {
   upload: UploadDto;
 }
 
+/**
+ * Minimal result surface used by the demo UI after completion.
+ */
 export interface DemoUploadResult {
   fileUrl: string;
 }
 
+/**
+ * Normalizes the file URL format expected by the demo page.
+ */
 function buildResult(fileName: string): DemoUploadResult {
   return {
     fileUrl: `/files/${encodeURIComponent(fileName)}`,
   };
 }
 
+/**
+ * The mock create endpoint only returns part numbers, while the uploader core
+ * expects normalized `UploadPartRecord` objects.
+ */
 function mapUploadedParts(parts: number[] | UploadPartRecord[]) {
   if (parts.length === 0) {
     return [];
@@ -27,6 +41,9 @@ function mapUploadedParts(parts: number[] | UploadPartRecord[]) {
   return parts as UploadPartRecord[];
 }
 
+/**
+ * Adapter that translates the demo REST endpoints into the generic uploader protocol.
+ */
 export function createDemoUploadAdapter(): UploadAdapter<DemoUploadServerContext, DemoUploadResult> {
   return {
     async createUploadSession(input) {

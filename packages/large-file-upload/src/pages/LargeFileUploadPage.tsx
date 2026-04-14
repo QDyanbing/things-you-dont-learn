@@ -291,6 +291,8 @@ export function LargeFileUploadPage() {
 
   return (
     <Space direction="vertical" size={16} style={{ display: 'flex' }}>
+      {/* Configuration controls are intentionally separated from live status so
+          the user can understand which values are locked after a file is chosen. */}
       <Card title="上传参数配置">
         <Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
@@ -361,6 +363,8 @@ export function LargeFileUploadPage() {
         </Space>
       </Card>
 
+      {/* Progress is broken into hash, upload, and overall stages so the page
+          can explain why "0% uploading" may still mean preprocessing is active. */}
       <Card title="上传进度">
         <Row gutter={[16, 16]}>
           <Col xs={24} md={6}>
@@ -404,6 +408,7 @@ export function LargeFileUploadPage() {
         ) : null}
       </Card>
 
+      {/* Raw task metadata is useful when pairing the demo UI with backend logs. */}
       <Card title="上传任务信息">
         {selectedFile ? (
           <Descriptions bordered column={1} size="small">
@@ -419,6 +424,7 @@ export function LargeFileUploadPage() {
         )}
       </Card>
 
+      {/* Keeping a short pending chunk list helps visualize how part splitting works. */}
       <Card title="待上传分片">
         <List
           size="small"

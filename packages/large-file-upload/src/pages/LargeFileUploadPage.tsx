@@ -6,10 +6,13 @@ import {
   Col,
   Descriptions,
   Divider,
+  Input,
   InputNumber,
   List,
   Progress,
   Row,
+  Segmented,
+  Select,
   Space,
   Statistic,
   Tag,
@@ -18,8 +21,11 @@ import {
   message,
 } from 'antd';
 import {
+  createAdaptivePartSizeResolver,
   createDemoUploadAdapter,
   LargeFileUploader,
+  PART_SIZE_UNITS,
+  recommendPartSize,
   type DemoUploadResult,
   type DemoUploadServerContext,
   type UploadSnapshot,
@@ -27,6 +33,10 @@ import {
 
 const DEFAULT_PART_SIZE_MB = 5;
 const DEFAULT_CONCURRENCY = 3;
+const DEFAULT_AUTH_TOKEN = 'demo-access-token';
+
+type AuthMode = 'none' | 'bearer' | 'cookie';
+type PartSizeMode = 'custom' | 'balanced' | 'throughput';
 
 /**
  * Human-readable byte formatter shared across progress cards and list items.
@@ -99,48 +109,135 @@ function getPendingPartSize(file: File | null, partNumber: number, partSize: num
   return Math.max(0, end - start);
 }
 
-const initialSnapshot: UploadSnapshot<DemoUploadResult, DemoUploadServerContext> = {
-  status: 'idle',
-  partSize: DEFAULT_PART_SIZE_MB * 1024 * 1024,
-  totalParts: 0,
-  uploadedPartNumbers: [],
-  pendingPartNumbers: [],
-  completedParts: [],
-  progress: {
-    hashingPercent: 0,
-    uploadPercent: 0,
-    overallPercent: 0,
-    uploadedBytes: 0,
-    confirmedUploadedBytes: 0,
-    totalBytes: 0,
-    speedBps: 0,
-    remainingBytes: 0,
-    estimatedRemainingMs: null,
-  },
-  flags: {
-    resumedFromCheckpoint: false,
-    resumedFromRemote: false,
-    instantUpload: false,
-  },
-};
+function createInitialSnapshot(
+  partSize: number,
+): UploadSnapshot<DemoUploadResult, DemoUploadServerContext> {
+  return {
+    status: 'idle',
+    partSize,
+    totalParts: 0,
+    uploadedPartNumbers: [],
+    pendingPartNumbers: [],
+    completedParts: [],
+    progress: {
+      hashingPercent: 0,
+      uploadPercent: 0,
+      overallPercent: 0,
+      uploadedBytes: 0,
+      confirmedUploadedBytes: 0,
+      totalBytes: 0,
+      speedBps: 0,
+      remainingBytes: 0,
+      estimatedRemainingMs: null,
+    },
+    flags: {
+      resumedFromCheckpoint: false,
+      resumedFromRemote: false,
+      instantUpload: false,
+    },
+  };
+}
+
+function resolvePartSizeStrategy(mode: PartSizeMode) {
+  switch (mode) {
+    case 'balanced':
+      return {
+        description: '按文件大小自动调整，兼顾请求数和失败恢复粒度。',
+        recommend: (fileSize: number) =>
+          recommendPartSize(fileSize, {
+            minPartSize: 4 * PART_SIZE_UNITS.MB,
+            maxPartSize: 32 * PART_SIZE_UNITS.MB,
+            targetChunkCount: 80,
+          }),
+        resolver: createAdaptivePartSizeResolver({
+          minPartSize: 4 * PART_SIZE_UNITS.MB,
+          maxPartSize: 32 * PART_SIZE_UNITS.MB,
+          targetChunkCount: 80,
+        }),
+      };
+    case 'throughput':
+      return {
+        description: '倾向更大的分片，适合带宽稳定、想降低请求数的场景。',
+        recommend: (fileSize: number) =>
+          recommendPartSize(fileSize, {
+            minPartSize: 8 * PART_SIZE_UNITS.MB,
+            maxPartSize: 64 * PART_SIZE_UNITS.MB,
+            targetChunkCount: 32,
+          }),
+        resolver: createAdaptivePartSizeResolver({
+          minPartSize: 8 * PART_SIZE_UNITS.MB,
+          maxPartSize: 64 * PART_SIZE_UNITS.MB,
+          targetChunkCount: 32,
+        }),
+      };
+    default:
+      return {
+        description: '固定分片大小，适合后端已有明确 multipart 限制。',
+        recommend: undefined,
+        resolver: undefined,
+      };
+  }
+}
+
+function getAuthModeDescription(authMode: AuthMode, authToken: string) {
+  switch (authMode) {
+    case 'bearer':
+      return authToken.trim()
+        ? '请求会自动注入 Authorization Bearer Token。'
+        : '当前是 Bearer 模式，但还没有填写 token。';
+    case 'cookie':
+      return '请求会以 credentials=include 的方式携带 Cookie / Session。';
+    default:
+      return '请求不会额外注入登录态信息。';
+  }
+}
 
 export function LargeFileUploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [partSizeMb, setPartSizeMb] = useState(DEFAULT_PART_SIZE_MB);
+  const [partSizeMode, setPartSizeMode] = useState<PartSizeMode>('balanced');
   const [concurrency, setConcurrency] = useState(DEFAULT_CONCURRENCY);
-  const [snapshot, setSnapshot] = useState<UploadSnapshot<DemoUploadResult, DemoUploadServerContext>>(initialSnapshot);
+  const [authMode, setAuthMode] = useState<AuthMode>('none');
+  const [authToken, setAuthToken] = useState(DEFAULT_AUTH_TOKEN);
+  const configuredPartSize = partSizeMb * PART_SIZE_UNITS.MB;
+  const partSizeStrategy = resolvePartSizeStrategy(partSizeMode);
+  const [snapshot, setSnapshot] = useState<UploadSnapshot<DemoUploadResult, DemoUploadServerContext>>(
+    createInitialSnapshot(configuredPartSize),
+  );
   const [apiMessage, setApiMessage] = useState('');
   const [resultUrl, setResultUrl] = useState('');
   const uploaderRef = useRef<LargeFileUploader<DemoUploadServerContext, DemoUploadResult> | null>(null);
+  const effectivePartSize = selectedFile
+    ? partSizeStrategy.recommend?.(selectedFile.size) ?? configuredPartSize
+    : configuredPartSize;
+  const estimatedChunkCount = selectedFile
+    ? Math.max(1, Math.ceil(selectedFile.size / effectivePartSize))
+    : 0;
 
   useEffect(() => {
     let disposed = false;
+    const currentPartSizeStrategy = resolvePartSizeStrategy(partSizeMode);
 
     // Re-create the uploader whenever transport-level configuration changes so
     // the class instance always matches the current page controls.
     const uploader = new LargeFileUploader<DemoUploadServerContext, DemoUploadResult>({
-      adapter: createDemoUploadAdapter(),
-      partSize: partSizeMb * 1024 * 1024,
+      adapter: createDemoUploadAdapter({
+        apiClientOptions: {
+          credentials: authMode === 'cookie' ? 'include' : 'omit',
+          headers:
+            authMode === 'bearer' && authToken.trim()
+              ? () => ({
+                  Authorization: `Bearer ${authToken.trim()}`,
+                })
+              : undefined,
+          onUnauthorized: async () => {
+            setApiMessage('请求返回 401。这里可以接 refresh token 逻辑，成功后返回 true 即可自动重试一次。');
+            return false;
+          },
+        },
+      }),
+      partSize: configuredPartSize,
+      partSizeResolver: currentPartSizeStrategy.resolver,
       concurrency,
       retry: {
         maxAttempts: 4,
@@ -149,7 +246,7 @@ export function LargeFileUploadPage() {
     });
 
     uploaderRef.current = uploader;
-    setSnapshot(uploader.getSnapshot());
+    setSnapshot(uploader.getSnapshot() ?? createInitialSnapshot(configuredPartSize));
 
     const unsubscribeSnapshot = uploader.on('snapshot', (nextSnapshot) => {
       if (disposed) {
@@ -200,7 +297,7 @@ export function LargeFileUploadPage() {
       unsubscribeSnapshot();
       uploader.destroy();
     };
-  }, [selectedFile, partSizeMb, concurrency]);
+  }, [authMode, authToken, configuredPartSize, concurrency, partSizeMode, selectedFile]);
 
   const beforeUpload = async (file: File) => {
     setSelectedFile(file);
@@ -277,7 +374,7 @@ export function LargeFileUploadPage() {
 
   const resetSelection = () => {
     setSelectedFile(null);
-    setSnapshot(initialSnapshot);
+    setSnapshot(createInitialSnapshot(configuredPartSize));
     setApiMessage('');
     setResultUrl('');
   };
@@ -314,12 +411,15 @@ export function LargeFileUploadPage() {
             </Space>
           </Col>
           <Col xs={24} md={6}>
-            <Typography.Text>分片大小（MB）</Typography.Text>
-            <InputNumber
-              min={1}
-              max={50}
-              value={partSizeMb}
-              onChange={(value) => setPartSizeMb(value ?? DEFAULT_PART_SIZE_MB)}
+            <Typography.Text>鉴权模式</Typography.Text>
+            <Select<AuthMode>
+              options={[
+                { label: '不鉴权', value: 'none' },
+                { label: 'Bearer Token', value: 'bearer' },
+                { label: 'Cookie / Session', value: 'cookie' },
+              ]}
+              value={authMode}
+              onChange={(value) => setAuthMode(value)}
               style={{ width: '100%' }}
               disabled={!canChangeConfig}
             />
@@ -334,6 +434,67 @@ export function LargeFileUploadPage() {
               style={{ width: '100%' }}
               disabled={!canChangeConfig}
             />
+          </Col>
+          <Col xs={24}>
+            <Typography.Text>Token / 登录态说明</Typography.Text>
+            <Input
+              allowClear
+              placeholder="Bearer 模式下可填写 access token"
+              value={authToken}
+              onChange={(event) => setAuthToken(event.target.value)}
+              disabled={!canChangeConfig || authMode !== 'bearer'}
+            />
+            <Alert
+              style={{ marginTop: 12 }}
+              type={authMode === 'bearer' && !authToken.trim() ? 'warning' : 'info'}
+              showIcon
+              message={getAuthModeDescription(authMode, authToken)}
+              description="真实业务里通常在 createDemoUploadAdapter({ apiClientOptions }) 中注入 headers、credentials，或者在 onUnauthorized 里接 refresh token。"
+            />
+          </Col>
+          <Col xs={24}>
+            <Typography.Text>分片策略</Typography.Text>
+            <Segmented<PartSizeMode>
+              block
+              options={[
+                { label: '固定分片', value: 'custom' },
+                { label: '自适应-均衡', value: 'balanced' },
+                { label: '自适应-吞吐', value: 'throughput' },
+              ]}
+              value={partSizeMode}
+              onChange={(value) => setPartSizeMode(value)}
+              disabled={!canChangeConfig}
+            />
+            <Alert
+              style={{ marginTop: 12 }}
+              type="info"
+              showIcon
+              message={partSizeStrategy.description}
+              description={
+                selectedFile
+                  ? `当前文件预计使用 ${formatBytes(effectivePartSize)} 分片，约 ${estimatedChunkCount} 个分片。`
+                  : '选择文件后会显示该文件的预计生效分片大小和分片数。'
+              }
+            />
+          </Col>
+          <Col xs={24} md={12}>
+            <Typography.Text>分片大小（MB）</Typography.Text>
+            <InputNumber
+              min={1}
+              max={50}
+              value={partSizeMb}
+              onChange={(value) => setPartSizeMb(value ?? DEFAULT_PART_SIZE_MB)}
+              style={{ width: '100%' }}
+              disabled={!canChangeConfig || partSizeMode !== 'custom'}
+            />
+          </Col>
+          <Col xs={24} md={6}>
+            <Typography.Text>预计生效分片大小</Typography.Text>
+            <Alert type="success" showIcon message={formatBytes(effectivePartSize)} />
+          </Col>
+          <Col xs={24} md={6}>
+            <Typography.Text>预计分片数</Typography.Text>
+            <Alert type="success" showIcon message={selectedFile ? `${estimatedChunkCount} 个` : '-'} />
           </Col>
         </Row>
 

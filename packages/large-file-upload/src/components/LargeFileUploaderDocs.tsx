@@ -65,6 +65,14 @@ interface IntegrationRow {
   location: string;
 }
 
+interface PartSizeStrategyRow {
+  key: string;
+  strategy: string;
+  scenario: string;
+  configuration: string;
+  notes: string;
+}
+
 const optionRows: OptionRow[] = [
   {
     key: 'adapter',
@@ -396,6 +404,37 @@ const integrationRows: IntegrationRow[] = [
   },
 ];
 
+const partSizeStrategyRows: PartSizeStrategyRow[] = [
+  {
+    key: 'fixed',
+    strategy: '固定分片',
+    scenario: '后端对 multipart 规则固定，或业务文件体积区间比较稳定。',
+    configuration: 'partSize: 8 * 1024 * 1024',
+    notes: '最容易排查问题，也方便和后端统一限额。',
+  },
+  {
+    key: 'balanced',
+    strategy: '均衡模式',
+    scenario: '既要控制请求数，也不希望单片过大导致失败重试成本高。',
+    configuration: 'partSizeResolver: createAdaptivePartSizeResolver()',
+    notes: '默认目标约 80 片，适合作为通用业务默认值。',
+  },
+  {
+    key: 'throughput',
+    strategy: '吞吐优先',
+    scenario: '文件很大、网络稳定，希望减少请求数和服务端合并压力。',
+    configuration: 'targetChunkCount: 48, maxPartSize: 64 * 1024 * 1024',
+    notes: '适合内网、大带宽场景，但单片失败回滚成本更高。',
+  },
+  {
+    key: 'business',
+    strategy: '按业务自定义',
+    scenario: '不同租户、文件类型或风控等级需要不同分片策略。',
+    configuration: 'partSizeResolver: async ({ file, fallbackPartSize }) => number',
+    notes: '建议把服务端上限、限流规则和文件类型一起纳入决策。',
+  },
+];
+
 const basicCode = `import { LargeFileUploader } from '@/utils/large-file-upload';
 import { createUploadAdapter } from './adapter';
 
@@ -522,6 +561,31 @@ const authCode = `const uploader = new LargeFileUploader({
   partSize: 8 * 1024 * 1024,
 });`;
 
+const partSizeCode = `import {
+  createAdaptivePartSizeResolver,
+  LargeFileUploader,
+  PART_SIZE_UNITS,
+} from '@/utils/large-file-upload';
+
+const uploader = new LargeFileUploader({
+  adapter: createUploadAdapter(),
+  partSize: 8 * PART_SIZE_UNITS.MB,
+  partSizeResolver: createAdaptivePartSizeResolver({
+    minPartSize: 5 * PART_SIZE_UNITS.MB,
+    maxPartSize: 32 * PART_SIZE_UNITS.MB,
+    targetChunkCount: 80,
+  }),
+});
+
+// 也可以直接接业务规则
+const resolver = async ({ file, fallbackPartSize }) => {
+  if (file.size > 5 * 1024 * 1024 * 1024) {
+    return 32 * PART_SIZE_UNITS.MB;
+  }
+
+  return fallbackPartSize;
+};`;
+
 const typeCode = `type UploadSnapshot<TResult = unknown, TServerContext = unknown> = {
   status: UploadStatus;
   fileHash?: string;
@@ -610,6 +674,13 @@ const integrationColumns: TableColumnsType<IntegrationRow> = [
   { title: '场景', dataIndex: 'scenario', width: 220 },
   { title: '推荐做法', dataIndex: 'recommendation' },
   { title: '接入位置', dataIndex: 'location', width: 280, render: codeCell },
+];
+
+const partSizeStrategyColumns: TableColumnsType<PartSizeStrategyRow> = [
+  { title: '策略', dataIndex: 'strategy', width: 180 },
+  { title: '适用场景', dataIndex: 'scenario', width: 260 },
+  { title: '推荐配置', dataIndex: 'configuration', width: 360, render: codeCell },
+  { title: '说明', dataIndex: 'notes' },
 ];
 
 const demoItems: TabsProps['items'] = [
@@ -824,6 +895,36 @@ export function LargeFileUploaderDocs() {
               scroll={{ x: 980 }}
             />
           </div>
+
+          <Divider />
+
+          <div id="part-size-strategy">
+            <Title level={2}>分片大小策略</Title>
+            <Paragraph>
+              分片越小，请求数越多但失败重试更细；分片越大，请求数越少但单次失败成本越高。
+              推荐把 <Text code>partSize</Text> 当作兜底值，把
+              <Text code>partSizeResolver</Text> 当作真实业务里的动态决策入口。
+            </Paragraph>
+            <Table<PartSizeStrategyRow>
+              bordered
+              size="small"
+              pagination={false}
+              rowKey="key"
+              columns={partSizeStrategyColumns}
+              dataSource={partSizeStrategyRows}
+              scroll={{ x: 1260 }}
+            />
+            <Alert
+              style={{ marginTop: 16 }}
+              type="info"
+              showIcon
+              message="实践建议"
+              description="如果后端或对象存储对单片最小值、最大分片数有明确要求，优先把这些约束写进 partSizeResolver，而不是只靠页面表单限制。"
+            />
+            <div style={{ marginTop: 16 }}>
+              <CodeBlock code={partSizeCode} />
+            </div>
+          </div>
         </Col>
 
         <Col xs={0} xl={6}>
@@ -838,6 +939,7 @@ export function LargeFileUploaderDocs() {
                   { key: 'snapshot', href: '#snapshot', title: 'UploadSnapshot' },
                   { key: 'adapter', href: '#adapter', title: 'UploadAdapter' },
                   { key: 'auth', href: '#auth', title: '鉴权接入' },
+                  { key: 'part-size-strategy', href: '#part-size-strategy', title: '分片大小策略' },
                 ]}
               />
             </Card>

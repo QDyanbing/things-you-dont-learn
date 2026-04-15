@@ -26,7 +26,15 @@ export interface DemoUploadResult {
 }
 
 export interface DemoUploadAdapterOptions {
+  /**
+   * Fully constructed API client. When provided, it takes precedence over the
+   * convenience `apiClientOptions` path below.
+   */
   apiClient?: UploadsApiClient;
+  /**
+   * Convenience options for teams that only need to inject auth or base URL
+   * without building a custom client by hand.
+   */
   apiClientOptions?: UploadApiClientOptions;
 }
 
@@ -61,6 +69,8 @@ function mapUploadedParts(parts: number[] | UploadPartRecord[]) {
 export function createDemoUploadAdapter(
   options: DemoUploadAdapterOptions = {},
 ): UploadAdapter<DemoUploadServerContext, DemoUploadResult> {
+  // Prefer an injected client so business projects can share a centralized
+  // request layer. Fall back to demo defaults when no customization is needed.
   const apiClient =
     options.apiClient ?? (options.apiClientOptions ? createUploadsApiClient(options.apiClientOptions) : null);
   const api = {

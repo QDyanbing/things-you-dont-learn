@@ -802,6 +802,8 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
       return this.options.partSize;
     }
 
+    // Resolve the effective part size before checkpoint restoration so the
+    // chunk layout, resume validation, and UI snapshot all stay consistent.
     const resolvedPartSize = await this.options.partSizeResolver({
       file,
       fileIdentity: createFileIdentity(file),

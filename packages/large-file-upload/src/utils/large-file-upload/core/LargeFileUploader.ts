@@ -14,6 +14,7 @@ import type {
   UploadFileIdentity,
   UploadPartProgress,
   UploadPartRecord,
+  UploadPartSizeResolver,
   UploadProgressState,
   UploadRetryPolicy,
   UploadSnapshot,
@@ -182,6 +183,7 @@ function computeRetryDelay(policy: UploadRetryPolicy, attempt: number) {
 interface ResolvedUploaderOptions<TServerContext, TResult> {
   adapter: UploadAdapter<TServerContext, TResult>;
   partSize: number;
+  partSizeResolver?: UploadPartSizeResolver;
   concurrency: number;
   autoComplete: boolean;
   verifyRemotePartsOnStart: boolean;
@@ -237,6 +239,7 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     this.options = {
       adapter: options.adapter,
       partSize: Math.max(1024 * 1024, options.partSize ?? DEFAULT_PART_SIZE),
+      partSizeResolver: options.partSizeResolver,
       concurrency: Math.max(1, options.concurrency ?? DEFAULT_CONCURRENCY),
       autoComplete: options.autoComplete ?? true,
       verifyRemotePartsOnStart: options.verifyRemotePartsOnStart ?? true,
@@ -296,7 +299,8 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
       throw new Error('Upload is in progress. Pause or cancel it before preparing a new file.');
     }
 
-    this.resetForNewFile(file);
+    const resolvedPartSize = await this.resolvePartSize(file);
+    this.resetForNewFile(file, resolvedPartSize);
     this.setStatus('hashing');
     this.prepareController?.abort();
     const prepareController = new AbortController();
@@ -793,7 +797,21 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     return this.chunks.filter((chunk) => !this.uploadedParts.has(chunk.partNumber));
   }
 
-  private resetForNewFile(file: File) {
+  private async resolvePartSize(file: File): Promise<number> {
+    if (!this.options.partSizeResolver) {
+      return this.options.partSize;
+    }
+
+    const resolvedPartSize = await this.options.partSizeResolver({
+      file,
+      fileIdentity: createFileIdentity(file),
+      fallbackPartSize: this.options.partSize,
+    });
+
+    return Math.max(1024 * 1024, resolvedPartSize);
+  }
+
+  private resetForNewFile(file: File, partSize: number) {
     this.file = file;
     this.fileIdentity = createFileIdentity(file);
     this.hashProgress = 0;
@@ -806,7 +824,7 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
     this.abortActiveControllers();
     this.uploadedParts.clear();
     this.activePartLoadedBytes.clear();
-    this.chunks = createChunks(file, this.options.partSize);
+    this.chunks = createChunks(file, partSize);
     this.progressTracker = {
       previousUploadedBytes: 0,
       previousTimestamp: performance.now(),
@@ -819,7 +837,7 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
       fileIdentity: this.fileIdentity,
       fileHash: undefined,
       uploadId: undefined,
-      partSize: this.options.partSize,
+      partSize,
       totalParts: this.chunks.length,
       uploadedPartNumbers: [],
       pendingPartNumbers: this.chunks.map((chunk) => chunk.partNumber),

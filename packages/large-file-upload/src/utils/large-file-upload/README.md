@@ -79,6 +79,37 @@ onBeforeUnmount(() => {
 });
 ```
 
+## 鉴权接入
+
+上传接口通常需要复用业务系统已有的登录态。推荐把鉴权逻辑集中放到 `createDemoUploadAdapter({ apiClientOptions })` 里，而不是分散到每个上传方法中。
+
+| 场景 | 推荐做法 | 接入位置 |
+| --- | --- | --- |
+| `Bearer Token / JWT` | 通过 `headers` 动态注入 `Authorization`。 | `apiClientOptions.headers` |
+| `Cookie / Session` | 将 `credentials` 设为 `include`，让浏览器自动带上 Cookie。 | `apiClientOptions.credentials` |
+| `401 后刷新登录态` | 在 `onUnauthorized` 中执行 refresh token，成功后返回 `true`，请求会自动重试一次。 | `apiClientOptions.onUnauthorized` |
+
+```ts
+import { LargeFileUploader } from './index';
+import { createDemoUploadAdapter } from './adapters/demoUploadAdapter';
+
+const uploader = new LargeFileUploader({
+  adapter: createDemoUploadAdapter({
+    apiClientOptions: {
+      headers: async () => ({
+        Authorization: `Bearer ${await getAccessToken()}`,
+      }),
+      credentials: 'omit',
+      onUnauthorized: async () => {
+        await refreshToken();
+        return true;
+      },
+    },
+  }),
+  partSize: 8 * 1024 * 1024,
+});
+```
+
 ## API
 
 ### Constructor

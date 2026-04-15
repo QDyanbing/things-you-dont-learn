@@ -471,6 +471,22 @@ export const adapter: UploadAdapter<ServerContext, UploadResult> = {
   },
 };`;
 
+const authCode = `const uploader = new LargeFileUploader({
+  adapter: createDemoUploadAdapter({
+    apiClientOptions: {
+      headers: async () => ({
+        Authorization: \`Bearer \${await getAccessToken()}\`,
+      }),
+      credentials: 'omit',
+      onUnauthorized: async () => {
+        await refreshToken();
+        return true;
+      },
+    },
+  }),
+  partSize: 8 * 1024 * 1024,
+});`;
+
 const typeCode = `type UploadSnapshot<TResult = unknown, TServerContext = unknown> = {
   status: UploadStatus;
   fileHash?: string;
@@ -575,6 +591,11 @@ const demoItems: TabsProps['items'] = [
     key: 'adapter',
     label: 'Adapter',
     children: <CodeBlock code={adapterCode} />,
+  },
+  {
+    key: 'auth',
+    label: 'Auth',
+    children: <CodeBlock code={authCode} />,
   },
 ];
 

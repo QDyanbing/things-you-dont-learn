@@ -110,6 +110,43 @@ const uploader = new LargeFileUploader({
 });
 ```
 
+## 分片大小策略
+
+分片越小，请求数越多但失败重试粒度更细；分片越大，请求数越少，但单次失败的回滚成本更高。推荐把 `partSize` 作为兜底值，把 `partSizeResolver` 作为真实业务中的动态决策入口。
+
+| 策略 | 适用场景 | 推荐配置 | 说明 |
+| --- | --- | --- | --- |
+| `固定分片` | 文件体积区间稳定，后端 multipart 规则固定。 | `partSize: 8 * 1024 * 1024` | 最容易排查问题，也方便和后端对齐限额。 |
+| `均衡模式` | 既要控制请求数，也不希望单片过大导致失败重试成本高。 | `partSizeResolver: createAdaptivePartSizeResolver()` | 默认目标约 80 片，适合作为通用默认值。 |
+| `吞吐优先` | 大文件、稳定网络，希望减少请求数。 | `targetChunkCount: 48, maxPartSize: 64 * 1024 * 1024` | 适合高带宽场景，但单片失败成本更高。 |
+| `按业务自定义` | 租户、文件类型、风控规则不同。 | `partSizeResolver: async ({ file, fallbackPartSize }) => number` | 建议把后端上限、限流规则和文件类型一起纳入决策。 |
+
+```ts
+import {
+  createAdaptivePartSizeResolver,
+  LargeFileUploader,
+  PART_SIZE_UNITS,
+} from './index';
+
+const uploader = new LargeFileUploader({
+  adapter: createUploadAdapter(),
+  partSize: 8 * PART_SIZE_UNITS.MB,
+  partSizeResolver: createAdaptivePartSizeResolver({
+    minPartSize: 5 * PART_SIZE_UNITS.MB,
+    maxPartSize: 32 * PART_SIZE_UNITS.MB,
+    targetChunkCount: 80,
+  }),
+});
+
+const resolver = async ({ file, fallbackPartSize }) => {
+  if (file.size > 5 * 1024 * 1024 * 1024) {
+    return 32 * PART_SIZE_UNITS.MB;
+  }
+
+  return fallbackPartSize;
+};
+```
+
 ## API
 
 ### Constructor
@@ -122,6 +159,7 @@ new LargeFileUploader(options)
 | --- | --- | --- | --- |
 | `adapter` | 上传协议适配器。负责创建上传任务、上传分片、完成上传等和后端的交互。 | `UploadAdapter<TServerContext, TResult>` | - |
 | `partSize` | 每个分片的字节大小。会影响请求数、失败重试粒度和整体吞吐。 | `number` | `5 * 1024 * 1024` |
+| `partSizeResolver` | 按文件动态计算分片大小。适合根据文件体积、业务限流策略或存储约束自适应调整。 | `UploadPartSizeResolver` | - |
 | `concurrency` | 并发上传的分片数量。 | `number` | `3` |
 | `autoComplete` | 全部分片成功后，是否自动调用 `completeUpload`。 | `boolean` | `true` |
 | `verifyRemotePartsOnStart` | 开始上传时是否主动向服务端确认已上传分片，用于断点续传校验。 | `boolean` | `true` |

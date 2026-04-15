@@ -1,5 +1,27 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000/api';
 
+export interface UploadApiRequestContext {
+  path: string;
+  method: string;
+  uploadId?: string;
+  partNumber?: number;
+}
+
+export type UploadApiResolvable<TValue> =
+  | TValue
+  | ((context: UploadApiRequestContext) => TValue | Promise<TValue>);
+
+export interface UploadApiClientOptions {
+  baseUrl?: string;
+  fetch?: typeof fetch;
+  headers?: UploadApiResolvable<HeadersInit | undefined>;
+  credentials?: UploadApiResolvable<RequestCredentials | undefined>;
+  onUnauthorized?: (input: {
+    context: UploadApiRequestContext;
+    response: Response;
+  }) => boolean | Promise<boolean>;
+}
+
 export interface UploadDto {
   uploadId: string;
   fileName: string;
@@ -42,60 +64,177 @@ export interface UploadPartsResponse {
   parts: UploadPartDto[];
 }
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options?.headers ?? {}),
-    },
-    ...options,
-  });
+function isResolver<TValue>(
+  value: UploadApiResolvable<TValue> | undefined,
+): value is (context: UploadApiRequestContext) => TValue | Promise<TValue> {
+  return typeof value === 'function';
+}
 
-  if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as { message?: string } | null;
-    throw new Error(payload?.message ?? '请求失败');
+async function resolveOption<TValue>(
+  value: UploadApiResolvable<TValue> | undefined,
+  context: UploadApiRequestContext,
+) {
+  if (isResolver(value)) {
+    return value(context);
   }
 
-  return response.json() as Promise<T>;
+  return value;
 }
 
-export async function createUpload(payload: {
-  fileName: string;
-  fileHash: string;
-  fileSize: number;
-  partSize: number;
-}) {
-  return request<CreateUploadResponse>('/uploads', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  });
+function mergeHeaders(
+  baseHeaders: HeadersInit | undefined,
+  nextHeaders: HeadersInit | undefined,
+) {
+  const headers = new Headers(baseHeaders);
+
+  if (nextHeaders) {
+    new Headers(nextHeaders).forEach((value, key) => {
+      headers.set(key, value);
+    });
+  }
+
+  return headers;
 }
 
-export async function getUpload(uploadId: string) {
-  return request<UploadResponse>(`/uploads/${uploadId}`);
+export interface UploadsApiClient {
+  createUpload(payload: {
+    fileName: string;
+    fileHash: string;
+    fileSize: number;
+    partSize: number;
+  }): Promise<CreateUploadResponse>;
+  getUpload(uploadId: string): Promise<UploadResponse>;
+  getUploadParts(uploadId: string): Promise<UploadPartsResponse>;
+  putUploadPart(payload: {
+    uploadId: string;
+    partNumber: number;
+    partHash: string;
+    size: number;
+  }): Promise<UploadResponse>;
+  completeUpload(uploadId: string): Promise<CompleteUploadResponse>;
 }
 
-export async function getUploadParts(uploadId: string) {
-  return request<UploadPartsResponse>(`/uploads/${uploadId}/parts`);
+export function createUploadsApiClient(options: UploadApiClientOptions = {}): UploadsApiClient {
+  const baseUrl = options.baseUrl ?? API_BASE_URL;
+  const executeFetch = options.fetch ?? fetch;
+
+  async function request<T>(
+    path: string,
+    requestOptions: RequestInit | undefined,
+    context: UploadApiRequestContext,
+    retryOnUnauthorized = true,
+  ): Promise<T> {
+    const dynamicHeaders = await resolveOption(options.headers, context);
+    const dynamicCredentials = await resolveOption(options.credentials, context);
+
+    const response = await executeFetch(`${baseUrl}${path}`, {
+      ...requestOptions,
+      credentials: dynamicCredentials ?? requestOptions?.credentials,
+      headers: mergeHeaders(
+        {
+          'Content-Type': 'application/json',
+        },
+        mergeHeaders(dynamicHeaders, requestOptions?.headers),
+      ),
+    });
+
+    if (response.status === 401 && retryOnUnauthorized && options.onUnauthorized) {
+      const shouldRetry = await options.onUnauthorized({
+        context,
+        response,
+      });
+
+      if (shouldRetry) {
+        return request<T>(path, requestOptions, context, false);
+      }
+    }
+
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => null)) as { message?: string } | null;
+      throw new Error(payload?.message ?? '请求失败');
+    }
+
+    return response.json() as Promise<T>;
+  }
+
+  return {
+    createUpload(payload) {
+      return request<CreateUploadResponse>(
+        '/uploads',
+        {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        },
+        {
+          path: '/uploads',
+          method: 'POST',
+        },
+      );
+    },
+
+    getUpload(uploadId) {
+      return request<UploadResponse>(
+        `/uploads/${uploadId}`,
+        undefined,
+        {
+          path: `/uploads/${uploadId}`,
+          method: 'GET',
+          uploadId,
+        },
+      );
+    },
+
+    getUploadParts(uploadId) {
+      return request<UploadPartsResponse>(
+        `/uploads/${uploadId}/parts`,
+        undefined,
+        {
+          path: `/uploads/${uploadId}/parts`,
+          method: 'GET',
+          uploadId,
+        },
+      );
+    },
+
+    putUploadPart(payload) {
+      return request<UploadResponse>(
+        `/uploads/${payload.uploadId}/parts/${payload.partNumber}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({
+            partHash: payload.partHash,
+            size: payload.size,
+          }),
+        },
+        {
+          path: `/uploads/${payload.uploadId}/parts/${payload.partNumber}`,
+          method: 'PUT',
+          uploadId: payload.uploadId,
+          partNumber: payload.partNumber,
+        },
+      );
+    },
+
+    completeUpload(uploadId) {
+      return request<CompleteUploadResponse>(
+        `/uploads/${uploadId}/complete`,
+        {
+          method: 'POST',
+        },
+        {
+          path: `/uploads/${uploadId}/complete`,
+          method: 'POST',
+          uploadId,
+        },
+      );
+    },
+  };
 }
 
-export async function putUploadPart(payload: {
-  uploadId: string;
-  partNumber: number;
-  partHash: string;
-  size: number;
-}) {
-  return request<UploadResponse>(`/uploads/${payload.uploadId}/parts/${payload.partNumber}`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      partHash: payload.partHash,
-      size: payload.size,
-    }),
-  });
-}
+const uploadsApiClient = createUploadsApiClient();
 
-export async function completeUpload(uploadId: string) {
-  return request<CompleteUploadResponse>(`/uploads/${uploadId}/complete`, {
-    method: 'POST',
-  });
-}
+export const createUpload = uploadsApiClient.createUpload;
+export const getUpload = uploadsApiClient.getUpload;
+export const getUploadParts = uploadsApiClient.getUploadParts;
+export const putUploadPart = uploadsApiClient.putUploadPart;
+export const completeUpload = uploadsApiClient.completeUpload;

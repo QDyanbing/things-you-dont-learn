@@ -1,5 +1,9 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000/api';
 
+/**
+ * Lightweight metadata passed into auth/header resolvers so callers can tailor
+ * credentials for create, resume, part upload, and completion requests.
+ */
 export interface UploadApiRequestContext {
   path: string;
   method: string;
@@ -7,15 +11,36 @@ export interface UploadApiRequestContext {
   partNumber?: number;
 }
 
+/**
+ * Allows auth-related options to be either static values or per-request
+ * resolvers, which is useful when tokens must be read lazily.
+ */
 export type UploadApiResolvable<TValue> =
   | TValue
   | ((context: UploadApiRequestContext) => TValue | Promise<TValue>);
 
+/**
+ * Shared configuration for the demo upload API client.
+ *
+ * The auth-related hooks live here so business projects can keep login/session
+ * logic centralized instead of duplicating it across adapter methods.
+ */
 export interface UploadApiClientOptions {
   baseUrl?: string;
   fetch?: typeof fetch;
+  /**
+   * Static headers or a resolver that can derive headers from request context.
+   * Typical usage is injecting bearer tokens or tenant identifiers.
+   */
   headers?: UploadApiResolvable<HeadersInit | undefined>;
+  /**
+   * Static credentials mode or a resolver for cookie-based auth scenarios.
+   */
   credentials?: UploadApiResolvable<RequestCredentials | undefined>;
+  /**
+   * Called once when a request receives 401. Return `true` after refreshing
+   * login state to trigger a single automatic retry with freshly resolved auth.
+   */
   onUnauthorized?: (input: {
     context: UploadApiRequestContext;
     response: Response;
@@ -114,6 +139,12 @@ export interface UploadsApiClient {
   completeUpload(uploadId: string): Promise<CompleteUploadResponse>;
 }
 
+/**
+ * Creates a small JSON API client used by the demo adapter.
+ *
+ * The client intentionally resolves auth options for every request so freshly
+ * rotated tokens/cookies can be picked up without recreating the adapter.
+ */
 export function createUploadsApiClient(options: UploadApiClientOptions = {}): UploadsApiClient {
   const baseUrl = options.baseUrl ?? API_BASE_URL;
   const executeFetch = options.fetch ?? fetch;
@@ -145,6 +176,8 @@ export function createUploadsApiClient(options: UploadApiClientOptions = {}): Up
       });
 
       if (shouldRetry) {
+        // Re-enter `request` so header/credential resolvers run again after the
+        // caller refreshes login state. Retrying only once avoids infinite loops.
         return request<T>(path, requestOptions, context, false);
       }
     }

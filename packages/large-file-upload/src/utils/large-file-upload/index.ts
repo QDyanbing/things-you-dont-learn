@@ -3,7 +3,9 @@ export { createDemoUploadAdapter } from './adapters/demoUploadAdapter';
 export { SampledFileHashStrategy } from './hashers/SampledFileHashStrategy';
 export { Sha256ChunkHashStrategy } from './hashers/Sha256ChunkHashStrategy';
 export { LocalStorageCheckpointStore } from './persistence/LocalStorageCheckpointStore';
+export { createAdaptivePartSizeResolver, PART_SIZE_UNITS, recommendPartSize } from './part-size';
 export type {
+  DemoUploadAdapterOptions,
   DemoUploadResult,
   DemoUploadServerContext,
 } from './adapters/demoUploadAdapter';
@@ -32,6 +34,8 @@ export type {
   UploadPartInput,
   UploadPartProgress,
   UploadPartRecord,
+  UploadPartSizeContext,
+  UploadPartSizeResolver,
   UploadPartResult,
   UploadProgressState,
   UploadRetryPolicy,

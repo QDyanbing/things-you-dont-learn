@@ -157,6 +157,8 @@ export interface UploadCheckpointStore<TServerContext = unknown> {
   remove(fileSignature: string): Promise<void> | void;
 }
 
+export type UploadMaybePromise<TValue> = TValue | Promise<TValue>;
+
 /**
  * Strategy for producing a stable file hash before the upload begins.
  */
@@ -184,6 +186,26 @@ export interface ChunkHashStrategy {
     },
   ): Promise<string>;
 }
+
+/**
+ * Context available when the uploader needs to decide the effective part size
+ * for the current file.
+ */
+export interface UploadPartSizeContext {
+  file: File;
+  fileIdentity: UploadFileIdentity;
+  fallbackPartSize: number;
+}
+
+/**
+ * Resolver for choosing the effective part size per file.
+ *
+ * This is useful when product requirements vary by file size instead of using
+ * one fixed value for every upload task.
+ */
+export type UploadPartSizeResolver = (
+  context: UploadPartSizeContext,
+) => UploadMaybePromise<number>;
 
 /**
  * Input for bootstrapping or restoring an upload session on the backend.
@@ -306,6 +328,7 @@ export interface UploadAdapter<TServerContext = unknown, TResult = unknown> {
 export interface LargeFileUploaderOptions<TServerContext = unknown, TResult = unknown> {
   adapter: UploadAdapter<TServerContext, TResult>;
   partSize?: number;
+  partSizeResolver?: UploadPartSizeResolver;
   concurrency?: number;
   autoComplete?: boolean;
   verifyRemotePartsOnStart?: boolean;

@@ -58,6 +58,13 @@ interface AdapterRow {
   required: string;
 }
 
+interface IntegrationRow {
+  key: string;
+  scenario: string;
+  recommendation: string;
+  location: string;
+}
+
 const optionRows: OptionRow[] = [
   {
     key: 'adapter',
@@ -361,6 +368,27 @@ const adapterRows: AdapterRow[] = [
   },
 ];
 
+const integrationRows: IntegrationRow[] = [
+  {
+    key: 'bearer',
+    scenario: 'Bearer Token / JWT',
+    recommendation: '在 createDemoUploadAdapter({ apiClientOptions }) 中通过 headers 注入 Authorization。',
+    location: 'apiClientOptions.headers',
+  },
+  {
+    key: 'cookie',
+    scenario: 'Cookie / Session',
+    recommendation: '将 credentials 设为 include，让浏览器自动携带 Session Cookie。',
+    location: 'apiClientOptions.credentials',
+  },
+  {
+    key: 'refresh',
+    scenario: '401 后刷新登录态',
+    recommendation: '在 onUnauthorized 中执行 refresh token，成功后返回 true 触发一次自动重试。',
+    location: 'apiClientOptions.onUnauthorized',
+  },
+];
+
 const basicCode = `import { LargeFileUploader } from '@/utils/large-file-upload';
 import { createUploadAdapter } from './adapter';
 
@@ -571,6 +599,12 @@ const adapterColumns: TableColumnsType<AdapterRow> = [
   { title: '必选', dataIndex: 'required', width: 120, render: codeCell },
 ];
 
+const integrationColumns: TableColumnsType<IntegrationRow> = [
+  { title: '场景', dataIndex: 'scenario', width: 220 },
+  { title: '推荐做法', dataIndex: 'recommendation' },
+  { title: '接入位置', dataIndex: 'location', width: 280, render: codeCell },
+];
+
 const demoItems: TabsProps['items'] = [
   {
     key: 'basic',
@@ -763,6 +797,26 @@ export function LargeFileUploaderDocs() {
               description="如果你的后端已经支持 uploadId、查询已上传分片、complete 合并接口，那么前端通常只需要实现一层很薄的 adapter。"
             />
           </div>
+
+          <Divider />
+
+          <div id="auth">
+            <Title level={2}>鉴权接入</Title>
+            <Paragraph>
+              正常业务里的上传请求通常不是匿名接口。推荐把登录态逻辑放在
+              <Text code> createDemoUploadAdapter({`{ apiClientOptions }`}) </Text>
+              这一层，而不是散落在每个上传方法里。
+            </Paragraph>
+            <Table<IntegrationRow>
+              bordered
+              size="small"
+              pagination={false}
+              rowKey="key"
+              columns={integrationColumns}
+              dataSource={integrationRows}
+              scroll={{ x: 980 }}
+            />
+          </div>
         </Col>
 
         <Col xs={0} xl={6}>
@@ -776,6 +830,7 @@ export function LargeFileUploaderDocs() {
                   { key: 'api', href: '#api', title: 'API' },
                   { key: 'snapshot', href: '#snapshot', title: 'UploadSnapshot' },
                   { key: 'adapter', href: '#adapter', title: 'UploadAdapter' },
+                  { key: 'auth', href: '#auth', title: '鉴权接入' },
                 ]}
               />
             </Card>

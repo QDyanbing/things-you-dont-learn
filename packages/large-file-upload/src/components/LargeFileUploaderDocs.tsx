@@ -81,6 +81,13 @@ const optionRows: OptionRow[] = [
     defaultValue: '5 * 1024 * 1024',
   },
   {
+    key: 'partSizeResolver',
+    name: 'partSizeResolver',
+    description: '按文件动态计算分片大小。适合根据文件体积、业务限流策略或存储约束自适应调整。',
+    type: 'UploadPartSizeResolver',
+    defaultValue: '-',
+  },
+  {
     key: 'concurrency',
     name: 'concurrency',
     description: '并发上传的分片数量。',

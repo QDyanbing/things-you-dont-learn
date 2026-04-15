@@ -1,4 +1,13 @@
-import { completeUpload, createUpload, getUploadParts, putUploadPart, type UploadDto } from '../../../api/uploads';
+import {
+  completeUpload,
+  createUpload,
+  createUploadsApiClient,
+  getUploadParts,
+  putUploadPart,
+  type UploadApiClientOptions,
+  type UploadDto,
+  type UploadsApiClient,
+} from '../../../api/uploads';
 import type { CompleteUploadResult, UploadAdapter, UploadPartRecord } from '../types';
 
 /**
@@ -14,6 +23,11 @@ export interface DemoUploadServerContext {
  */
 export interface DemoUploadResult {
   fileUrl: string;
+}
+
+export interface DemoUploadAdapterOptions {
+  apiClient?: UploadsApiClient;
+  apiClientOptions?: UploadApiClientOptions;
 }
 
 /**
@@ -44,10 +58,21 @@ function mapUploadedParts(parts: number[] | UploadPartRecord[]) {
 /**
  * Adapter that translates the demo REST endpoints into the generic uploader protocol.
  */
-export function createDemoUploadAdapter(): UploadAdapter<DemoUploadServerContext, DemoUploadResult> {
+export function createDemoUploadAdapter(
+  options: DemoUploadAdapterOptions = {},
+): UploadAdapter<DemoUploadServerContext, DemoUploadResult> {
+  const apiClient =
+    options.apiClient ?? (options.apiClientOptions ? createUploadsApiClient(options.apiClientOptions) : null);
+  const api = {
+    createUpload: apiClient?.createUpload ?? createUpload,
+    getUploadParts: apiClient?.getUploadParts ?? getUploadParts,
+    putUploadPart: apiClient?.putUploadPart ?? putUploadPart,
+    completeUpload: apiClient?.completeUpload ?? completeUpload,
+  };
+
   return {
     async createUploadSession(input) {
-      const response = await createUpload({
+      const response = await api.createUpload({
         fileName: input.file.name,
         fileHash: input.fileHash,
         fileSize: input.file.size,
@@ -67,7 +92,7 @@ export function createDemoUploadAdapter(): UploadAdapter<DemoUploadServerContext
     },
 
     async listUploadedParts(input) {
-      const response = await getUploadParts(input.uploadId);
+      const response = await api.getUploadParts(input.uploadId);
       return response.parts.map((part) => ({
         partNumber: part.partNumber,
         partHash: part.partHash,
@@ -76,7 +101,7 @@ export function createDemoUploadAdapter(): UploadAdapter<DemoUploadServerContext
     },
 
     async uploadPart(input) {
-      const response = await putUploadPart({
+      const response = await api.putUploadPart({
         uploadId: input.uploadId,
         partHash: input.partHash ?? `${input.fileHash}-${input.chunk.partNumber}`,
         partNumber: input.chunk.partNumber,
@@ -96,7 +121,7 @@ export function createDemoUploadAdapter(): UploadAdapter<DemoUploadServerContext
     },
 
     async completeUpload(input): Promise<CompleteUploadResult<DemoUploadServerContext, DemoUploadResult>> {
-      const response = await completeUpload(input.uploadId);
+      const response = await api.completeUpload(input.uploadId);
 
       return {
         result: {

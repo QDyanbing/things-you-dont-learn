@@ -19,6 +19,31 @@ export type UploadApiResolvable<TValue> =
   | TValue
   | ((context: UploadApiRequestContext) => TValue | Promise<TValue>);
 
+export type UploadApiMaybePromise<TValue> = TValue | Promise<TValue>;
+
+export interface UploadApiBearerAuthConfig {
+  type: 'bearer';
+  token?: string;
+  getToken?: () => UploadApiMaybePromise<string | null | undefined>;
+  scheme?: string;
+  credentials?: RequestCredentials;
+}
+
+export interface UploadApiCookieAuthConfig {
+  type: 'cookie';
+  credentials?: RequestCredentials;
+}
+
+export interface UploadApiNoAuthConfig {
+  type: 'none';
+  credentials?: RequestCredentials;
+}
+
+export type UploadApiAuthConfig =
+  | UploadApiBearerAuthConfig
+  | UploadApiCookieAuthConfig
+  | UploadApiNoAuthConfig;
+
 /**
  * Shared configuration for the demo upload API client.
  *
@@ -45,6 +70,13 @@ export interface UploadApiClientOptions {
     context: UploadApiRequestContext;
     response: Response;
   }) => boolean | Promise<boolean>;
+}
+
+export interface CreateUploadApiClientOptionsInput
+  extends Omit<UploadApiClientOptions, 'headers' | 'credentials'> {
+  auth?: UploadApiAuthConfig;
+  headers?: UploadApiResolvable<HeadersInit | undefined>;
+  credentials?: UploadApiResolvable<RequestCredentials | undefined>;
 }
 
 export interface UploadDto {
@@ -137,6 +169,54 @@ function mergeHeaders(
   }
 
   return headers;
+}
+
+async function resolveAuthHeaders(
+  auth: UploadApiAuthConfig | undefined,
+) {
+  if (!auth || auth.type !== 'bearer') {
+    return undefined;
+  }
+
+  const token = auth.getToken ? await auth.getToken() : auth.token;
+  if (!token) {
+    return undefined;
+  }
+
+  return {
+    Authorization: `${auth.scheme ?? 'Bearer'} ${token}`,
+  } satisfies HeadersInit;
+}
+
+export function createUploadApiClientOptions(
+  input: CreateUploadApiClientOptionsInput = {},
+): UploadApiClientOptions {
+  const auth = input.auth;
+
+  return {
+    baseUrl: input.baseUrl,
+    fetch: input.fetch,
+    onUnauthorized: input.onUnauthorized,
+    headers: async (context) => {
+      const baseHeaders = await resolveOption(input.headers, context);
+      const authHeaders = await resolveAuthHeaders(auth);
+
+      return mergeHeaders(baseHeaders, authHeaders);
+    },
+    credentials: async (context) => {
+      const baseCredentials = await resolveOption(input.credentials, context);
+
+      if (!auth) {
+        return baseCredentials;
+      }
+
+      if (auth.type === 'cookie') {
+        return auth.credentials ?? baseCredentials ?? 'include';
+      }
+
+      return auth.credentials ?? baseCredentials;
+    },
+  };
 }
 
 export interface UploadsApiClient {

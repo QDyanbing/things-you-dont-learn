@@ -31,6 +31,10 @@ function resolveUploadAccessMode(headerValue: string | string[] | undefined): De
   return 'public';
 }
 
+function readHeaderValue(headerValue: string | string[] | undefined) {
+  return Array.isArray(headerValue) ? headerValue[0] : headerValue;
+}
+
 function hasDemoSessionCookie(cookieHeader: string | undefined) {
   if (!cookieHeader) {
     return false;
@@ -57,7 +61,7 @@ function ensureUploadAccess(
   }
 
   if (accessMode === 'bearer') {
-    const authorization = request.headers.authorization;
+    const authorization = readHeaderValue(request.headers.authorization);
     const token = authorization?.replace(/^Bearer\s+/i, '');
 
     if (!token) {
@@ -87,7 +91,7 @@ function ensureUploadAccess(
     return true;
   }
 
-  if (!hasDemoSessionCookie(request.headers.cookie)) {
+  if (!hasDemoSessionCookie(readHeaderValue(request.headers.cookie))) {
     reply.code(401);
     return {
       message: '缺少有效的会话 Cookie',

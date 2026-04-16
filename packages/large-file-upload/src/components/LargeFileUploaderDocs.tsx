@@ -3,11 +3,15 @@ import {
   Anchor,
   Card,
   Col,
+  Collapse,
   Divider,
   Row,
+  Steps,
   Table,
   Tabs,
   Typography,
+  type CollapseProps,
+  type StepsProps,
   type TableColumnsType,
   type TabsProps,
 } from 'antd';
@@ -187,6 +191,20 @@ const methodRows: MethodRow[] = [
     name: 'resume',
     description: '继续一个处于 paused 状态的上传任务。',
     signature: 'resume()',
+    returns: 'Promise<TResult | undefined>',
+  },
+  {
+    key: 'retry',
+    name: 'retry',
+    description: '按当前已准备好的上下文继续重试，适合 paused / error 状态。',
+    signature: 'retry()',
+    returns: 'Promise<TResult | undefined>',
+  },
+  {
+    key: 'restart',
+    name: 'restart',
+    description: '清理本地 checkpoint 和远端上传状态后，对当前文件重新上传。',
+    signature: 'restart(options?: { removeCheckpoint?: boolean })',
     returns: 'Promise<TResult | undefined>',
   },
   {
@@ -547,44 +565,124 @@ export const adapter: UploadAdapter<ServerContext, UploadResult> = {
 
 const authCode = `const uploader = new LargeFileUploader({
   adapter: createDemoUploadAdapter({
-    apiClientOptions: {
-      headers: async () => ({
-        Authorization: \`Bearer \${await getAccessToken()}\`,
-      }),
-      credentials: 'omit',
+    apiClientOptions: createUploadApiClientOptions({
+      auth: {
+        type: 'bearer',
+        getToken: getAccessToken,
+      },
+      headers: {
+        'x-demo-upload-access': 'bearer',
+      },
       onUnauthorized: async () => {
         await refreshToken();
         return true;
       },
-    },
+    }),
   }),
   partSize: 8 * 1024 * 1024,
 });`;
 
+const businessCode = `const adapter = createDemoUploadAdapter({
+  apiClientOptions: createUploadApiClientOptions({
+    auth: {
+      type: 'bearer',
+      getToken: getAccessToken,
+    },
+    headers: {
+      'x-demo-upload-access': 'bearer',
+    },
+  }),
+  requestData: {
+    createUpload: ({ file }) => ({
+      bizType: 'invoice',
+      folderId: currentFolderId,
+      tenantId: currentTenantId,
+      originalFileName: file.name,
+    }),
+    uploadPart: ({ uploadId, chunk }) => ({
+      traceId: \`\${uploadId}-part-\${chunk?.partNumber}\`,
+    }),
+    completeUpload: ({ completedParts }) => ({
+      notify: true,
+      completedPartCount: completedParts?.length ?? 0,
+    }),
+  },
+});`;
+
 const partSizeCode = `import {
-  createAdaptivePartSizeResolver,
+  createPartSizePresetResolver,
+  getUploadPartSizePreset,
   LargeFileUploader,
-  PART_SIZE_UNITS,
+  UPLOAD_PART_SIZE_PRESETS,
 } from '@/utils/large-file-upload';
 
 const uploader = new LargeFileUploader({
   adapter: createUploadAdapter(),
-  partSize: 8 * PART_SIZE_UNITS.MB,
-  partSizeResolver: createAdaptivePartSizeResolver({
-    minPartSize: 5 * PART_SIZE_UNITS.MB,
-    maxPartSize: 32 * PART_SIZE_UNITS.MB,
-    targetChunkCount: 80,
-  }),
+  partSizeResolver: createPartSizePresetResolver('balanced'),
 });
 
-// 也可以直接接业务规则
-const resolver = async ({ file, fallbackPartSize }) => {
-  if (file.size > 5 * 1024 * 1024 * 1024) {
-    return 32 * PART_SIZE_UNITS.MB;
-  }
+const throughputPreset = getUploadPartSizePreset('throughput');
 
-  return fallbackPartSize;
-};`;
+console.log(UPLOAD_PART_SIZE_PRESETS.recovery.description, throughputPreset.maxPartSize);`;
+
+const quickStartItems: StepsProps['items'] = [
+  {
+    title: '准备实例',
+    description: '先用 LargeFileUploader + UploadAdapter 建一个可复用的上传实例。',
+  },
+  {
+    title: '接入鉴权与业务参数',
+    description: '在 createDemoUploadAdapter({ apiClientOptions, requestData }) 里统一注入登录态和业务字段。',
+  },
+  {
+    title: '选择分片策略',
+    description: '固定 partSize 适合强约束场景，命名预设和 partSizeResolver 适合通用业务。',
+  },
+  {
+    title: '绑定快照与动作',
+    description: 'UI 直接订阅 snapshot，再接上 start / pause / retry / restart 即可。',
+  },
+];
+
+const recipeItems: CollapseProps['items'] = [
+  {
+    key: 'auth-recipe',
+    label: '鉴权接入',
+    children: (
+      <div>
+        <Paragraph>
+          推荐使用 <Text code>createUploadApiClientOptions()</Text> 统一拼 Bearer / Cookie / 401
+          重试逻辑，而不是在每个请求函数里手动拼 header。
+        </Paragraph>
+        <CodeBlock code={authCode} />
+      </div>
+    ),
+  },
+  {
+    key: 'biz-recipe',
+    label: '业务参数注入',
+    children: (
+      <div>
+        <Paragraph>
+          如果上传接口需要 <Text code>bizType</Text>、<Text code>folderId</Text>、
+          <Text code>tenantId</Text> 这类字段，可以放在
+          <Text code>requestData.createUpload / uploadPart / completeUpload</Text> 里统一注入。
+        </Paragraph>
+        <CodeBlock code={businessCode} />
+      </div>
+    ),
+  },
+  {
+    key: 'retry-recipe',
+    label: '失败重试与重新上传',
+    children: (
+      <Paragraph>
+        失败后优先使用 <Text code>retry()</Text>，它会从当前准备状态或断点继续；如果需要彻底丢弃旧任务，
+        使用 <Text code>restart()</Text>，它会先走 cancel / abort，再重新 prepare + start。
+      </Paragraph>
+    ),
+  },
+];
 
 const typeCode = `type UploadSnapshot<TResult = unknown, TServerContext = unknown> = {
   status: UploadStatus;
@@ -709,6 +807,11 @@ const demoItems: TabsProps['items'] = [
     label: 'Auth',
     children: <CodeBlock code={authCode} />,
   },
+  {
+    key: 'business',
+    label: 'Business',
+    children: <CodeBlock code={businessCode} />,
+  },
 ];
 
 export function LargeFileUploaderDocs() {
@@ -732,6 +835,13 @@ export function LargeFileUploaderDocs() {
               message="设计目标"
               description="核心能力全部放在 TypeScript class 中，界面层只做状态订阅和交互触发。"
             />
+          </div>
+
+          <Divider />
+
+          <div id="quick-start">
+            <Title level={2}>快速开始</Title>
+            <Steps size="small" responsive items={quickStartItems} />
           </div>
 
           <Divider />
@@ -925,6 +1035,13 @@ export function LargeFileUploaderDocs() {
               <CodeBlock code={partSizeCode} />
             </div>
           </div>
+
+          <Divider />
+
+          <div id="recipes">
+            <Title level={2}>实践配方</Title>
+            <Collapse ghost items={recipeItems} />
+          </div>
         </Col>
 
         <Col xs={0} xl={6}>
@@ -934,12 +1051,14 @@ export function LargeFileUploaderDocs() {
                 affix={false}
                 items={[
                   { key: 'when-to-use', href: '#when-to-use', title: '何时使用' },
+                  { key: 'quick-start', href: '#quick-start', title: '快速开始' },
                   { key: 'examples', href: '#examples', title: '代码演示' },
                   { key: 'api', href: '#api', title: 'API' },
                   { key: 'snapshot', href: '#snapshot', title: 'UploadSnapshot' },
                   { key: 'adapter', href: '#adapter', title: 'UploadAdapter' },
                   { key: 'auth', href: '#auth', title: '鉴权接入' },
                   { key: 'part-size-strategy', href: '#part-size-strategy', title: '分片大小策略' },
+                  { key: 'recipes', href: '#recipes', title: '实践配方' },
                 ]}
               />
             </Card>

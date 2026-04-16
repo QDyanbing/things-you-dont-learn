@@ -12,6 +12,13 @@
 4. 需要支持秒传或服务端断点续传。
 5. 需要同时兼容 React、Vue 或其他框架。
 
+## 快速开始
+
+1. 先用 `LargeFileUploader + UploadAdapter` 建一个可复用的上传实例。
+2. 把登录态和业务参数统一收敛到 `createDemoUploadAdapter({ apiClientOptions, requestData })`。
+3. 根据业务场景选择固定 `partSize`、命名预设，或者 `partSizeResolver`。
+4. UI 直接订阅 `snapshot`，再接上 `start / pause / retry / restart` 即可。
+
 ## 代码演示
 
 ### Basic
@@ -92,21 +99,64 @@ onBeforeUnmount(() => {
 ```ts
 import { LargeFileUploader } from './index';
 import { createDemoUploadAdapter } from './adapters/demoUploadAdapter';
+import { createUploadApiClientOptions } from '../../api/uploads';
 
 const uploader = new LargeFileUploader({
   adapter: createDemoUploadAdapter({
-    apiClientOptions: {
-      headers: async () => ({
-        Authorization: `Bearer ${await getAccessToken()}`,
-      }),
-      credentials: 'omit',
+    apiClientOptions: createUploadApiClientOptions({
+      auth: {
+        type: 'bearer',
+        getToken: getAccessToken,
+      },
+      headers: {
+        'x-demo-upload-access': 'bearer',
+      },
       onUnauthorized: async () => {
         await refreshToken();
         return true;
       },
-    },
+    }),
   }),
   partSize: 8 * 1024 * 1024,
+});
+```
+
+## 业务参数注入
+
+很多上传接口除了文件本身，还会要求带上 `bizType`、`folderId`、`tenantId`、`traceId` 这类业务字段。推荐直接使用 `requestData`，而不是为此重写整套 adapter。
+
+| 阶段 | 适合放什么 |
+| --- | --- |
+| `createUpload` | 业务归属、目录信息、租户信息、上传策略 |
+| `uploadPart` | 链路追踪字段、灰度标记、服务端分片路由字段 |
+| `completeUpload` | 合并选项、通知开关、落库标记 |
+
+```ts
+const adapter = createDemoUploadAdapter({
+  apiClientOptions: createUploadApiClientOptions({
+    auth: {
+      type: 'bearer',
+      getToken: getAccessToken,
+    },
+    headers: {
+      'x-demo-upload-access': 'bearer',
+    },
+  }),
+  requestData: {
+    createUpload: ({ file }) => ({
+      bizType: 'invoice',
+      folderId: currentFolderId,
+      tenantId: currentTenantId,
+      originalFileName: file.name,
+    }),
+    uploadPart: ({ uploadId, chunk }) => ({
+      traceId: `${uploadId}-part-${chunk?.partNumber}`,
+    }),
+    completeUpload: ({ completedParts }) => ({
+      notify: true,
+      completedPartCount: completedParts?.length ?? 0,
+    }),
+  },
 });
 ```
 
@@ -123,28 +173,20 @@ const uploader = new LargeFileUploader({
 
 ```ts
 import {
-  createAdaptivePartSizeResolver,
+  createPartSizePresetResolver,
+  getUploadPartSizePreset,
   LargeFileUploader,
-  PART_SIZE_UNITS,
+  UPLOAD_PART_SIZE_PRESETS,
 } from './index';
 
 const uploader = new LargeFileUploader({
   adapter: createUploadAdapter(),
-  partSize: 8 * PART_SIZE_UNITS.MB,
-  partSizeResolver: createAdaptivePartSizeResolver({
-    minPartSize: 5 * PART_SIZE_UNITS.MB,
-    maxPartSize: 32 * PART_SIZE_UNITS.MB,
-    targetChunkCount: 80,
-  }),
+  partSizeResolver: createPartSizePresetResolver('balanced'),
 });
 
-const resolver = async ({ file, fallbackPartSize }) => {
-  if (file.size > 5 * 1024 * 1024 * 1024) {
-    return 32 * PART_SIZE_UNITS.MB;
-  }
+const throughputPreset = getUploadPartSizePreset('throughput');
 
-  return fallbackPartSize;
-};
+console.log(UPLOAD_PART_SIZE_PRESETS.recovery.description, throughputPreset.maxPartSize);
 ```
 
 ## API
@@ -178,6 +220,8 @@ new LargeFileUploader(options)
 | `prepare` | 预处理文件，计算文件 hash，恢复本地 checkpoint。 | `prepare(file: File)` | `Promise<UploadSnapshot<TResult, TServerContext>>` |
 | `start` | 开始上传。可传 `file`，也可在 `prepare` 之后直接调用。 | `start(file?: File)` | `Promise<TResult \| undefined>` |
 | `resume` | 继续一个处于 `paused` 状态的上传任务。 | `resume()` | `Promise<TResult \| undefined>` |
+| `retry` | 按当前已准备好的上下文继续重试，适合 `paused / error` 状态。 | `retry()` | `Promise<TResult \| undefined>` |
+| `restart` | 清理本地 checkpoint 和远端上传状态后，对当前文件重新上传。 | `restart(options?: { removeCheckpoint?: boolean })` | `Promise<TResult \| undefined>` |
 | `pause` | 暂停当前上传，终止进行中的分片请求。 | `pause()` | `Promise<UploadSnapshot<TResult, TServerContext>>` |
 | `cancel` | 取消上传，并按需删除本地 checkpoint。 | `cancel(options?: { removeCheckpoint?: boolean })` | `Promise<UploadSnapshot<TResult, TServerContext>>` |
 | `getSnapshot` | 获取当前快照。 | `getSnapshot()` | `UploadSnapshot<TResult, TServerContext>` |

@@ -24,6 +24,11 @@ import {
   createUploadApiClientOptions,
 } from '../api/uploads';
 import {
+  clearDemoSession,
+  createDemoSession,
+  refreshDemoAccessToken,
+} from '../api/demoAuth';
+import {
   createAdaptivePartSizeResolver,
   createDemoUploadAdapter,
   LargeFileUploader,
@@ -37,6 +42,7 @@ import {
 const DEFAULT_PART_SIZE_MB = 5;
 const DEFAULT_CONCURRENCY = 3;
 const DEFAULT_AUTH_TOKEN = 'demo-access-token';
+const EXPIRED_DEMO_AUTH_TOKEN = 'expired-demo-token';
 
 type AuthMode = 'none' | 'bearer' | 'cookie';
 type PartSizeMode = 'custom' | 'balanced' | 'throughput';
@@ -202,6 +208,7 @@ export function LargeFileUploadPage() {
   const [concurrency, setConcurrency] = useState(DEFAULT_CONCURRENCY);
   const [authMode, setAuthMode] = useState<AuthMode>('none');
   const [authToken, setAuthToken] = useState(DEFAULT_AUTH_TOKEN);
+  const [autoRefreshToken, setAutoRefreshToken] = useState(true);
   const configuredPartSize = partSizeMb * PART_SIZE_UNITS.MB;
   const partSizeStrategy = resolvePartSizeStrategy(partSizeMode);
   const [snapshot, setSnapshot] = useState<UploadSnapshot<DemoUploadResult, DemoUploadServerContext>>(
@@ -236,8 +243,24 @@ export function LargeFileUploadPage() {
                 type: 'none',
                 credentials: 'omit',
               },
+      headers: {
+        'x-demo-upload-access': authMode === 'none' ? 'public' : authMode,
+      },
       onUnauthorized: async () => {
-        setApiMessage('请求返回 401。这里可以接 refresh token 逻辑，成功后返回 true 即可自动重试一次。');
+        if (authMode === 'bearer' && autoRefreshToken) {
+          const nextToken = await refreshDemoAccessToken();
+          if (!disposed) {
+            setAuthToken(nextToken);
+            setApiMessage('Bearer Token 已自动刷新，上传请求会自动重试一次。');
+          }
+          return true;
+        }
+
+        setApiMessage(
+          authMode === 'cookie'
+            ? '请求返回 401。当前是 Cookie 模式，请先点击“写入演示 Session”。'
+            : '请求返回 401。这里可以接 refresh token 逻辑，成功后返回 true 即可自动重试一次。',
+        );
         return false;
       },
     });
@@ -309,7 +332,7 @@ export function LargeFileUploadPage() {
       unsubscribeSnapshot();
       uploader.destroy();
     };
-  }, [authMode, authToken, configuredPartSize, concurrency, partSizeMode, selectedFile]);
+  }, [authMode, authToken, autoRefreshToken, configuredPartSize, concurrency, partSizeMode, selectedFile]);
 
   const beforeUpload = async (file: File) => {
     setSelectedFile(file);
@@ -391,6 +414,30 @@ export function LargeFileUploadPage() {
     setResultUrl('');
   };
 
+  const prepareDemoCookieSession = async () => {
+    try {
+      await createDemoSession();
+      setApiMessage('演示 Session 已写入，Cookie 模式下可以直接上传。');
+      message.success('已写入演示 Session');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '写入演示 Session 失败';
+      setApiMessage(errorMessage);
+      message.error(errorMessage);
+    }
+  };
+
+  const removeDemoCookieSession = async () => {
+    try {
+      await clearDemoSession();
+      setApiMessage('演示 Session 已清除。');
+      message.success('已清除演示 Session');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '清除演示 Session 失败';
+      setApiMessage(errorMessage);
+      message.error(errorMessage);
+    }
+  };
+
   const canChangeConfig = !selectedFile;
   const uploadProgressStatus = snapshot.status === 'completed' ? 'success' : snapshot.status === 'error' ? 'exception' : 'active';
   const pendingParts = snapshot.pendingPartNumbers.slice(0, 20).map((partNumber) => ({
@@ -461,8 +508,35 @@ export function LargeFileUploadPage() {
               type={authMode === 'bearer' && !authToken.trim() ? 'warning' : 'info'}
               showIcon
               message={getAuthModeDescription(authMode, authToken)}
-              description="真实业务里通常在 createDemoUploadAdapter({ apiClientOptions }) 中注入 headers、credentials，或者在 onUnauthorized 里接 refresh token。"
+              description="当前 demo 会把 x-demo-upload-access 一起发给服务端，用来模拟公开、Bearer、Cookie 三种上传场景。"
             />
+            {authMode === 'bearer' ? (
+              <Space wrap style={{ marginTop: 12 }}>
+                <Button onClick={() => setAuthToken(DEFAULT_AUTH_TOKEN)} disabled={!canChangeConfig}>
+                  填入有效 Token
+                </Button>
+                <Button onClick={() => setAuthToken(EXPIRED_DEMO_AUTH_TOKEN)} disabled={!canChangeConfig}>
+                  填入过期 Token
+                </Button>
+                <Button
+                  type={autoRefreshToken ? 'primary' : 'default'}
+                  onClick={() => setAutoRefreshToken((value) => !value)}
+                  disabled={!canChangeConfig}
+                >
+                  自动刷新：{autoRefreshToken ? '开启' : '关闭'}
+                </Button>
+              </Space>
+            ) : null}
+            {authMode === 'cookie' ? (
+              <Space wrap style={{ marginTop: 12 }}>
+                <Button onClick={() => void prepareDemoCookieSession()} disabled={!canChangeConfig}>
+                  写入演示 Session
+                </Button>
+                <Button onClick={() => void removeDemoCookieSession()} disabled={!canChangeConfig}>
+                  清除演示 Session
+                </Button>
+              </Space>
+            ) : null}
           </Col>
           <Col xs={24}>
             <Typography.Text>分片策略</Typography.Text>

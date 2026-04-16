@@ -225,6 +225,7 @@ export interface UploadsApiClient {
   getUploadParts(uploadId: string): Promise<UploadPartsResponse>;
   putUploadPart(payload: PutUploadPartPayload): Promise<UploadResponse>;
   completeUpload(uploadId: string, payload?: CompleteUploadPayload): Promise<CompleteUploadResponse>;
+  abortUpload(uploadId: string): Promise<void>;
 }
 
 /**
@@ -350,11 +351,26 @@ export function createUploadsApiClient(options: UploadApiClientOptions = {}): Up
         },
       );
     },
+
+    async abortUpload(uploadId) {
+      await request<{ ok: boolean }>(
+        `/uploads/${uploadId}`,
+        {
+          method: 'DELETE',
+        },
+        {
+          path: `/uploads/${uploadId}`,
+          method: 'DELETE',
+          uploadId,
+        },
+      );
+    },
   };
 }
 
 const uploadsApiClient = createUploadsApiClient();
 
+export const abortUpload = uploadsApiClient.abortUpload;
 export const createUpload = uploadsApiClient.createUpload;
 export const getUpload = uploadsApiClient.getUpload;
 export const getUploadParts = uploadsApiClient.getUploadParts;

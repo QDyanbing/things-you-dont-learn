@@ -1,4 +1,5 @@
 import {
+  abortUpload,
   type CompleteUploadPayload,
   completeUpload,
   createUpload,
@@ -139,6 +140,7 @@ export function createDemoUploadAdapter(
   const apiClient =
     options.apiClient ?? (options.apiClientOptions ? createUploadsApiClient(options.apiClientOptions) : null);
   const api = {
+    abortUpload: apiClient?.abortUpload ?? abortUpload,
     createUpload: apiClient?.createUpload ?? createUpload,
     getUploadParts: apiClient?.getUploadParts ?? getUploadParts,
     putUploadPart: apiClient?.putUploadPart ?? putUploadPart,
@@ -248,6 +250,10 @@ export function createDemoUploadAdapter(
           upload: response.upload,
         },
       };
+    },
+
+    async abortUpload(input) {
+      await api.abortUpload(input.uploadId);
     },
   };
 }

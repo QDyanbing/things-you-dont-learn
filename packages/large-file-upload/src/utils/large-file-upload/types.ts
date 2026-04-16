@@ -197,6 +197,18 @@ export interface UploadPartSizeContext {
   fallbackPartSize: number;
 }
 
+export type UploadPartSizePresetName = 'balanced' | 'throughput' | 'recovery';
+
+export interface UploadPartSizePreset {
+  key: UploadPartSizePresetName;
+  label: string;
+  description: string;
+  minPartSize?: number;
+  maxPartSize?: number;
+  targetChunkCount?: number;
+  alignTo?: number;
+}
+
 /**
  * Resolver for choosing the effective part size per file.
  *

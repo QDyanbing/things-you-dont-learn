@@ -29,11 +29,13 @@ import {
   refreshDemoAccessToken,
 } from '../api/demoAuth';
 import {
-  createAdaptivePartSizeResolver,
+  createPartSizePresetResolver,
   createDemoUploadAdapter,
+  getUploadPartSizePreset,
   LargeFileUploader,
   PART_SIZE_UNITS,
   recommendPartSize,
+  UPLOAD_PART_SIZE_PRESETS,
   type DemoUploadResult,
   type DemoUploadServerContext,
   type UploadSnapshot,
@@ -45,7 +47,7 @@ const DEFAULT_AUTH_TOKEN = 'demo-access-token';
 const EXPIRED_DEMO_AUTH_TOKEN = 'expired-demo-token';
 
 type AuthMode = 'none' | 'bearer' | 'cookie';
-type PartSizeMode = 'custom' | 'balanced' | 'throughput';
+type PartSizeMode = 'custom' | 'balanced' | 'throughput' | 'recovery';
 
 /**
  * Human-readable byte formatter shared across progress cards and list items.
@@ -150,35 +152,15 @@ function createInitialSnapshot(
 function resolvePartSizeStrategy(mode: PartSizeMode) {
   switch (mode) {
     case 'balanced':
-      return {
-        description: '按文件大小自动调整，兼顾请求数和失败恢复粒度。',
-        recommend: (fileSize: number) =>
-          recommendPartSize(fileSize, {
-            minPartSize: 4 * PART_SIZE_UNITS.MB,
-            maxPartSize: 32 * PART_SIZE_UNITS.MB,
-            targetChunkCount: 80,
-          }),
-        resolver: createAdaptivePartSizeResolver({
-          minPartSize: 4 * PART_SIZE_UNITS.MB,
-          maxPartSize: 32 * PART_SIZE_UNITS.MB,
-          targetChunkCount: 80,
-        }),
-      };
     case 'throughput':
+    case 'recovery': {
+      const preset = getUploadPartSizePreset(mode);
       return {
-        description: '倾向更大的分片，适合带宽稳定、想降低请求数的场景。',
-        recommend: (fileSize: number) =>
-          recommendPartSize(fileSize, {
-            minPartSize: 8 * PART_SIZE_UNITS.MB,
-            maxPartSize: 64 * PART_SIZE_UNITS.MB,
-            targetChunkCount: 32,
-          }),
-        resolver: createAdaptivePartSizeResolver({
-          minPartSize: 8 * PART_SIZE_UNITS.MB,
-          maxPartSize: 64 * PART_SIZE_UNITS.MB,
-          targetChunkCount: 32,
-        }),
+        description: preset.description,
+        recommend: (fileSize: number) => recommendPartSize(fileSize, preset),
+        resolver: createPartSizePresetResolver(mode),
       };
+    }
     default:
       return {
         description: '固定分片大小，适合后端已有明确 multipart 限制。',
@@ -544,8 +526,9 @@ export function LargeFileUploadPage() {
               block
               options={[
                 { label: '固定分片', value: 'custom' },
-                { label: '自适应-均衡', value: 'balanced' },
-                { label: '自适应-吞吐', value: 'throughput' },
+                { label: UPLOAD_PART_SIZE_PRESETS.balanced.label, value: 'balanced' },
+                { label: UPLOAD_PART_SIZE_PRESETS.throughput.label, value: 'throughput' },
+                { label: UPLOAD_PART_SIZE_PRESETS.recovery.label, value: 'recovery' },
               ]}
               value={partSizeMode}
               onChange={(value) => setPartSizeMode(value)}

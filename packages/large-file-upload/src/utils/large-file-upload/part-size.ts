@@ -1,4 +1,4 @@
-import type { UploadPartSizeResolver } from './types';
+import type { UploadPartSizePreset, UploadPartSizePresetName, UploadPartSizeResolver } from './types';
 
 const MB = 1024 * 1024;
 
@@ -22,14 +22,6 @@ export interface RecommendPartSizeOptions {
 }
 
 export interface AdaptivePartSizeResolverOptions extends RecommendPartSizeOptions {}
-
-export type UploadPartSizePresetName = 'balanced' | 'throughput' | 'recovery';
-
-export interface UploadPartSizePreset extends AdaptivePartSizeResolverOptions {
-  key: UploadPartSizePresetName;
-  label: string;
-  description: string;
-}
 
 export const UPLOAD_PART_SIZE_PRESETS: Record<UploadPartSizePresetName, UploadPartSizePreset> = {
   balanced: {
@@ -96,6 +88,16 @@ export function recommendPartSize(
   return clamp(alignUp(roughPartSize, alignTo), minPartSize, maxPartSize);
 }
 
+export function getUploadPartSizePreset(
+  name: UploadPartSizePresetName,
+  overrides: AdaptivePartSizeResolverOptions = {},
+) {
+  return {
+    ...UPLOAD_PART_SIZE_PRESETS[name],
+    ...overrides,
+  };
+}
+
 /**
  * Builds a resolver suitable for `LargeFileUploaderOptions.partSizeResolver`.
  *
@@ -106,6 +108,14 @@ export function createAdaptivePartSizeResolver(
   options: AdaptivePartSizeResolverOptions = {},
 ): UploadPartSizeResolver {
   return ({ file }) => recommendPartSize(file.size, options);
+}
+
+export function createPartSizePresetResolver(
+  name: UploadPartSizePresetName,
+  overrides: AdaptivePartSizeResolverOptions = {},
+): UploadPartSizeResolver {
+  const { key: _key, label: _label, description: _description, ...options } = getUploadPartSizePreset(name, overrides);
+  return createAdaptivePartSizeResolver(options);
 }
 
 export const PART_SIZE_UNITS = {

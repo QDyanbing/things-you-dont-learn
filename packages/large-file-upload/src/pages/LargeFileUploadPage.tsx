@@ -21,6 +21,9 @@ import {
   message,
 } from 'antd';
 import {
+  createUploadApiClientOptions,
+} from '../api/uploads';
+import {
   createAdaptivePartSizeResolver,
   createDemoUploadAdapter,
   LargeFileUploader,
@@ -217,24 +220,33 @@ export function LargeFileUploadPage() {
   useEffect(() => {
     let disposed = false;
     const currentPartSizeStrategy = resolvePartSizeStrategy(partSizeMode);
+    const apiClientOptions = createUploadApiClientOptions({
+      auth:
+        authMode === 'bearer'
+          ? {
+              type: 'bearer',
+              token: authToken.trim(),
+              credentials: 'omit',
+            }
+          : authMode === 'cookie'
+            ? {
+                type: 'cookie',
+              }
+            : {
+                type: 'none',
+                credentials: 'omit',
+              },
+      onUnauthorized: async () => {
+        setApiMessage('请求返回 401。这里可以接 refresh token 逻辑，成功后返回 true 即可自动重试一次。');
+        return false;
+      },
+    });
 
     // Re-create the uploader whenever transport-level configuration changes so
     // the class instance always matches the current page controls.
     const uploader = new LargeFileUploader<DemoUploadServerContext, DemoUploadResult>({
       adapter: createDemoUploadAdapter({
-        apiClientOptions: {
-          credentials: authMode === 'cookie' ? 'include' : 'omit',
-          headers:
-            authMode === 'bearer' && authToken.trim()
-              ? () => ({
-                  Authorization: `Bearer ${authToken.trim()}`,
-                })
-              : undefined,
-          onUnauthorized: async () => {
-            setApiMessage('请求返回 401。这里可以接 refresh token 逻辑，成功后返回 true 即可自动重试一次。');
-            return false;
-          },
-        },
+        apiClientOptions,
       }),
       partSize: configuredPartSize,
       partSizeResolver: currentPartSizeStrategy.resolver,

@@ -361,6 +361,56 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
   }
 
   /**
+   * Retries the current upload from its latest prepared or persisted state.
+   */
+  async retry() {
+    this.ensureNotDestroyed();
+
+    if (this.snapshot.status === 'uploading') {
+      return this.runPromise ?? undefined;
+    }
+
+    if (!this.file) {
+      throw new Error('No file selected. Call prepare(file) first.');
+    }
+
+    if (this.snapshot.status === 'canceled') {
+      throw new Error('Upload was canceled. Call restart() or prepare(file) first.');
+    }
+
+    if (this.snapshot.status === 'completed') {
+      return this.snapshot.result;
+    }
+
+    if (this.snapshot.status === 'ready' || this.snapshot.status === 'idle') {
+      return this.start();
+    }
+
+    return this.launchUpload(true);
+  }
+
+  /**
+   * Restarts the current file from scratch, clearing local checkpoints and
+   * notifying the adapter so remote multipart state can be discarded as well.
+   */
+  async restart(options?: { removeCheckpoint?: boolean }) {
+    this.ensureNotDestroyed();
+
+    if (!this.file) {
+      throw new Error('No file selected. Call prepare(file) first.');
+    }
+
+    const file = this.file;
+    const removeCheckpoint = options?.removeCheckpoint ?? true;
+
+    await this.cancel({
+      removeCheckpoint,
+    });
+
+    return this.start(file);
+  }
+
+  /**
    * Requests a pause and waits until in-flight chunk work settles.
    */
   async pause() {
@@ -443,6 +493,7 @@ export class LargeFileUploader<TServerContext = unknown, TResult = unknown> {
 
     this.pauseRequested = false;
     this.cancelRequested = false;
+    this.snapshot.error = undefined;
 
     const runToken = ++this.currentRunToken;
     const runTask = this.runUpload(runToken, isResume);

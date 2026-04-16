@@ -389,11 +389,64 @@ export function LargeFileUploadPage() {
     }
   };
 
-  const resetSelection = () => {
+  const resetSelection = async () => {
+    if (
+      uploaderRef.current
+      && selectedFile
+      && snapshot.status !== 'idle'
+      && snapshot.status !== 'completed'
+      && snapshot.status !== 'canceled'
+    ) {
+      await uploaderRef.current.cancel({
+        removeCheckpoint: true,
+      });
+    }
+
     setSelectedFile(null);
     setSnapshot(createInitialSnapshot(configuredPartSize));
     setApiMessage('');
     setResultUrl('');
+  };
+
+  const retryUpload = async () => {
+    if (!uploaderRef.current) {
+      return;
+    }
+
+    setApiMessage('正在重试上传...');
+
+    try {
+      const result = await uploaderRef.current.retry();
+      if (result?.fileUrl) {
+        setResultUrl(result.fileUrl);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '重试上传失败';
+      setApiMessage(errorMessage);
+      message.error(errorMessage);
+    }
+  };
+
+  const restartUpload = async () => {
+    if (!uploaderRef.current || !selectedFile) {
+      message.warning('请先选择文件');
+      return;
+    }
+
+    setApiMessage('正在清理旧上传状态并重新开始...');
+
+    try {
+      const result = await uploaderRef.current.restart({
+        removeCheckpoint: true,
+      });
+      if (result?.fileUrl) {
+        setResultUrl(result.fileUrl);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '重新上传失败';
+      setApiMessage(errorMessage);
+      message.error(errorMessage);
+    }
   };
 
   const prepareDemoCookieSession = async () => {
@@ -583,7 +636,13 @@ export function LargeFileUploadPage() {
           <Button onClick={() => void resumeUpload()} disabled={snapshot.status !== 'paused'}>
             继续上传
           </Button>
-          <Button onClick={resetSelection} disabled={snapshot.status === 'uploading'}>
+          <Button onClick={() => void retryUpload()} disabled={!['error', 'paused', 'ready'].includes(snapshot.status)}>
+            失败重试
+          </Button>
+          <Button onClick={() => void restartUpload()} disabled={!selectedFile || snapshot.status === 'uploading'}>
+            重新上传
+          </Button>
+          <Button onClick={() => void resetSelection()} disabled={snapshot.status === 'uploading'}>
             清空当前文件
           </Button>
           <Tag color={getStatusTagColor(snapshot.status)}>状态：{snapshot.status}</Tag>

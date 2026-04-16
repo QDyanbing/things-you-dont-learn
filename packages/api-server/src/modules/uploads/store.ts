@@ -117,4 +117,20 @@ export function completeUpload(uploadId: string) {
   return upload;
 }
 
+export function abortUpload(uploadId: string) {
+  const upload = uploads.get(uploadId);
+  if (!upload) {
+    return null;
+  }
+
+  uploads.delete(uploadId);
+
+  const completed = completedByHash.get(upload.fileHash);
+  if (completed?.uploadId === uploadId) {
+    completedByHash.delete(upload.fileHash);
+  }
+
+  return upload;
+}
+
 export { toUploadResource };

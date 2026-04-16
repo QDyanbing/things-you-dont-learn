@@ -5,7 +5,7 @@ import {
   DEMO_UPLOAD_SESSION_COOKIE,
   DEMO_UPLOAD_SESSION_VALUE,
 } from '../demo-auth/constants.js';
-import { completeUpload, createUpload, getUpload, listUploadedParts, putUploadPart, toUploadResource } from './store.js';
+import { abortUpload, completeUpload, createUpload, getUpload, listUploadedParts, putUploadPart, toUploadResource } from './store.js';
 
 interface CreateUploadBody {
   fileName: string;
@@ -227,6 +227,24 @@ export const uploadRoutes: FastifyPluginAsync = async (fastify) => {
       file: {
         url: `/files/${encodeURIComponent(upload.fileName)}`,
       },
+    };
+  });
+
+  fastify.delete<{ Params: { uploadId: string } }>('/uploads/:uploadId', async (request, reply) => {
+    const access = ensureUploadAccess(request, reply);
+    if (access !== true) {
+      return access;
+    }
+
+    const upload = abortUpload(request.params.uploadId);
+    if (!upload) {
+      reply.code(404);
+      return { message: '上传任务不存在' };
+    }
+
+    return {
+      ok: true,
+      upload: toUploadResource(upload),
     };
   });
 };

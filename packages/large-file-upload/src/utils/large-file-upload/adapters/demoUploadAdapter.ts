@@ -4,6 +4,7 @@ import {
   createUploadsApiClient,
   getUploadParts,
   putUploadPart,
+  type CreateUploadPayload,
   type UploadApiClientOptions,
   type UploadDto,
   type UploadsApiClient,
@@ -73,6 +74,33 @@ export interface DemoUploadAdapterOptions {
   requestData?: DemoUploadRequestDataOptions;
 }
 
+function isRequestDataResolver(
+  value: DemoUploadRequestDataValue | DemoUploadRequestDataResolver | undefined,
+): value is DemoUploadRequestDataResolver {
+  return typeof value === 'function';
+}
+
+async function resolveRequestData(
+  value: DemoUploadRequestDataValue | DemoUploadRequestDataResolver | undefined,
+  context: DemoUploadRequestDataContext,
+) {
+  if (isRequestDataResolver(value)) {
+    return value(context);
+  }
+
+  return value;
+}
+
+function mergePayload<TPayload extends Record<string, unknown>>(
+  payload: TPayload,
+  extraData: Record<string, unknown> | undefined,
+) {
+  return {
+    ...payload,
+    ...extraData,
+  };
+}
+
 /**
  * Normalizes the file URL format expected by the demo page.
  */
@@ -117,12 +145,26 @@ export function createDemoUploadAdapter(
 
   return {
     async createUploadSession(input) {
-      const response = await api.createUpload({
-        fileName: input.file.name,
+      const createRequestData = await resolveRequestData(options.requestData?.createUpload, {
+        stage: 'createUpload',
+        file: input.file,
         fileHash: input.fileHash,
-        fileSize: input.file.size,
         partSize: input.partSize,
+        totalParts: input.totalParts,
+        uploadId: input.existingUploadId,
+        serverContext: input.checkpoint?.serverContext as DemoUploadServerContext | undefined,
       });
+      const response = await api.createUpload(
+        mergePayload<CreateUploadPayload>(
+          {
+            fileName: input.file.name,
+            fileHash: input.fileHash,
+            fileSize: input.file.size,
+            partSize: input.partSize,
+          },
+          createRequestData,
+        ),
+      );
 
       return {
         uploadId: response.upload.uploadId,

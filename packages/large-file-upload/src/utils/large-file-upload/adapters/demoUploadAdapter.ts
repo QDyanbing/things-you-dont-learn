@@ -1,10 +1,12 @@
 import {
+  type CompleteUploadPayload,
   completeUpload,
   createUpload,
   createUploadsApiClient,
   getUploadParts,
   putUploadPart,
   type CreateUploadPayload,
+  type PutUploadPartPayload,
   type UploadApiClientOptions,
   type UploadDto,
   type UploadsApiClient,
@@ -188,12 +190,27 @@ export function createDemoUploadAdapter(
     },
 
     async uploadPart(input) {
-      const response = await api.putUploadPart({
+      const uploadPartRequestData = await resolveRequestData(options.requestData?.uploadPart, {
+        stage: 'uploadPart',
+        file: input.file,
+        fileHash: input.fileHash,
+        partSize: input.serverContext?.upload.partSize ?? input.chunk.size,
+        totalParts: input.serverContext?.upload.totalParts ?? Math.max(1, input.chunk.index + 1),
         uploadId: input.uploadId,
-        partHash: input.partHash ?? `${input.fileHash}-${input.chunk.partNumber}`,
-        partNumber: input.chunk.partNumber,
-        size: input.chunk.size,
+        chunk: input.chunk,
+        serverContext: input.serverContext,
       });
+      const response = await api.putUploadPart(
+        mergePayload<PutUploadPartPayload>(
+          {
+            uploadId: input.uploadId,
+            partHash: input.partHash ?? `${input.fileHash}-${input.chunk.partNumber}`,
+            partNumber: input.chunk.partNumber,
+            size: input.chunk.size,
+          },
+          uploadPartRequestData,
+        ),
+      );
 
       return {
         part: {
@@ -208,7 +225,20 @@ export function createDemoUploadAdapter(
     },
 
     async completeUpload(input): Promise<CompleteUploadResult<DemoUploadServerContext, DemoUploadResult>> {
-      const response = await api.completeUpload(input.uploadId);
+      const completeRequestData = await resolveRequestData(options.requestData?.completeUpload, {
+        stage: 'completeUpload',
+        file: input.file,
+        fileHash: input.fileHash,
+        partSize: input.partSize,
+        totalParts: input.totalParts,
+        uploadId: input.uploadId,
+        completedParts: input.completedParts,
+        serverContext: input.serverContext,
+      });
+      const response = await api.completeUpload(
+        input.uploadId,
+        mergePayload<CompleteUploadPayload>({}, completeRequestData),
+      );
 
       return {
         result: {

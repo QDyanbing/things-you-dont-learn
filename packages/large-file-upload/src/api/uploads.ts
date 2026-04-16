@@ -89,6 +89,24 @@ export interface UploadPartsResponse {
   parts: UploadPartDto[];
 }
 
+export type UploadApiExtraPayload = Record<string, unknown>;
+
+export type CreateUploadPayload = UploadApiExtraPayload & {
+  fileName: string;
+  fileHash: string;
+  fileSize: number;
+  partSize: number;
+};
+
+export type PutUploadPartPayload = UploadApiExtraPayload & {
+  uploadId: string;
+  partNumber: number;
+  partHash: string;
+  size: number;
+};
+
+export type CompleteUploadPayload = UploadApiExtraPayload;
+
 function isResolver<TValue>(
   value: UploadApiResolvable<TValue> | undefined,
 ): value is (context: UploadApiRequestContext) => TValue | Promise<TValue> {
@@ -122,21 +140,11 @@ function mergeHeaders(
 }
 
 export interface UploadsApiClient {
-  createUpload(payload: {
-    fileName: string;
-    fileHash: string;
-    fileSize: number;
-    partSize: number;
-  }): Promise<CreateUploadResponse>;
+  createUpload(payload: CreateUploadPayload): Promise<CreateUploadResponse>;
   getUpload(uploadId: string): Promise<UploadResponse>;
   getUploadParts(uploadId: string): Promise<UploadPartsResponse>;
-  putUploadPart(payload: {
-    uploadId: string;
-    partNumber: number;
-    partHash: string;
-    size: number;
-  }): Promise<UploadResponse>;
-  completeUpload(uploadId: string): Promise<CompleteUploadResponse>;
+  putUploadPart(payload: PutUploadPartPayload): Promise<UploadResponse>;
+  completeUpload(uploadId: string, payload?: CompleteUploadPayload): Promise<CompleteUploadResponse>;
 }
 
 /**
@@ -248,11 +256,12 @@ export function createUploadsApiClient(options: UploadApiClientOptions = {}): Up
       );
     },
 
-    completeUpload(uploadId) {
+    completeUpload(uploadId, payload) {
       return request<CompleteUploadResponse>(
         `/uploads/${uploadId}/complete`,
         {
           method: 'POST',
+          body: payload ? JSON.stringify(payload) : undefined,
         },
         {
           path: `/uploads/${uploadId}/complete`,

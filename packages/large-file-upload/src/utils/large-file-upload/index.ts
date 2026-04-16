@@ -6,6 +6,10 @@ export { LocalStorageCheckpointStore } from './persistence/LocalStorageCheckpoin
 export { createAdaptivePartSizeResolver, PART_SIZE_UNITS, recommendPartSize } from './part-size';
 export type {
   DemoUploadAdapterOptions,
+  DemoUploadRequestDataContext,
+  DemoUploadRequestDataOptions,
+  DemoUploadRequestDataResolver,
+  DemoUploadRequestDataValue,
   DemoUploadResult,
   DemoUploadServerContext,
 } from './adapters/demoUploadAdapter';

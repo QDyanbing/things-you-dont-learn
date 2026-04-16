@@ -8,7 +8,13 @@ import {
   type UploadDto,
   type UploadsApiClient,
 } from '../../../api/uploads';
-import type { CompleteUploadResult, UploadAdapter, UploadPartRecord } from '../types';
+import type {
+  CompleteUploadResult,
+  UploadAdapter,
+  UploadChunkDescriptor,
+  UploadMaybePromise,
+  UploadPartRecord,
+} from '../types';
 
 /**
  * Demo backend state mirrored into uploader snapshots so the page can inspect
@@ -25,6 +31,30 @@ export interface DemoUploadResult {
   fileUrl: string;
 }
 
+export interface DemoUploadRequestDataContext {
+  stage: 'createUpload' | 'uploadPart' | 'completeUpload';
+  file: File;
+  fileHash: string;
+  partSize: number;
+  totalParts: number;
+  uploadId?: string;
+  chunk?: UploadChunkDescriptor;
+  completedParts?: UploadPartRecord[];
+  serverContext?: DemoUploadServerContext;
+}
+
+export type DemoUploadRequestDataValue = Record<string, unknown> | undefined;
+
+export type DemoUploadRequestDataResolver = (
+  context: DemoUploadRequestDataContext,
+) => UploadMaybePromise<DemoUploadRequestDataValue>;
+
+export interface DemoUploadRequestDataOptions {
+  createUpload?: DemoUploadRequestDataValue | DemoUploadRequestDataResolver;
+  uploadPart?: DemoUploadRequestDataValue | DemoUploadRequestDataResolver;
+  completeUpload?: DemoUploadRequestDataValue | DemoUploadRequestDataResolver;
+}
+
 export interface DemoUploadAdapterOptions {
   /**
    * Fully constructed API client. When provided, it takes precedence over the
@@ -36,6 +66,11 @@ export interface DemoUploadAdapterOptions {
    * without building a custom client by hand.
    */
   apiClientOptions?: UploadApiClientOptions;
+  /**
+   * Business-side extra request payload injected into create / part / complete
+   * calls, for fields such as bizType, folderId, tenantId, or traceId.
+   */
+  requestData?: DemoUploadRequestDataOptions;
 }
 
 /**

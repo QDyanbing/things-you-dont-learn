@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import { demoAuthRoutes } from './modules/demo-auth/routes.js';
 import { uploadRoutes } from './modules/uploads/routes.js';
 
 export function createApp() {
@@ -7,6 +8,11 @@ export function createApp() {
 
   app.register(cors, {
     origin: true,
+    credentials: true,
+  });
+
+  app.register(demoAuthRoutes, {
+    prefix: '/api/demo-auth',
   });
 
   app.register(uploadRoutes, {

@@ -23,6 +23,44 @@ export interface RecommendPartSizeOptions {
 
 export interface AdaptivePartSizeResolverOptions extends RecommendPartSizeOptions {}
 
+export type UploadPartSizePresetName = 'balanced' | 'throughput' | 'recovery';
+
+export interface UploadPartSizePreset extends AdaptivePartSizeResolverOptions {
+  key: UploadPartSizePresetName;
+  label: string;
+  description: string;
+}
+
+export const UPLOAD_PART_SIZE_PRESETS: Record<UploadPartSizePresetName, UploadPartSizePreset> = {
+  balanced: {
+    key: 'balanced',
+    label: '均衡模式',
+    description: '兼顾请求数与失败恢复粒度，适合作为大多数业务的默认值。',
+    minPartSize: 4 * MB,
+    maxPartSize: 32 * MB,
+    targetChunkCount: 80,
+    alignTo: MB,
+  },
+  throughput: {
+    key: 'throughput',
+    label: '吞吐优先',
+    description: '倾向更大的分片，减少请求数和服务端合并压力。',
+    minPartSize: 8 * MB,
+    maxPartSize: 64 * MB,
+    targetChunkCount: 32,
+    alignTo: MB,
+  },
+  recovery: {
+    key: 'recovery',
+    label: '恢复优先',
+    description: '倾向更小的分片，适合弱网或失败率较高的场景。',
+    minPartSize: 2 * MB,
+    maxPartSize: 16 * MB,
+    targetChunkCount: 120,
+    alignTo: MB,
+  },
+};
+
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }

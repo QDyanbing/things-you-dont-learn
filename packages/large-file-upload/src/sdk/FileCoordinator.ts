@@ -35,11 +35,20 @@ interface FileCoordinatorChunk {
   size: number;
 }
 
+/**
+ * Coordinates one file instance and prepares internal chunk metadata for later upload steps.
+ */
 export class FileCoordinator {
   private readonly file: File;
   private readonly options: FileCoordinatorOptions;
   private readonly chunks: FileCoordinatorChunk[];
 
+  /**
+   * Creates a coordinator bound to one selected file.
+   *
+   * @param file File selected by the user.
+   * @param options Runtime configuration for the current file.
+   */
   constructor(
     file: File,
     options: FileCoordinatorOptions = {},
@@ -52,14 +61,23 @@ export class FileCoordinator {
     this.chunks = this.createChunks();
   }
 
+  /**
+   * Returns the original `File` instance bound to the coordinator.
+   */
   getFile() {
     return this.file;
   }
 
+  /**
+   * Returns the normalized runtime options of the current coordinator.
+   */
   getOptions() {
     return { ...this.options };
   }
 
+  /**
+   * Returns the total number of chunks generated for the current file.
+   */
   getChunkCount() {
     return this.chunks.length;
   }

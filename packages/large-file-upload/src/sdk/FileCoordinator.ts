@@ -1,13 +1,37 @@
+/**
+ * Default chunk size used when the caller does not provide a custom value.
+ */
 const DEFAULT_CHUNK_SIZE = 5 * 1024 * 1024;
 
+/**
+ * Public configuration accepted by a single `FileCoordinator` instance.
+ */
 export interface FileCoordinatorOptions {
+  /**
+   * Chunk size in bytes used to split the current file.
+   */
   chunkSize?: number;
 }
 
+/**
+ * Internal descriptor used to represent one file chunk.
+ */
 interface FileCoordinatorChunk {
+  /**
+   * Zero-based chunk index.
+   */
   index: number;
+  /**
+   * Inclusive start byte offset of the chunk.
+   */
   start: number;
+  /**
+   * Exclusive end byte offset of the chunk.
+   */
   end: number;
+  /**
+   * Byte length of the chunk.
+   */
   size: number;
 }
 

@@ -6,3 +6,4 @@ coverage
 .env
 .env.*
 packages/api-server/.data
+images-500m.zip

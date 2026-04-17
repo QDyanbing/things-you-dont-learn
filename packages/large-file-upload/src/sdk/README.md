@@ -33,7 +33,7 @@ new FileCoordinator(file, options)
 
 | 属性 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| - | 当前还没有正式开放配置项，后续会逐步补充 | - | - |
+| `chunkSize` | 单个分片的字节大小 | `number` | `5 * 1024 * 1024` |
 
 ### Methods
 
@@ -41,3 +41,4 @@ new FileCoordinator(file, options)
 | --- | --- | --- |
 | `getFile()` | 获取当前实例持有的原始文件对象 | `File` |
 | `getOptions()` | 获取当前实例持有的配置对象 | `FileCoordinatorOptions` |
+| `getChunkCount()` | 获取当前文件分片数量 | `number` |

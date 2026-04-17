@@ -39,8 +39,17 @@ interface FileCoordinatorChunk {
  * Coordinates one file instance and prepares internal chunk metadata for later upload steps.
  */
 export class FileCoordinator {
+  /**
+   * Original file selected by the caller.
+   */
   private readonly file: File;
+  /**
+   * Normalized options stored for the current coordinator instance.
+   */
   private readonly options: FileCoordinatorOptions;
+  /**
+   * Internal chunk list used by later upload scheduling logic.
+   */
   private readonly chunks: FileCoordinatorChunk[];
 
   /**
@@ -82,6 +91,9 @@ export class FileCoordinator {
     return this.chunks.length;
   }
 
+  /**
+   * Splits the current file into deterministic chunks based on `chunkSize`.
+   */
   private createChunks(): FileCoordinatorChunk[] {
     const chunkSize = this.options.chunkSize ?? DEFAULT_CHUNK_SIZE;
 

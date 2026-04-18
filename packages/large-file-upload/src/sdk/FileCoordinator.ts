@@ -3,6 +3,9 @@
  */
 const DEFAULT_CHUNK_SIZE = 5 * 1024 * 1024;
 
+/**
+ * Public status exposed by the current coordinator instance.
+ */
 export type FileCoordinatorStatus =
   | 'INIT'
   | 'PREPARING'
@@ -62,6 +65,9 @@ export class FileCoordinator {
    * Internal chunk list used by later upload scheduling logic.
    */
   private readonly chunks: FileCoordinatorChunk[];
+  /**
+   * Current runtime status of the coordinator.
+   */
   private status: FileCoordinatorStatus;
 
   /**
@@ -97,6 +103,9 @@ export class FileCoordinator {
     return { ...this.options };
   }
 
+  /**
+   * Returns the current runtime status of the coordinator.
+   */
   getStatus() {
     return this.status;
   }

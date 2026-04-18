@@ -117,6 +117,9 @@ export class FileCoordinator {
     return this.chunks.length;
   }
 
+  /**
+   * Updates the internal runtime status of the coordinator.
+   */
   private setStatus(status: FileCoordinatorStatus) {
     this.status = status;
   }

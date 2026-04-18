@@ -110,6 +110,11 @@ export class FileCoordinator {
     return this.status;
   }
 
+  async prepare() {
+    this.setStatus('PREPARING');
+    this.setStatus('READY');
+  }
+
   /**
    * Returns the total number of chunks generated for the current file.
    */

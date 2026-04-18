@@ -3,6 +3,17 @@
  */
 const DEFAULT_CHUNK_SIZE = 5 * 1024 * 1024;
 
+export type FileCoordinatorStatus =
+  | 'INIT'
+  | 'PREPARING'
+  | 'READY'
+  | 'UPLOADING'
+  | 'PAUSED'
+  | 'COMPLETING'
+  | 'COMPLETED'
+  | 'CANCELED'
+  | 'ERROR';
+
 /**
  * Public configuration accepted by a single `FileCoordinator` instance.
  */
@@ -51,6 +62,7 @@ export class FileCoordinator {
    * Internal chunk list used by later upload scheduling logic.
    */
   private readonly chunks: FileCoordinatorChunk[];
+  private status: FileCoordinatorStatus;
 
   /**
    * Creates a coordinator bound to one selected file.
@@ -68,6 +80,7 @@ export class FileCoordinator {
       chunkSize: Math.max(1, options.chunkSize ?? DEFAULT_CHUNK_SIZE),
     };
     this.chunks = this.createChunks();
+    this.status = 'INIT';
   }
 
   /**
@@ -82,6 +95,10 @@ export class FileCoordinator {
    */
   getOptions() {
     return { ...this.options };
+  }
+
+  getStatus() {
+    return this.status;
   }
 
   /**

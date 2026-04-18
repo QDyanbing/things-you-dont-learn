@@ -110,6 +110,9 @@ export class FileCoordinator {
     return this.status;
   }
 
+  /**
+   * Runs the first-stage preparation flow for the current file.
+   */
   async prepare() {
     this.setStatus('PREPARING');
     this.setStatus('READY');

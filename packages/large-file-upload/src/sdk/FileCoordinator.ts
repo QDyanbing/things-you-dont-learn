@@ -64,7 +64,7 @@ export class FileCoordinator {
   /**
    * Internal chunk list used by later upload scheduling logic.
    */
-  private readonly chunks: FileCoordinatorChunk[];
+  private chunks: FileCoordinatorChunk[];
   /**
    * Current runtime status of the coordinator.
    */
@@ -85,7 +85,7 @@ export class FileCoordinator {
       ...options,
       chunkSize: Math.max(1, options.chunkSize ?? DEFAULT_CHUNK_SIZE),
     };
-    this.chunks = this.createChunks();
+    this.chunks = [];
     this.setStatus('INIT');
   }
 
@@ -115,6 +115,7 @@ export class FileCoordinator {
    */
   async prepare() {
     this.setStatus('PREPARING');
+    this.chunks = this.createChunks();
     this.setStatus('READY');
   }
 

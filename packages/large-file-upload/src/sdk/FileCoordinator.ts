@@ -68,7 +68,7 @@ export class FileCoordinator {
   /**
    * Current runtime status of the coordinator.
    */
-  private status: FileCoordinatorStatus;
+  private status!: FileCoordinatorStatus;
 
   /**
    * Creates a coordinator bound to one selected file.
@@ -86,7 +86,7 @@ export class FileCoordinator {
       chunkSize: Math.max(1, options.chunkSize ?? DEFAULT_CHUNK_SIZE),
     };
     this.chunks = this.createChunks();
-    this.status = 'INIT';
+    this.setStatus('INIT');
   }
 
   /**
@@ -115,6 +115,10 @@ export class FileCoordinator {
    */
   getChunkCount() {
     return this.chunks.length;
+  }
+
+  private setStatus(status: FileCoordinatorStatus) {
+    this.status = status;
   }
 
   /**

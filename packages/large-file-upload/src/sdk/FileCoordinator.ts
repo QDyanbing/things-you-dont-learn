@@ -17,6 +17,8 @@ export type FileCoordinatorStatus =
   | 'CANCELED'
   | 'ERROR';
 
+export type FileCoordinatorFileIdentity = string;
+
 /**
  * Public configuration accepted by a single `FileCoordinator` instance.
  */
@@ -57,6 +59,7 @@ export class FileCoordinator {
    * Original file selected by the caller.
    */
   private readonly file: File;
+  private readonly fileIdentity: FileCoordinatorFileIdentity;
   /**
    * Normalized options stored for the current coordinator instance.
    */
@@ -81,6 +84,7 @@ export class FileCoordinator {
     options: FileCoordinatorOptions = {},
   ) {
     this.file = file;
+    this.fileIdentity = this.createFileIdentity();
     this.options = {
       ...options,
       chunkSize: Math.max(1, options.chunkSize ?? DEFAULT_CHUNK_SIZE),
@@ -94,6 +98,10 @@ export class FileCoordinator {
    */
   getFile() {
     return this.file;
+  }
+
+  getFileIdentity() {
+    return this.fileIdentity;
   }
 
   /**
@@ -131,6 +139,10 @@ export class FileCoordinator {
    */
   private setStatus(status: FileCoordinatorStatus) {
     this.status = status;
+  }
+
+  private createFileIdentity(): FileCoordinatorFileIdentity {
+    return `${this.file.name}__${this.file.size}__${this.file.lastModified}`;
   }
 
   /**

@@ -56,5 +56,5 @@ new FileCoordinator(file, options)
 | `getFile()` | 获取当前实例持有的原始文件对象 | `File` |
 | `getOptions()` | 获取当前实例持有的配置对象 | `FileCoordinatorOptions` |
 | `getStatus()` | 获取当前实例状态 | `FileCoordinatorStatus` |
-| `prepare()` | 执行当前文件的最小预处理流程，状态会从 `PREPARING` 进入 `READY` | `Promise<void>` |
-| `getChunkCount()` | 获取当前文件分片数量 | `number` |
+| `prepare()` | 重新按当前 `chunkSize` 准备分片数据，状态会从 `PREPARING` 进入 `READY` | `Promise<void>` |
+| `getChunkCount()` | 获取当前文件分片数量；在调用 `prepare()` 前默认是 `0` | `number` |

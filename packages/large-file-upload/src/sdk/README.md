@@ -49,11 +49,18 @@ new FileCoordinator(file, options)
 | `CANCELED` | 上传已被主动取消 | `'CANCELED'` | - |
 | `ERROR` | 上传流程发生错误 | `'ERROR'` | - |
 
+### FileCoordinatorFileIdentity
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `-` | 基于 `file.name + file.size + file.lastModified` 组合出的文件唯一标识 | `string` | - |
+
 ### Methods
 
 | 方法 | 说明 | 返回类型 |
 | --- | --- | --- |
 | `getFile()` | 获取当前实例持有的原始文件对象 | `File` |
+| `getFileIdentity()` | 获取当前文件的唯一标识 | `FileCoordinatorFileIdentity` |
 | `getOptions()` | 获取当前实例持有的配置对象 | `FileCoordinatorOptions` |
 | `getStatus()` | 获取当前实例状态 | `FileCoordinatorStatus` |
 | `prepare()` | 重新按当前 `chunkSize` 准备分片数据，状态会从 `PREPARING` 进入 `READY` | `Promise<void>` |

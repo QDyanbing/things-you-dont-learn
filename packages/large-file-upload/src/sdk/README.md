@@ -63,5 +63,5 @@ new FileCoordinator(file, options)
 | `getFileIdentity()` | 获取当前文件的唯一标识 | `FileCoordinatorFileIdentity` |
 | `getOptions()` | 获取当前实例持有的配置对象 | `FileCoordinatorOptions` |
 | `getStatus()` | 获取当前实例状态 | `FileCoordinatorStatus` |
-| `prepare()` | 重新按当前 `chunkSize` 准备分片数据，状态会从 `PREPARING` 进入 `READY` | `Promise<void>` |
+| `prepare()` | 重新按当前 `chunkSize` 准备分片数据；重复调用是安全的，并发调用会复用同一轮 prepare，重建前会先清空旧分片；状态会从 `PREPARING` 进入 `READY` | `Promise<void>` |
 | `getChunkCount()` | 获取当前文件分片数量；在调用 `prepare()` 前默认是 `0` | `number` |

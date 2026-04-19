@@ -7,6 +7,7 @@ export default function App() {
   const [fileIdentity, setFileIdentity] = useState("");
   const [status, setStatus] = useState("");
   const [chunkCount, setChunkCount] = useState(0);
+  const [chunkSize, setChunkSize] = useState(0);
   const [prepareCalls, setPrepareCalls] = useState(0);
 
   return (
@@ -23,15 +24,18 @@ export default function App() {
               setFileIdentity(coordinator.getFileIdentity());
               setStatus(coordinator.getStatus());
               setChunkCount(coordinator.getChunkCount());
+              setChunkSize(0);
               setPrepareCalls(0);
 
-              await Promise.all([
+              const [, prepareResult] = await Promise.all([
                 coordinator.prepare(),
                 coordinator.prepare(),
               ]);
 
-              setStatus(coordinator.getStatus());
-              setChunkCount(coordinator.getChunkCount());
+              setFileIdentity(prepareResult.fileIdentity);
+              setStatus(prepareResult.status);
+              setChunkCount(prepareResult.chunkCount);
+              setChunkSize(prepareResult.chunkSize);
               setPrepareCalls(2);
               onSuccess?.({}, file);
             } catch (error) {
@@ -45,6 +49,7 @@ export default function App() {
         {fileIdentity ? <div>identity: {fileIdentity}</div> : null}
         {status ? <div>status: {status}</div> : null}
         <div>chunkCount: {chunkCount}</div>
+        <div>chunkSize: {chunkSize}</div>
         <div>prepareCalls: {prepareCalls}</div>
       </>
     </ConfigProvider>

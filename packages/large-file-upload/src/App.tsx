@@ -5,6 +5,7 @@ import { FileCoordinator } from "./sdk/FileCoordinator";
 export default function App() {
   const [fileName, setFileName] = useState("");
   const [status, setStatus] = useState("");
+  const [chunkCount, setChunkCount] = useState(0);
 
   return (
     <ConfigProvider>
@@ -18,10 +19,12 @@ export default function App() {
 
               setFileName(coordinator.getFile().name);
               setStatus(coordinator.getStatus());
+              setChunkCount(coordinator.getChunkCount());
 
               await coordinator.prepare();
 
               setStatus(coordinator.getStatus());
+              setChunkCount(coordinator.getChunkCount());
               onSuccess?.({}, file);
             } catch (error) {
               onError?.(error as Error);
@@ -32,6 +35,7 @@ export default function App() {
         </Upload>
         {fileName ? <div>file: {fileName}</div> : null}
         {status ? <div>status: {status}</div> : null}
+        <div>chunkCount: {chunkCount}</div>
       </>
     </ConfigProvider>
   );

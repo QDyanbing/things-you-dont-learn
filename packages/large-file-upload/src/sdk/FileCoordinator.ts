@@ -17,6 +17,9 @@ export type FileCoordinatorStatus =
   | 'CANCELED'
   | 'ERROR';
 
+/**
+ * Stable identity string derived from the current file metadata.
+ */
 export type FileCoordinatorFileIdentity = string;
 
 /**
@@ -59,6 +62,9 @@ export class FileCoordinator {
    * Original file selected by the caller.
    */
   private readonly file: File;
+  /**
+   * Stable identity generated for the current file.
+   */
   private readonly fileIdentity: FileCoordinatorFileIdentity;
   /**
    * Normalized options stored for the current coordinator instance.
@@ -100,6 +106,9 @@ export class FileCoordinator {
     return this.file;
   }
 
+  /**
+   * Returns the stable identity string of the current file.
+   */
   getFileIdentity() {
     return this.fileIdentity;
   }
@@ -141,6 +150,9 @@ export class FileCoordinator {
     this.status = status;
   }
 
+  /**
+   * Creates a stable identity string for the current file.
+   */
   private createFileIdentity(): FileCoordinatorFileIdentity {
     return `${this.file.name}__${this.file.size}__${this.file.lastModified}`;
   }

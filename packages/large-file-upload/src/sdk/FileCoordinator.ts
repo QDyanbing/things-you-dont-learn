@@ -100,6 +100,9 @@ export class FileCoordinator {
    * Active preparation task reused by concurrent `prepare()` calls.
    */
   private preparePromise: Promise<FileCoordinatorPrepareResult> | null = null;
+  /**
+   * Latest successful preparation summary of the current file.
+   */
   private prepareResult: FileCoordinatorPrepareResult | null = null;
   /**
    * Current runtime status of the coordinator.
@@ -194,6 +197,9 @@ export class FileCoordinator {
     return this.chunks.length;
   }
 
+  /**
+   * Returns the latest successful preparation summary.
+   */
   getPrepareResult() {
     if (!this.prepareResult) {
       return null;

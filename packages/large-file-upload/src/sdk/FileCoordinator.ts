@@ -32,6 +32,13 @@ export interface FileCoordinatorOptions {
   chunkSize?: number;
 }
 
+export interface FileCoordinatorPrepareResult {
+  fileIdentity: FileCoordinatorFileIdentity;
+  status: FileCoordinatorStatus;
+  chunkCount: number;
+  chunkSize: number;
+}
+
 /**
  * Internal descriptor used to represent one file chunk.
  */
@@ -77,7 +84,7 @@ export class FileCoordinator {
   /**
    * Active preparation task reused by concurrent `prepare()` calls.
    */
-  private preparePromise: Promise<void> | null = null;
+  private preparePromise: Promise<FileCoordinatorPrepareResult> | null = null;
   /**
    * Current runtime status of the coordinator.
    */
@@ -147,6 +154,7 @@ export class FileCoordinator {
       this.resetChunks();
       this.chunks = this.createChunks();
       this.setStatus('READY');
+      return this.createPrepareResult();
     })();
 
     const wrappedPrepareTask = prepareTask.finally(() => {
@@ -178,6 +186,15 @@ export class FileCoordinator {
    */
   private resetChunks() {
     this.chunks = [];
+  }
+
+  private createPrepareResult(): FileCoordinatorPrepareResult {
+    return {
+      fileIdentity: this.fileIdentity,
+      status: this.status,
+      chunkCount: this.chunks.length,
+      chunkSize: this.options.chunkSize ?? DEFAULT_CHUNK_SIZE,
+    };
   }
 
   /**

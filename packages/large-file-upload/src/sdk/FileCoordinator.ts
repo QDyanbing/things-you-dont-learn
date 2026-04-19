@@ -74,6 +74,9 @@ export class FileCoordinator {
    * Internal chunk list used by later upload scheduling logic.
    */
   private chunks: FileCoordinatorChunk[];
+  /**
+   * Active preparation task reused by concurrent `prepare()` calls.
+   */
   private preparePromise: Promise<void> | null = null;
   /**
    * Current runtime status of the coordinator.
@@ -130,6 +133,9 @@ export class FileCoordinator {
 
   /**
    * Runs the first-stage preparation flow for the current file.
+   *
+   * Repeated calls are safe. When a preparation task is already running,
+   * later callers reuse the same promise instead of starting a new run.
    */
   async prepare() {
     if (this.preparePromise) {
@@ -167,6 +173,9 @@ export class FileCoordinator {
     this.status = status;
   }
 
+  /**
+   * Clears the previously prepared chunk metadata before rebuilding it.
+   */
   private resetChunks() {
     this.chunks = [];
   }

@@ -55,6 +55,15 @@ new FileCoordinator(file, options)
 | --- | --- | --- | --- |
 | `-` | 基于 `file.name + file.size + file.lastModified` 组合出的文件唯一标识 | `string` | - |
 
+### FileCoordinatorPrepareResult
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `fileIdentity` | 当前文件的唯一标识 | `FileCoordinatorFileIdentity` | - |
+| `status` | 当前 prepare 完成后的实例状态 | `FileCoordinatorStatus` | - |
+| `chunkCount` | 当前 prepare 生成出的分片数量 | `number` | - |
+| `chunkSize` | 当前 prepare 使用的分片大小 | `number` | - |
+
 ### Methods
 
 | 方法 | 说明 | 返回类型 |
@@ -63,5 +72,5 @@ new FileCoordinator(file, options)
 | `getFileIdentity()` | 获取当前文件的唯一标识 | `FileCoordinatorFileIdentity` |
 | `getOptions()` | 获取当前实例持有的配置对象 | `FileCoordinatorOptions` |
 | `getStatus()` | 获取当前实例状态 | `FileCoordinatorStatus` |
-| `prepare()` | 重新按当前 `chunkSize` 准备分片数据；重复调用是安全的，并发调用会复用同一轮 prepare，重建前会先清空旧分片；状态会从 `PREPARING` 进入 `READY` | `Promise<void>` |
+| `prepare()` | 重新按当前 `chunkSize` 准备分片数据；重复调用是安全的，并发调用会复用同一轮 prepare，重建前会先清空旧分片；状态会从 `PREPARING` 进入 `READY`，并返回本次 prepare 的摘要结果 | `Promise<FileCoordinatorPrepareResult>` |
 | `getChunkCount()` | 获取当前文件分片数量；在调用 `prepare()` 前默认是 `0` | `number` |

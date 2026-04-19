@@ -74,6 +74,7 @@ export class FileCoordinator {
    * Internal chunk list used by later upload scheduling logic.
    */
   private chunks: FileCoordinatorChunk[];
+  private preparePromise: Promise<void> | null = null;
   /**
    * Current runtime status of the coordinator.
    */
@@ -131,9 +132,25 @@ export class FileCoordinator {
    * Runs the first-stage preparation flow for the current file.
    */
   async prepare() {
-    this.setStatus('PREPARING');
-    this.chunks = this.createChunks();
-    this.setStatus('READY');
+    if (this.preparePromise) {
+      return this.preparePromise;
+    }
+
+    const prepareTask = (async () => {
+      this.setStatus('PREPARING');
+      this.resetChunks();
+      this.chunks = this.createChunks();
+      this.setStatus('READY');
+    })();
+
+    const wrappedPrepareTask = prepareTask.finally(() => {
+      if (this.preparePromise === wrappedPrepareTask) {
+        this.preparePromise = null;
+      }
+    });
+
+    this.preparePromise = wrappedPrepareTask;
+    return wrappedPrepareTask;
   }
 
   /**
@@ -148,6 +165,10 @@ export class FileCoordinator {
    */
   private setStatus(status: FileCoordinatorStatus) {
     this.status = status;
+  }
+
+  private resetChunks() {
+    this.chunks = [];
   }
 
   /**

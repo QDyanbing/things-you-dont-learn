@@ -100,6 +100,7 @@ export class FileCoordinator {
    * Active preparation task reused by concurrent `prepare()` calls.
    */
   private preparePromise: Promise<FileCoordinatorPrepareResult> | null = null;
+  private prepareResult: FileCoordinatorPrepareResult | null = null;
   /**
    * Current runtime status of the coordinator.
    */
@@ -168,10 +169,12 @@ export class FileCoordinator {
 
     const prepareTask = (async () => {
       this.setStatus('PREPARING');
+      this.prepareResult = null;
       this.resetChunks();
       this.chunks = this.createChunks();
       this.setStatus('READY');
-      return this.createPrepareResult();
+      this.prepareResult = this.createPrepareResult();
+      return this.prepareResult;
     })();
 
     const wrappedPrepareTask = prepareTask.finally(() => {
@@ -189,6 +192,14 @@ export class FileCoordinator {
    */
   getChunkCount() {
     return this.chunks.length;
+  }
+
+  getPrepareResult() {
+    if (!this.prepareResult) {
+      return null;
+    }
+
+    return { ...this.prepareResult };
   }
 
   /**

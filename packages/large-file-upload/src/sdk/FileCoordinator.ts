@@ -50,6 +50,10 @@ export interface FileCoordinatorPrepareResult {
    */
   fileIdentity: FileCoordinatorFileIdentity;
   /**
+   * File size of the current file in bytes.
+   */
+  fileSize: number;
+  /**
    * Runtime status captured after the current preparation pass.
    */
   status: FileCoordinatorStatus;
@@ -240,6 +244,7 @@ export class FileCoordinator {
   private createPrepareResult(): FileCoordinatorPrepareResult {
     return {
       fileIdentity: this.fileIdentity,
+      fileSize: this.file.size,
       status: this.status,
       chunkCount: this.chunks.length,
       chunkSize: this.options.chunkSize ?? DEFAULT_CHUNK_SIZE,

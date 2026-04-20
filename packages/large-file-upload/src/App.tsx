@@ -4,6 +4,7 @@ import { FileCoordinator } from "./sdk/FileCoordinator";
 
 export default function App() {
   const [fileName, setFileName] = useState("");
+  const [fileSize, setFileSize] = useState(0);
   const [fileLastModified, setFileLastModified] = useState(0);
   const [fileIdentity, setFileIdentity] = useState("");
   const [status, setStatus] = useState("");
@@ -24,6 +25,7 @@ export default function App() {
               const coordinator = new FileCoordinator(file as File, {});
 
               setFileName(coordinator.getFile().name);
+              setFileSize(0);
               setFileLastModified(coordinator.getFile().lastModified);
               setFileIdentity(coordinator.getFileIdentity());
               setStatus(coordinator.getStatus());
@@ -40,6 +42,7 @@ export default function App() {
               const latestPrepareResult = coordinator.getPrepareResult();
 
               setFileIdentity(prepareResult.fileIdentity);
+              setFileSize(prepareResult.fileSize);
               setStatus(prepareResult.status);
               setChunkCount(prepareResult.chunkCount);
               setCachedChunkCount(latestPrepareResult?.chunkCount ?? 0);
@@ -54,6 +57,7 @@ export default function App() {
           <Button>Select File</Button>
         </Upload>
         {fileName ? <div>file: {fileName}</div> : null}
+        <div>fileSize: {fileSize}</div>
         <div>lastModified: {fileLastModified}</div>
         {fileIdentity ? <div>identity: {fileIdentity}</div> : null}
         {status ? <div>status: {status}</div> : null}

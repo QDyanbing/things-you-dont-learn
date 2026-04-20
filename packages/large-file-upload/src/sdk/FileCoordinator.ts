@@ -18,7 +18,7 @@ export type FileCoordinatorStatus =
   | 'ERROR';
 
 /**
- * Stable identity string derived from the current file metadata.
+ * Lightweight identity string derived from stable file metadata.
  */
 export type FileCoordinatorFileIdentity = string;
 
@@ -235,10 +235,10 @@ export class FileCoordinator {
   }
 
   /**
-   * Creates a stable identity string for the current file.
+   * Creates a lightweight identity string for the current file.
    */
   private createFileIdentity(): FileCoordinatorFileIdentity {
-    return `${this.file.name}__${this.file.size}__${this.file.lastModified}`;
+    return `${this.file.size}__${this.file.lastModified}`;
   }
 
   /**

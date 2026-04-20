@@ -14,6 +14,7 @@
 import { FileCoordinator } from './FileCoordinator';
 
 const coordinator = new FileCoordinator(file, {});
+const prepareResult = await coordinator.prepare();
 ```
 
 ## API
@@ -66,6 +67,7 @@ new FileCoordinator(file, options)
 | 属性 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | `fileIdentity` | 当前文件的唯一标识 | `FileCoordinatorFileIdentity` | - |
+| `fileSize` | 当前文件大小，单位为字节 | `number` | - |
 | `status` | 当前 prepare 完成后的实例状态 | `FileCoordinatorStatus` | - |
 | `chunkCount` | 当前 prepare 生成出的分片数量 | `number` | - |
 | `chunkSize` | 当前 prepare 使用的分片大小 | `number` | - |

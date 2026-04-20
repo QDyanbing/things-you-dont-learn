@@ -34,6 +34,10 @@ export interface FileCoordinatorOptions {
   chunkSize?: number;
 }
 
+export interface FileCoordinatorResolvedOptions {
+  chunkSize: number;
+}
+
 /**
  * Lightweight summary returned after one preparation pass completes.
  */
@@ -93,7 +97,7 @@ export class FileCoordinator {
   /**
    * Normalized options stored for the current coordinator instance.
    */
-  private readonly options: FileCoordinatorOptions;
+  private readonly options: FileCoordinatorResolvedOptions;
   /**
    * Internal chunk list used by later upload scheduling logic.
    */
@@ -148,7 +152,7 @@ export class FileCoordinator {
   /**
    * Returns the normalized runtime options of the current coordinator.
    */
-  getOptions() {
+  getOptions(): FileCoordinatorResolvedOptions {
     return { ...this.options };
   }
 

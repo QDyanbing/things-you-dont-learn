@@ -53,7 +53,7 @@ new FileCoordinator(file, options)
 
 | 属性 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| `-` | 基于 `file.name + file.size + file.lastModified` 组合出的文件唯一标识 | `string` | - |
+| `-` | 基于 `file.size + file.lastModified` 组合出的轻量文件标识，不依赖文件名，适合当前阶段做同文件识别，不等同于内容 hash | `string` | - |
 
 ### FileCoordinatorPrepareResult
 

@@ -51,6 +51,8 @@ export interface FileCoordinatorPrepareResult {
   fileIdentity: FileCoordinatorFileIdentity;
   /**
    * File size of the current file in bytes.
+   *
+   * Exposed here so the caller can use the prepare summary directly.
    */
   fileSize: number;
   /**

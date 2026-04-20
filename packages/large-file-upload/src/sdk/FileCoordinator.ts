@@ -19,6 +19,8 @@ export type FileCoordinatorStatus =
 
 /**
  * Lightweight identity string derived from stable file metadata.
+ *
+ * This identity intentionally ignores the file name and is not a content hash.
  */
 export type FileCoordinatorFileIdentity = string;
 
@@ -236,6 +238,9 @@ export class FileCoordinator {
 
   /**
    * Creates a lightweight identity string for the current file.
+   *
+   * The current rule uses only size and lastModified so that renaming a file
+   * does not change the identity.
    */
   private createFileIdentity(): FileCoordinatorFileIdentity {
     return `${this.file.size}__${this.file.lastModified}`;

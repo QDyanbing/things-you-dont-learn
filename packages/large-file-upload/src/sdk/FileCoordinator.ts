@@ -35,6 +35,9 @@ export interface FileCoordinatorOptions {
 }
 
 export interface FileCoordinatorResolvedOptions {
+  /**
+   * Effective chunk size normalized by the coordinator constructor.
+   */
   chunkSize: number;
 }
 
@@ -151,6 +154,9 @@ export class FileCoordinator {
 
   /**
    * Returns the normalized runtime options of the current coordinator.
+   *
+   * Unlike the input `FileCoordinatorOptions`, the returned object always
+   * contains the resolved `chunkSize`.
    */
   getOptions(): FileCoordinatorResolvedOptions {
     return { ...this.options };

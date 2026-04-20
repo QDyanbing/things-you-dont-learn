@@ -9,6 +9,7 @@ export default function App() {
   const [status, setStatus] = useState("");
   const [chunkCount, setChunkCount] = useState(0);
   const [cachedChunkCount, setCachedChunkCount] = useState(0);
+  const [resolvedChunkSize, setResolvedChunkSize] = useState(0);
   const [chunkSize, setChunkSize] = useState(0);
   const [prepareCalls, setPrepareCalls] = useState(0);
 
@@ -28,6 +29,7 @@ export default function App() {
               setStatus(coordinator.getStatus());
               setChunkCount(coordinator.getChunkCount());
               setCachedChunkCount(0);
+              setResolvedChunkSize(coordinator.getOptions().chunkSize);
               setChunkSize(0);
               setPrepareCalls(0);
 
@@ -57,6 +59,7 @@ export default function App() {
         {status ? <div>status: {status}</div> : null}
         <div>chunkCount: {chunkCount}</div>
         <div>cachedChunkCount: {cachedChunkCount}</div>
+        <div>resolvedChunkSize: {resolvedChunkSize}</div>
         <div>chunkSize: {chunkSize}</div>
         <div>prepareCalls: {prepareCalls}</div>
       </>

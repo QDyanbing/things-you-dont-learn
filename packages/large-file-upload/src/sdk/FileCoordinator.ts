@@ -24,6 +24,10 @@ export type FileCoordinatorStatus =
  */
 export type FileCoordinatorFileIdentity = string;
 
+export type FileCoordinatorCreateFileIdentity = (
+  file: File,
+) => FileCoordinatorFileIdentity;
+
 /**
  * Public configuration accepted by a single `FileCoordinator` instance.
  */
@@ -32,6 +36,7 @@ export interface FileCoordinatorOptions {
    * Chunk size in bytes used to split the current file.
    */
   chunkSize?: number;
+  createFileIdentity?: FileCoordinatorCreateFileIdentity;
 }
 
 export interface FileCoordinatorResolvedOptions {
@@ -39,6 +44,7 @@ export interface FileCoordinatorResolvedOptions {
    * Effective chunk size normalized by the coordinator constructor.
    */
   chunkSize: number;
+  createFileIdentity: FileCoordinatorCreateFileIdentity;
 }
 
 /**
@@ -135,11 +141,15 @@ export class FileCoordinator {
     options: FileCoordinatorOptions = {},
   ) {
     this.file = file;
-    this.fileIdentity = this.createFileIdentity();
-    this.options = {
+    const resolvedOptions: FileCoordinatorResolvedOptions = {
       ...options,
       chunkSize: Math.max(1, options.chunkSize ?? DEFAULT_CHUNK_SIZE),
+      createFileIdentity:
+        options.createFileIdentity ??
+        ((currentFile) => this.createFileIdentity(currentFile)),
     };
+    this.options = resolvedOptions;
+    this.fileIdentity = resolvedOptions.createFileIdentity(this.file);
     this.chunks = [];
     this.setStatus('INIT');
   }
@@ -256,13 +266,13 @@ export class FileCoordinator {
   /**
    * Creates a lightweight identity string for the current file.
    */
-  private createFileIdentity(): FileCoordinatorFileIdentity {
+  private createFileIdentity(file: File): FileCoordinatorFileIdentity {
     const identitySource = [
-      this.file.name,
-      this.file.size,
-      this.file.type,
-      this.file.lastModified,
-      this.getFileRelativePath(this.file),
+      file.name,
+      file.size,
+      file.type,
+      file.lastModified,
+      this.getFileRelativePath(file),
     ].join('__');
 
     return `file_${this.hashText(identitySource)}`;

@@ -32,6 +32,35 @@ export type FileCoordinatorCreateFileIdentity = (
 ) => FileCoordinatorFileIdentity;
 
 /**
+ * Returns the relative path attached by directory uploads when available.
+ */
+function getFileRelativePath(file: File): string {
+  return 'webkitRelativePath' in file ? file.webkitRelativePath ?? '' : '';
+}
+
+/**
+ * Hashes plain text into a compact base36 token for metadata ids.
+ */
+function hashText(value: string): string {
+  let primaryHash = 2166136261;
+  let secondaryHash = 3335557771;
+
+  for (let index = 0; index < value.length; index += 1) {
+    const code = value.charCodeAt(index);
+
+    primaryHash ^= code;
+    primaryHash = Math.imul(primaryHash, 16777619);
+
+    secondaryHash ^= code;
+    secondaryHash = Math.imul(secondaryHash, 2246822519);
+  }
+
+  return `${(primaryHash >>> 0).toString(36)}${(secondaryHash >>> 0).toString(
+    36,
+  )}`.slice(0, 12);
+}
+
+/**
  * Public configuration accepted by a single `FileCoordinator` instance.
  */
 export interface FileCoordinatorOptions {
@@ -273,7 +302,7 @@ export class FileCoordinator {
   }
 
   /**
-   * Creates a lightweight identity string for the current file.
+   * Creates the default short identity string for the current file.
    *
    * The default implementation compresses stable file metadata into a
    * short token without reading file content.
@@ -284,39 +313,10 @@ export class FileCoordinator {
       file.size,
       file.type,
       file.lastModified,
-      this.getFileRelativePath(file),
+      getFileRelativePath(file),
     ].join('__');
 
-    return `file_${this.hashText(identitySource)}`;
-  }
-
-  /**
-   * Returns the relative path attached by directory uploads when available.
-   */
-  private getFileRelativePath(file: File): string {
-    return 'webkitRelativePath' in file ? file.webkitRelativePath ?? '' : '';
-  }
-
-  /**
-   * Hashes plain text into a compact base36 token for metadata ids.
-   */
-  private hashText(value: string): string {
-    let primaryHash = 2166136261;
-    let secondaryHash = 3335557771;
-
-    for (let index = 0; index < value.length; index += 1) {
-      const code = value.charCodeAt(index);
-
-      primaryHash ^= code;
-      primaryHash = Math.imul(primaryHash, 16777619);
-
-      secondaryHash ^= code;
-      secondaryHash = Math.imul(secondaryHash, 2246822519);
-    }
-
-    return `${(primaryHash >>> 0).toString(36)}${(secondaryHash >>> 0).toString(
-      36,
-    )}`.slice(0, 12);
+    return `file_${hashText(identitySource)}`;
   }
 
   /**

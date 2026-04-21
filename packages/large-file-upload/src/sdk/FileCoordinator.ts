@@ -61,6 +61,24 @@ function hashText(value: string): string {
 }
 
 /**
+ * Creates the default short identity string for the current file.
+ *
+ * The default implementation compresses stable file metadata into a
+ * short token without reading file content.
+ */
+function createDefaultFileIdentity(file: File): FileCoordinatorFileIdentity {
+  const identitySource = [
+    file.name,
+    file.size,
+    file.type,
+    file.lastModified,
+    getFileRelativePath(file),
+  ].join('__');
+
+  return `file_${hashText(identitySource)}`;
+}
+
+/**
  * Public configuration accepted by a single `FileCoordinator` instance.
  */
 export interface FileCoordinatorOptions {
@@ -183,8 +201,7 @@ export class FileCoordinator {
       ...options,
       chunkSize: Math.max(1, options.chunkSize ?? DEFAULT_CHUNK_SIZE),
       createFileIdentity:
-        options.createFileIdentity ??
-        ((currentFile) => this.createFileIdentity(currentFile)),
+        options.createFileIdentity ?? createDefaultFileIdentity,
     };
     this.options = resolvedOptions;
     this.fileIdentity = resolvedOptions.createFileIdentity(this.file);
@@ -299,24 +316,6 @@ export class FileCoordinator {
       chunkCount: this.chunks.length,
       chunkSize: this.options.chunkSize ?? DEFAULT_CHUNK_SIZE,
     };
-  }
-
-  /**
-   * Creates the default short identity string for the current file.
-   *
-   * The default implementation compresses stable file metadata into a
-   * short token without reading file content.
-   */
-  private createFileIdentity(file: File): FileCoordinatorFileIdentity {
-    const identitySource = [
-      file.name,
-      file.size,
-      file.type,
-      file.lastModified,
-      getFileRelativePath(file),
-    ].join('__');
-
-    return `file_${hashText(identitySource)}`;
   }
 
   /**

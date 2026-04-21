@@ -7,6 +7,8 @@ export default function App() {
   const [fileSize, setFileSize] = useState(0);
   const [fileLastModified, setFileLastModified] = useState(0);
   const [fileIdentity, setFileIdentity] = useState("");
+  const [firstChunkRange, setFirstChunkRange] = useState("");
+  const [firstChunkBlobSize, setFirstChunkBlobSize] = useState(0);
   const [status, setStatus] = useState("");
   const [chunkCount, setChunkCount] = useState(0);
   const [cachedChunkCount, setCachedChunkCount] = useState(0);
@@ -28,6 +30,8 @@ export default function App() {
               setFileSize(0);
               setFileLastModified(coordinator.getFile().lastModified);
               setFileIdentity(coordinator.getFileIdentity());
+              setFirstChunkRange("");
+              setFirstChunkBlobSize(0);
               setStatus(coordinator.getStatus());
               setChunkCount(coordinator.getChunkCount());
               setCachedChunkCount(0);
@@ -40,9 +44,17 @@ export default function App() {
                 coordinator.prepare(),
               ]);
               const latestPrepareResult = coordinator.getPrepareResult();
+              const firstChunkInfo = coordinator.getChunkInfo(0);
+              const firstChunk = coordinator.getChunk(0);
 
               setFileIdentity(prepareResult.fileIdentity);
               setFileSize(prepareResult.fileSize);
+              setFirstChunkRange(
+                firstChunkInfo
+                  ? `${firstChunkInfo.start}-${firstChunkInfo.end}`
+                  : "",
+              );
+              setFirstChunkBlobSize(firstChunk?.size ?? 0);
               setStatus(prepareResult.status);
               setChunkCount(prepareResult.chunkCount);
               setCachedChunkCount(latestPrepareResult?.chunkCount ?? 0);
@@ -60,6 +72,8 @@ export default function App() {
         <div>fileSize: {fileSize}</div>
         <div>lastModified: {fileLastModified}</div>
         {fileIdentity ? <div>identity: {fileIdentity}</div> : null}
+        {firstChunkRange ? <div>firstChunkRange: {firstChunkRange}</div> : null}
+        <div>firstChunkBlobSize: {firstChunkBlobSize}</div>
         {status ? <div>status: {status}</div> : null}
         <div>chunkCount: {chunkCount}</div>
         <div>cachedChunkCount: {cachedChunkCount}</div>

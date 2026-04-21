@@ -20,7 +20,7 @@ export type FileCoordinatorStatus =
 /**
  * Lightweight identity string derived from stable file metadata.
  *
- * This identity intentionally ignores the file name and is not a content hash.
+ * This identity is still metadata-based and is not a content hash.
  */
 export type FileCoordinatorFileIdentity = string;
 
@@ -255,12 +255,40 @@ export class FileCoordinator {
 
   /**
    * Creates a lightweight identity string for the current file.
-   *
-   * The current rule uses only size and lastModified so that renaming a file
-   * does not change the identity.
    */
   private createFileIdentity(): FileCoordinatorFileIdentity {
-    return `${this.file.size}__${this.file.lastModified}`;
+    const identitySource = [
+      this.file.name,
+      this.file.size,
+      this.file.type,
+      this.file.lastModified,
+      this.getFileRelativePath(this.file),
+    ].join('__');
+
+    return `file_${this.hashText(identitySource)}`;
+  }
+
+  private getFileRelativePath(file: File): string {
+    return 'webkitRelativePath' in file ? file.webkitRelativePath ?? '' : '';
+  }
+
+  private hashText(value: string): string {
+    let primaryHash = 2166136261;
+    let secondaryHash = 3335557771;
+
+    for (let index = 0; index < value.length; index += 1) {
+      const code = value.charCodeAt(index);
+
+      primaryHash ^= code;
+      primaryHash = Math.imul(primaryHash, 16777619);
+
+      secondaryHash ^= code;
+      secondaryHash = Math.imul(secondaryHash, 2246822519);
+    }
+
+    return `${(primaryHash >>> 0).toString(36)}${(secondaryHash >>> 0).toString(
+      36,
+    )}`.slice(0, 12);
   }
 
   /**

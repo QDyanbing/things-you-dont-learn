@@ -103,10 +103,25 @@ export interface FileCoordinatorResolvedOptions {
   createFileIdentity: FileCoordinatorCreateFileIdentity;
 }
 
+/**
+ * Public metadata of one prepared chunk.
+ */
 export interface FileCoordinatorChunkInfo {
+  /**
+   * Zero-based chunk index.
+   */
   index: number;
+  /**
+   * Inclusive start byte offset of the chunk.
+   */
   start: number;
+  /**
+   * Exclusive end byte offset of the chunk.
+   */
   end: number;
+  /**
+   * Byte length of the chunk.
+   */
   size: number;
 }
 
@@ -265,6 +280,9 @@ export class FileCoordinator {
     return this.chunks.length;
   }
 
+  /**
+   * Returns the public metadata of one prepared chunk by index.
+   */
   getChunkInfo(index: number): FileCoordinatorChunkInfo | null {
     const chunk = this.findChunk(index);
 
@@ -275,6 +293,9 @@ export class FileCoordinator {
     return { ...chunk };
   }
 
+  /**
+   * Returns the chunk blob selected by the provided prepared index.
+   */
   getChunk(index: number): Blob | null {
     const chunk = this.findChunk(index);
 
@@ -323,6 +344,9 @@ export class FileCoordinator {
     };
   }
 
+  /**
+   * Finds one prepared chunk from the internal chunk list.
+   */
   private findChunk(index: number): FileCoordinatorChunkInfo | null {
     return this.chunks[index] ?? null;
   }

@@ -13,7 +13,11 @@
 ```ts
 import { FileCoordinator } from './FileCoordinator';
 
-const coordinator = new FileCoordinator(file, {});
+const coordinator = new FileCoordinator(file, {
+  createFileIdentity(currentFile) {
+    return `biz_${currentFile.name}_${currentFile.size}`;
+  },
+});
 const prepareResult = await coordinator.prepare();
 ```
 
@@ -35,12 +39,14 @@ new FileCoordinator(file, options)
 | 属性 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | `chunkSize` | 单个分片的字节大小 | `number` | `5 * 1024 * 1024` |
+| `createFileIdentity` | 自定义文件 id 计算函数；不传时会基于 `name`、`size`、`type`、`lastModified` 等元信息生成短 id | `(file: File) => FileCoordinatorFileIdentity` | 默认内置实现 |
 
 ### FileCoordinatorResolvedOptions
 
 | 属性 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | `chunkSize` | 当前实例最终生效的分片大小，`getOptions()` 返回的一定是归一化后的值 | `number` | - |
+| `createFileIdentity` | 当前实例最终生效的文件 id 计算函数 | `(file: File) => FileCoordinatorFileIdentity` | - |
 
 ### FileCoordinatorStatus
 
@@ -60,7 +66,7 @@ new FileCoordinator(file, options)
 
 | 属性 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| `-` | 基于 `file.size + file.lastModified` 组合出的轻量文件标识，不依赖文件名，适合当前阶段做同文件识别，不等同于内容 hash | `string` | - |
+| `-` | 默认基于 `file.name`、`file.size`、`file.type`、`file.lastModified`、目录上传相对路径等元信息压缩生成的短 id；适合当前阶段做轻量文件键，不等同于内容 hash | `string` | - |
 
 ### FileCoordinatorPrepareResult
 

@@ -24,6 +24,9 @@ export type FileCoordinatorStatus =
  */
 export type FileCoordinatorFileIdentity = string;
 
+/**
+ * Custom identity factory provided by the caller.
+ */
 export type FileCoordinatorCreateFileIdentity = (
   file: File,
 ) => FileCoordinatorFileIdentity;
@@ -36,6 +39,9 @@ export interface FileCoordinatorOptions {
    * Chunk size in bytes used to split the current file.
    */
   chunkSize?: number;
+  /**
+   * Custom file identity generator used to override the default short id.
+   */
   createFileIdentity?: FileCoordinatorCreateFileIdentity;
 }
 
@@ -44,6 +50,9 @@ export interface FileCoordinatorResolvedOptions {
    * Effective chunk size normalized by the coordinator constructor.
    */
   chunkSize: number;
+  /**
+   * Effective file identity generator used by the current coordinator.
+   */
   createFileIdentity: FileCoordinatorCreateFileIdentity;
 }
 
@@ -265,6 +274,9 @@ export class FileCoordinator {
 
   /**
    * Creates a lightweight identity string for the current file.
+   *
+   * The default implementation compresses stable file metadata into a
+   * short token without reading file content.
    */
   private createFileIdentity(file: File): FileCoordinatorFileIdentity {
     const identitySource = [
@@ -278,10 +290,16 @@ export class FileCoordinator {
     return `file_${this.hashText(identitySource)}`;
   }
 
+  /**
+   * Returns the relative path attached by directory uploads when available.
+   */
   private getFileRelativePath(file: File): string {
     return 'webkitRelativePath' in file ? file.webkitRelativePath ?? '' : '';
   }
 
+  /**
+   * Hashes plain text into a compact base36 token for metadata ids.
+   */
   private hashText(value: string): string {
     let primaryHash = 2166136261;
     let secondaryHash = 3335557771;

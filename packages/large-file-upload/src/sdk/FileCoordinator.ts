@@ -103,6 +103,13 @@ export interface FileCoordinatorResolvedOptions {
   createFileIdentity: FileCoordinatorCreateFileIdentity;
 }
 
+export interface FileCoordinatorChunkInfo {
+  index: number;
+  start: number;
+  end: number;
+  size: number;
+}
+
 /**
  * Lightweight summary returned after one preparation pass completes.
  */
@@ -132,28 +139,6 @@ export interface FileCoordinatorPrepareResult {
 }
 
 /**
- * Internal descriptor used to represent one file chunk.
- */
-interface FileCoordinatorChunk {
-  /**
-   * Zero-based chunk index.
-   */
-  index: number;
-  /**
-   * Inclusive start byte offset of the chunk.
-   */
-  start: number;
-  /**
-   * Exclusive end byte offset of the chunk.
-   */
-  end: number;
-  /**
-   * Byte length of the chunk.
-   */
-  size: number;
-}
-
-/**
  * Coordinates one file instance and prepares internal chunk metadata for later upload steps.
  */
 export class FileCoordinator {
@@ -172,7 +157,7 @@ export class FileCoordinator {
   /**
    * Internal chunk list used by later upload scheduling logic.
    */
-  private chunks: FileCoordinatorChunk[];
+  private chunks: FileCoordinatorChunkInfo[];
   /**
    * Active preparation task reused by concurrent `prepare()` calls.
    */
@@ -280,6 +265,26 @@ export class FileCoordinator {
     return this.chunks.length;
   }
 
+  getChunkInfo(index: number): FileCoordinatorChunkInfo | null {
+    const chunk = this.findChunk(index);
+
+    if (!chunk) {
+      return null;
+    }
+
+    return { ...chunk };
+  }
+
+  getChunk(index: number): Blob | null {
+    const chunk = this.findChunk(index);
+
+    if (!chunk) {
+      return null;
+    }
+
+    return this.file.slice(chunk.start, chunk.end);
+  }
+
   /**
    * Returns the latest successful preparation summary.
    */
@@ -318,17 +323,21 @@ export class FileCoordinator {
     };
   }
 
+  private findChunk(index: number): FileCoordinatorChunkInfo | null {
+    return this.chunks[index] ?? null;
+  }
+
   /**
    * Splits the current file into deterministic chunks based on `chunkSize`.
    */
-  private createChunks(): FileCoordinatorChunk[] {
+  private createChunks(): FileCoordinatorChunkInfo[] {
     const chunkSize = this.options.chunkSize ?? DEFAULT_CHUNK_SIZE;
 
     if (this.file.size === 0) {
       return [];
     }
 
-    const chunks: FileCoordinatorChunk[] = [];
+    const chunks: FileCoordinatorChunkInfo[] = [];
     let start = 0;
     let index = 0;
 

@@ -303,7 +303,7 @@ export class FileCoordinator {
       return null;
     }
 
-    return this.file.slice(chunk.start, chunk.end);
+    return this.file.slice(chunk.start, chunk.end, this.file.type);
   }
 
   /**

@@ -280,6 +280,10 @@ export class FileCoordinator {
     return this.chunks.length;
   }
 
+  hasChunk(index: number): boolean {
+    return this.findChunk(index) !== null;
+  }
+
   /**
    * Returns the public metadata of one prepared chunk by index.
    */

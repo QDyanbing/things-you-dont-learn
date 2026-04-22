@@ -280,6 +280,9 @@ export class FileCoordinator {
     return this.chunks.length;
   }
 
+  /**
+   * Returns whether one prepared chunk exists at the provided index.
+   */
   hasChunk(index: number): boolean {
     return this.findChunk(index) !== null;
   }

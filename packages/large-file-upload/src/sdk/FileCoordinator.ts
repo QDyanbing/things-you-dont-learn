@@ -295,6 +295,8 @@ export class FileCoordinator {
 
   /**
    * Returns the chunk blob selected by the provided prepared index.
+   *
+   * The returned blob keeps the original file MIME type when available.
    */
   getChunk(index: number): Blob | null {
     const chunk = this.findChunk(index);

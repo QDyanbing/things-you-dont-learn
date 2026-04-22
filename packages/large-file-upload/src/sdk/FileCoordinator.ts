@@ -79,6 +79,17 @@ function createDefaultFileIdentity(file: File): FileCoordinatorFileIdentity {
 }
 
 /**
+ * Normalizes the public chunk index into an internal array index.
+ */
+function normalizeChunkIndex(index: number): number | null {
+  if (!Number.isInteger(index) || index < 0) {
+    return null;
+  }
+
+  return index;
+}
+
+/**
  * Public configuration accepted by a single `FileCoordinator` instance.
  */
 export interface FileCoordinatorOptions {
@@ -357,7 +368,13 @@ export class FileCoordinator {
    * Finds one prepared chunk from the internal chunk list.
    */
   private findChunk(index: number): FileCoordinatorChunkInfo | null {
-    return this.chunks[index] ?? null;
+    const normalizedIndex = normalizeChunkIndex(index);
+
+    if (normalizedIndex === null) {
+      return null;
+    }
+
+    return this.chunks[normalizedIndex] ?? null;
   }
 
   /**

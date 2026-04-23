@@ -257,6 +257,10 @@ export class FileCoordinator {
     return this.status;
   }
 
+  isPrepared(): boolean {
+    return this.status === 'READY';
+  }
+
   /**
    * Runs the first-stage preparation flow for the current file.
    *

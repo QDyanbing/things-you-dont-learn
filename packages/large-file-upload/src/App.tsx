@@ -9,6 +9,7 @@ export default function App() {
   const [fileIdentity, setFileIdentity] = useState("");
   const [hasFirstChunk, setHasFirstChunk] = useState(false);
   const [firstChunkRange, setFirstChunkRange] = useState("");
+  const [firstChunkType, setFirstChunkType] = useState("");
   const [firstChunkBlobSize, setFirstChunkBlobSize] = useState(0);
   const [firstChunkBlobType, setFirstChunkBlobType] = useState("");
   const [status, setStatus] = useState("");
@@ -34,6 +35,7 @@ export default function App() {
               setFileIdentity(coordinator.getFileIdentity());
               setHasFirstChunk(false);
               setFirstChunkRange("");
+              setFirstChunkType("");
               setFirstChunkBlobSize(0);
               setFirstChunkBlobType("");
               setStatus(coordinator.getStatus());
@@ -60,6 +62,7 @@ export default function App() {
                   ? `${firstChunkInfo.start}-${firstChunkInfo.end}`
                   : "",
               );
+              setFirstChunkType(firstChunkInfo?.type ?? "");
               setFirstChunkBlobSize(firstChunk?.size ?? 0);
               setFirstChunkBlobType(firstChunk?.type ?? "");
               setStatus(prepareResult.status);
@@ -81,6 +84,7 @@ export default function App() {
         {fileIdentity ? <div>identity: {fileIdentity}</div> : null}
         <div>hasFirstChunk: {String(hasFirstChunk)}</div>
         {firstChunkRange ? <div>firstChunkRange: {firstChunkRange}</div> : null}
+        {firstChunkType ? <div>firstChunkType: {firstChunkType}</div> : null}
         <div>firstChunkBlobSize: {firstChunkBlobSize}</div>
         {firstChunkBlobType ? <div>firstChunkBlobType: {firstChunkBlobType}</div> : null}
         {status ? <div>status: {status}</div> : null}

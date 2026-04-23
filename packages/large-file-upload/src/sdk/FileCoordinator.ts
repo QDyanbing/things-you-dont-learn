@@ -257,6 +257,9 @@ export class FileCoordinator {
     return this.status;
   }
 
+  /**
+   * Returns whether the current coordinator has completed preparation.
+   */
   isPrepared(): boolean {
     return this.status === 'READY';
   }

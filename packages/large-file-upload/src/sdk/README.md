@@ -53,6 +53,7 @@ new FileCoordinator(file, options)
 | 属性 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | `index` | 当前分片的下标，从 `0` 开始 | `number` | - |
+| `type` | 当前分片继承的文件 MIME type | `string` | - |
 | `start` | 当前分片的起始字节位置，包含当前值 | `number` | - |
 | `end` | 当前分片的结束字节位置，不包含当前值 | `number` | - |
 | `size` | 当前分片的字节大小 | `number` | - |
@@ -98,6 +99,6 @@ new FileCoordinator(file, options)
 | `prepare()` | 重新按当前 `chunkSize` 准备分片数据；重复调用是安全的，并发调用会复用同一轮 prepare，重建前会先清空旧分片；状态会从 `PREPARING` 进入 `READY`，并返回本次 prepare 的摘要结果 | `Promise<FileCoordinatorPrepareResult>` |
 | `getChunkCount()` | 获取当前文件分片数量；在调用 `prepare()` 前默认是 `0` | `number` |
 | `hasChunk(index)` | 按下标判断当前分片是否存在；`index` 需要是从 `0` 开始的非负整数；在分片不存在或尚未 `prepare()` 时返回 `false` | `boolean` |
-| `getChunkInfo(index)` | 按下标获取单个分片的元信息；`index` 需要是从 `0` 开始的非负整数；在分片不存在或尚未 `prepare()` 时返回 `null` | `FileCoordinatorChunkInfo \| null` |
+| `getChunkInfo(index)` | 按下标获取单个分片的元信息；返回结果里会带上当前分片的 MIME type；`index` 需要是从 `0` 开始的非负整数；在分片不存在或尚未 `prepare()` 时返回 `null` | `FileCoordinatorChunkInfo \| null` |
 | `getChunk(index)` | 按下标获取单个分片的 `Blob`；返回的 `Blob` 会继承原文件类型；`index` 需要是从 `0` 开始的非负整数；在分片不存在或尚未 `prepare()` 时返回 `null` | `Blob \| null` |
 | `getPrepareResult()` | 获取最近一次 prepare 的结果快照；在调用 `prepare()` 前返回 `null` | `FileCoordinatorPrepareResult \| null` |

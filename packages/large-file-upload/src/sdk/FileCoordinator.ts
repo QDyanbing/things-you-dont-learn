@@ -360,7 +360,7 @@ export class FileCoordinator {
       fileSize: this.file.size,
       status: this.status,
       chunkCount: this.chunks.length,
-      chunkSize: this.options.chunkSize ?? DEFAULT_CHUNK_SIZE,
+      chunkSize: this.options.chunkSize,
     };
   }
 
@@ -381,7 +381,7 @@ export class FileCoordinator {
    * Splits the current file into deterministic chunks based on `chunkSize`.
    */
   private createChunks(): FileCoordinatorChunkInfo[] {
-    const chunkSize = this.options.chunkSize ?? DEFAULT_CHUNK_SIZE;
+    const chunkSize = this.options.chunkSize;
 
     if (this.file.size === 0) {
       return [];

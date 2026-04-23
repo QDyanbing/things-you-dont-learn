@@ -124,6 +124,8 @@ export interface FileCoordinatorChunkInfo {
   index: number;
   /**
    * MIME type inherited from the original file when available.
+   *
+   * This mirrors the type used by `getChunk()`.
    */
   type: string;
   /**
@@ -304,6 +306,8 @@ export class FileCoordinator {
 
   /**
    * Returns the public metadata of one prepared chunk by index.
+   *
+   * Use this when the caller only needs offsets and type information.
    */
   getChunkInfo(index: number): FileCoordinatorChunkInfo | null {
     const chunk = this.findChunk(index);

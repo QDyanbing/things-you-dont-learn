@@ -85,7 +85,7 @@ new FileCoordinator(file, options)
 | `fileSize` | 当前文件大小，单位为字节 | `number` | - |
 | `status` | 当前 prepare 完成后的实例状态 | `FileCoordinatorStatus` | - |
 | `chunkCount` | 当前 prepare 生成出的分片数量 | `number` | - |
-| `chunkSize` | 当前 prepare 使用的分片大小 | `number` | - |
+| `chunkSize` | 当前 prepare 使用的分片大小，也就是实例最终生效的归一化 `chunkSize` | `number` | - |
 
 ### Methods
 

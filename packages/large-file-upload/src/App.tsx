@@ -7,6 +7,7 @@ export default function App() {
   const [fileSize, setFileSize] = useState(0);
   const [fileLastModified, setFileLastModified] = useState(0);
   const [fileIdentity, setFileIdentity] = useState("");
+  const [isPrepared, setIsPrepared] = useState(false);
   const [hasFirstChunk, setHasFirstChunk] = useState(false);
   const [firstChunkRange, setFirstChunkRange] = useState("");
   const [firstChunkType, setFirstChunkType] = useState("");
@@ -33,6 +34,7 @@ export default function App() {
               setFileSize(0);
               setFileLastModified(coordinator.getFile().lastModified);
               setFileIdentity(coordinator.getFileIdentity());
+              setIsPrepared(false);
               setHasFirstChunk(false);
               setFirstChunkRange("");
               setFirstChunkType("");
@@ -50,11 +52,13 @@ export default function App() {
                 coordinator.prepare(),
               ]);
               const latestPrepareResult = coordinator.getPrepareResult();
+              const prepared = coordinator.isPrepared();
               const hasPreparedFirstChunk = coordinator.hasChunk(0);
               const firstChunkInfo = coordinator.getChunkInfo(0);
               const firstChunk = coordinator.getChunk(0);
 
               setFileIdentity(prepareResult.fileIdentity);
+              setIsPrepared(prepared);
               setHasFirstChunk(hasPreparedFirstChunk);
               setFileSize(prepareResult.fileSize);
               setFirstChunkRange(
@@ -82,6 +86,7 @@ export default function App() {
         <div>fileSize: {fileSize}</div>
         <div>lastModified: {fileLastModified}</div>
         {fileIdentity ? <div>identity: {fileIdentity}</div> : null}
+        <div>isPrepared: {String(isPrepared)}</div>
         <div>hasFirstChunk: {String(hasFirstChunk)}</div>
         {firstChunkRange ? <div>firstChunkRange: {firstChunkRange}</div> : null}
         {firstChunkType ? <div>firstChunkType: {firstChunkType}</div> : null}

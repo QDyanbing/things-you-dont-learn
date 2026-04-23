@@ -123,6 +123,10 @@ export interface FileCoordinatorChunkInfo {
    */
   index: number;
   /**
+   * MIME type inherited from the original file when available.
+   */
+  type: string;
+  /**
    * Inclusive start byte offset of the chunk.
    */
   start: number;
@@ -396,6 +400,7 @@ export class FileCoordinator {
 
       chunks.push({
         index,
+        type: this.file.type,
         start,
         end,
         size: end - start,

@@ -354,6 +354,10 @@ export class FileCoordinator {
     return this.findChunk(index) !== null;
   }
 
+  getChunkIdentity(index: number): FileCoordinatorChunkIdentity | null {
+    return this.findChunk(index)?.chunkIdentity ?? null;
+  }
+
   /**
    * Returns the public metadata of one prepared chunk by index.
    *

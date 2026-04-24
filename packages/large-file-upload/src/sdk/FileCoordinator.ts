@@ -257,6 +257,21 @@ export class FileCoordinator {
     return { ...this.options };
   }
 
+  setChunkSize(chunkSize: number): number {
+    const normalizedChunkSize = normalizeChunkSize(chunkSize);
+
+    if (normalizedChunkSize === this.options.chunkSize) {
+      return this.options.chunkSize;
+    }
+
+    this.options.chunkSize = normalizedChunkSize;
+    this.prepareResult = null;
+    this.resetChunks();
+    this.setStatus('INIT');
+
+    return this.options.chunkSize;
+  }
+
   /**
    * Returns the current runtime status of the coordinator.
    */

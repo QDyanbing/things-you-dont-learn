@@ -31,6 +31,9 @@ export type FileCoordinatorStatus =
  */
 export type FileCoordinatorFileIdentity = string;
 
+/**
+ * Stable identity string of one prepared chunk.
+ */
 export type FileCoordinatorChunkIdentity = string;
 
 /**
@@ -142,6 +145,8 @@ export interface FileCoordinatorChunkInfo {
   index: number;
   /**
    * Stable identity of the current chunk.
+   *
+   * Useful for mapping upload records or retry state outside the SDK.
    */
   chunkIdentity: FileCoordinatorChunkIdentity;
   /**
@@ -354,6 +359,9 @@ export class FileCoordinator {
     return this.findChunk(index) !== null;
   }
 
+  /**
+   * Returns the stable identity of one prepared chunk by index.
+   */
   getChunkIdentity(index: number): FileCoordinatorChunkIdentity | null {
     return this.findChunk(index)?.chunkIdentity ?? null;
   }

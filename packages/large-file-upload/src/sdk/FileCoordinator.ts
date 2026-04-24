@@ -31,6 +31,8 @@ export type FileCoordinatorStatus =
  */
 export type FileCoordinatorFileIdentity = string;
 
+export type FileCoordinatorChunkIdentity = string;
+
 /**
  * Custom identity factory provided by the caller.
  */
@@ -85,6 +87,15 @@ function createDefaultFileIdentity(file: File): FileCoordinatorFileIdentity {
   return `file_${hashText(identitySource)}`;
 }
 
+function createChunkIdentity(
+  fileIdentity: FileCoordinatorFileIdentity,
+  index: number,
+  start: number,
+  end: number,
+): FileCoordinatorChunkIdentity {
+  return `chunk_${hashText([fileIdentity, index, start, end].join('__'))}`;
+}
+
 /**
  * Normalizes the public chunk index into an internal array index.
  */
@@ -129,6 +140,10 @@ export interface FileCoordinatorChunkInfo {
    * Zero-based chunk index.
    */
   index: number;
+  /**
+   * Stable identity of the current chunk.
+   */
+  chunkIdentity: FileCoordinatorChunkIdentity;
   /**
    * MIME type inherited from the original file when available.
    *
@@ -439,6 +454,7 @@ export class FileCoordinator {
 
       chunks.push({
         index,
+        chunkIdentity: createChunkIdentity(this.fileIdentity, index, start, end),
         type: this.file.type,
         start,
         end,

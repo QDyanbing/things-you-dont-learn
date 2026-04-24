@@ -29,6 +29,7 @@ export default function App() {
           customRequest={async ({ file, onError, onSuccess }) => {
             try {
               const coordinator = new FileCoordinator(file as File, {});
+              const updatedChunkSize = coordinator.setChunkSize(1024 * 1024);
 
               setFileName(coordinator.getFile().name);
               setFileSize(0);
@@ -43,7 +44,7 @@ export default function App() {
               setStatus(coordinator.getStatus());
               setChunkCount(coordinator.getChunkCount());
               setCachedChunkCount(0);
-              setResolvedChunkSize(coordinator.getOptions().chunkSize);
+              setResolvedChunkSize(updatedChunkSize);
               setChunkSize(0);
               setPrepareCalls(0);
 

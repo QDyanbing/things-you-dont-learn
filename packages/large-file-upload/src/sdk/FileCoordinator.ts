@@ -4,6 +4,13 @@
 const DEFAULT_CHUNK_SIZE = 5 * 1024 * 1024;
 
 /**
+ * Normalizes the public chunk size into the effective runtime value.
+ */
+function normalizeChunkSize(chunkSize?: number): number {
+  return Math.max(1, chunkSize ?? DEFAULT_CHUNK_SIZE);
+}
+
+/**
  * Public status exposed by the current coordinator instance.
  */
 export type FileCoordinatorStatus =
@@ -216,7 +223,7 @@ export class FileCoordinator {
     this.file = file;
     const resolvedOptions: FileCoordinatorResolvedOptions = {
       ...options,
-      chunkSize: Math.max(1, options.chunkSize ?? DEFAULT_CHUNK_SIZE),
+      chunkSize: normalizeChunkSize(options.chunkSize),
       createFileIdentity:
         options.createFileIdentity ?? createDefaultFileIdentity,
     };

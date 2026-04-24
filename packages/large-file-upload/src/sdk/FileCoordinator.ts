@@ -257,6 +257,12 @@ export class FileCoordinator {
     return { ...this.options };
   }
 
+  /**
+   * Updates the effective chunk size of the current coordinator.
+   *
+   * Changing the chunk size clears prepared chunks and moves the status back
+   * to `INIT` so the caller can run `prepare()` again with the new setting.
+   */
   setChunkSize(chunkSize: number): number {
     const normalizedChunkSize = normalizeChunkSize(chunkSize);
 

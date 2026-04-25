@@ -114,7 +114,7 @@ new FileCoordinator(file, options)
 | `setChunkSize(chunkSize)` | 更新当前实例生效的分片大小；会返回归一化后的值，并清空当前已准备的分片数据，把状态重置为 `INIT` | `number` |
 | `getStatus()` | 获取当前实例状态 | `FileCoordinatorStatus` |
 | `isPrepared()` | 判断当前实例是否已经完成分片准备；当前等价于状态是否为 `READY` | `boolean` |
-| `prepare()` | 重新按当前 `chunkSize` 准备分片数据；重复调用是安全的，并发调用会复用同一轮 prepare，重建前会先清空旧分片；状态会从 `PREPARING` 进入 `READY`，并返回本次 prepare 的摘要结果 | `Promise<FileCoordinatorPrepareResult>` |
+| `prepare()` | 重新按当前 `chunkSize` 准备分片数据；重复调用是安全的，并发调用会复用同一轮 prepare，重建前会先清空旧分片；状态会从 `PREPARING` 进入 `READY`，新生成的分片初始状态都是 `PENDING`，并返回本次 prepare 的摘要结果 | `Promise<FileCoordinatorPrepareResult>` |
 | `getChunkCount()` | 获取当前文件分片数量；在调用 `prepare()` 前默认是 `0` | `number` |
 | `hasChunk(index)` | 按下标判断当前分片是否存在；`index` 需要是从 `0` 开始的非负整数；在分片不存在或尚未 `prepare()` 时返回 `false` | `boolean` |
 | `getChunkIdentity(index)` | 按下标获取单个分片的唯一标识；`index` 需要是从 `0` 开始的非负整数；在分片不存在或尚未 `prepare()` 时返回 `null` | `FileCoordinatorChunkIdentity \| null` |

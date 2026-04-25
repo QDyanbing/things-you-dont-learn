@@ -369,6 +369,10 @@ export class FileCoordinator {
     return this.findChunk(index) !== null;
   }
 
+  getChunkStatus(index: number): FileCoordinatorChunkStatus | null {
+    return this.findChunk(index)?.status ?? null;
+  }
+
   /**
    * Returns the stable identity of one prepared chunk by index.
    */

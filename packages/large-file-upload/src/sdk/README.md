@@ -19,6 +19,7 @@ const coordinator = new FileCoordinator(file, {
   },
 });
 const prepareResult = await coordinator.prepare();
+const firstChunkStatus = coordinator.getChunkStatus(0);
 ```
 
 ## API

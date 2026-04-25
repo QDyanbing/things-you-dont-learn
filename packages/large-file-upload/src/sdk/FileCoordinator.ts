@@ -36,6 +36,12 @@ export type FileCoordinatorFileIdentity = string;
  */
 export type FileCoordinatorChunkIdentity = string;
 
+export type FileCoordinatorChunkStatus =
+  | 'PENDING'
+  | 'UPLOADING'
+  | 'SUCCESS'
+  | 'ERROR';
+
 /**
  * Custom identity factory provided by the caller.
  */

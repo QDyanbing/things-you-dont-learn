@@ -175,6 +175,10 @@ export interface FileCoordinatorChunkInfo {
   size: number;
 }
 
+interface FileCoordinatorChunkRecord extends FileCoordinatorChunkInfo {
+  status: FileCoordinatorChunkStatus;
+}
+
 /**
  * Lightweight summary returned after one preparation pass completes.
  */
@@ -222,7 +226,7 @@ export class FileCoordinator {
   /**
    * Internal chunk list used by later upload scheduling logic.
    */
-  private chunks: FileCoordinatorChunkInfo[];
+  private chunks: FileCoordinatorChunkRecord[];
   /**
    * Active preparation task reused by concurrent `prepare()` calls.
    */
@@ -384,7 +388,14 @@ export class FileCoordinator {
       return null;
     }
 
-    return { ...chunk };
+    return {
+      index: chunk.index,
+      chunkIdentity: chunk.chunkIdentity,
+      type: chunk.type,
+      start: chunk.start,
+      end: chunk.end,
+      size: chunk.size,
+    };
   }
 
   /**
@@ -443,7 +454,7 @@ export class FileCoordinator {
   /**
    * Finds one prepared chunk from the internal chunk list.
    */
-  private findChunk(index: number): FileCoordinatorChunkInfo | null {
+  private findChunk(index: number): FileCoordinatorChunkRecord | null {
     const normalizedIndex = normalizeChunkIndex(index);
 
     if (normalizedIndex === null) {
@@ -456,14 +467,14 @@ export class FileCoordinator {
   /**
    * Splits the current file into deterministic chunks based on `chunkSize`.
    */
-  private createChunks(): FileCoordinatorChunkInfo[] {
+  private createChunks(): FileCoordinatorChunkRecord[] {
     const chunkSize = this.options.chunkSize;
 
     if (this.file.size === 0) {
       return [];
     }
 
-    const chunks: FileCoordinatorChunkInfo[] = [];
+    const chunks: FileCoordinatorChunkRecord[] = [];
     let start = 0;
     let index = 0;
 
@@ -473,6 +484,7 @@ export class FileCoordinator {
       chunks.push({
         index,
         chunkIdentity: createChunkIdentity(this.fileIdentity, index, start, end),
+        status: 'PENDING',
         type: this.file.type,
         start,
         end,

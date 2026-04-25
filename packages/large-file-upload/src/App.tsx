@@ -10,6 +10,7 @@ export default function App() {
   const [isPrepared, setIsPrepared] = useState(false);
   const [hasFirstChunk, setHasFirstChunk] = useState(false);
   const [firstChunkIdentity, setFirstChunkIdentity] = useState("");
+  const [firstChunkStatus, setFirstChunkStatus] = useState("");
   const [firstChunkRange, setFirstChunkRange] = useState("");
   const [firstChunkType, setFirstChunkType] = useState("");
   const [firstChunkBlobSize, setFirstChunkBlobSize] = useState(0);
@@ -39,6 +40,7 @@ export default function App() {
               setIsPrepared(false);
               setHasFirstChunk(false);
               setFirstChunkIdentity("");
+              setFirstChunkStatus("");
               setFirstChunkRange("");
               setFirstChunkType("");
               setFirstChunkBlobSize(0);
@@ -58,6 +60,7 @@ export default function App() {
               const prepared = coordinator.isPrepared();
               const hasPreparedFirstChunk = coordinator.hasChunk(0);
               const preparedFirstChunkIdentity = coordinator.getChunkIdentity(0);
+              const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
               const firstChunkInfo = coordinator.getChunkInfo(0);
               const firstChunk = coordinator.getChunk(0);
 
@@ -65,6 +68,7 @@ export default function App() {
               setIsPrepared(prepared);
               setHasFirstChunk(hasPreparedFirstChunk);
               setFirstChunkIdentity(preparedFirstChunkIdentity ?? "");
+              setFirstChunkStatus(preparedFirstChunkStatus ?? "");
               setFileSize(prepareResult.fileSize);
               setFirstChunkRange(
                 firstChunkInfo
@@ -94,6 +98,7 @@ export default function App() {
         <div>isPrepared: {String(isPrepared)}</div>
         <div>hasFirstChunk: {String(hasFirstChunk)}</div>
         {firstChunkIdentity ? <div>firstChunkIdentity: {firstChunkIdentity}</div> : null}
+        {firstChunkStatus ? <div>firstChunkStatus: {firstChunkStatus}</div> : null}
         {firstChunkRange ? <div>firstChunkRange: {firstChunkRange}</div> : null}
         {firstChunkType ? <div>firstChunkType: {firstChunkType}</div> : null}
         <div>firstChunkBlobSize: {firstChunkBlobSize}</div>

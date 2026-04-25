@@ -54,6 +54,15 @@ new FileCoordinator(file, options)
 | --- | --- | --- | --- |
 | `-` | 基于文件标识、分片下标和分片范围压缩生成的短 id，用来唯一标记当前分片 | `string` | - |
 
+### FileCoordinatorChunkStatus
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `PENDING` | 分片已经准备完成，等待调用方开始上传 | `'PENDING'` | - |
+| `UPLOADING` | 分片正在上传中 | `'UPLOADING'` | - |
+| `SUCCESS` | 分片已经上传成功 | `'SUCCESS'` | - |
+| `ERROR` | 分片上传失败 | `'ERROR'` | - |
+
 ### FileCoordinatorChunkInfo
 
 | 属性 | 说明 | 类型 | 默认值 |

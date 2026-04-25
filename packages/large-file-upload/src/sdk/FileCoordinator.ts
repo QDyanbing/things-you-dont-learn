@@ -36,6 +36,9 @@ export type FileCoordinatorFileIdentity = string;
  */
 export type FileCoordinatorChunkIdentity = string;
 
+/**
+ * Runtime status tracked for one prepared chunk.
+ */
 export type FileCoordinatorChunkStatus =
   | 'PENDING'
   | 'UPLOADING'

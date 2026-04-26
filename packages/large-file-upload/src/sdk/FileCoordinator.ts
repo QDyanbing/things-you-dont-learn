@@ -403,6 +403,9 @@ export class FileCoordinator {
     return this.getChunkStatus(index) === 'SUCCESS';
   }
 
+  /**
+   * Returns how many prepared chunks have been marked as uploaded.
+   */
   getUploadedChunkCount(): number {
     return this.chunks.reduce((uploadedChunkCount, chunk) => {
       return uploadedChunkCount + (chunk.status === 'SUCCESS' ? 1 : 0);

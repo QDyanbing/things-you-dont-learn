@@ -403,6 +403,12 @@ export class FileCoordinator {
     return this.getChunkStatus(index) === 'SUCCESS';
   }
 
+  getUploadedChunkCount(): number {
+    return this.chunks.reduce((uploadedChunkCount, chunk) => {
+      return uploadedChunkCount + (chunk.status === 'SUCCESS' ? 1 : 0);
+    }, 0);
+  }
+
   /**
    * Returns the stable identity of one prepared chunk by index.
    */

@@ -379,6 +379,9 @@ export class FileCoordinator {
     return this.findChunk(index)?.status ?? null;
   }
 
+  /**
+   * Updates the current runtime status of one prepared chunk by index.
+   */
   setChunkStatus(
     index: number,
     status: FileCoordinatorChunkStatus,

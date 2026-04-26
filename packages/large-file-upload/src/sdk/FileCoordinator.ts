@@ -396,6 +396,10 @@ export class FileCoordinator {
     return true;
   }
 
+  isChunkUploaded(index: number): boolean {
+    return this.getChunkStatus(index) === 'SUCCESS';
+  }
+
   /**
    * Returns the stable identity of one prepared chunk by index.
    */

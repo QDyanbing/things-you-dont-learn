@@ -379,6 +379,20 @@ export class FileCoordinator {
     return this.findChunk(index)?.status ?? null;
   }
 
+  setChunkStatus(
+    index: number,
+    status: FileCoordinatorChunkStatus,
+  ): boolean {
+    const chunk = this.findChunk(index);
+
+    if (!chunk) {
+      return false;
+    }
+
+    chunk.status = status;
+    return true;
+  }
+
   /**
    * Returns the stable identity of one prepared chunk by index.
    */

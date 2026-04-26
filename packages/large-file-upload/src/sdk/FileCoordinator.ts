@@ -396,6 +396,9 @@ export class FileCoordinator {
     return true;
   }
 
+  /**
+   * Returns whether one prepared chunk has been marked as uploaded.
+   */
   isChunkUploaded(index: number): boolean {
     return this.getChunkStatus(index) === 'SUCCESS';
   }

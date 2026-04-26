@@ -11,12 +11,14 @@ export default function App() {
   const [hasFirstChunk, setHasFirstChunk] = useState(false);
   const [firstChunkIdentity, setFirstChunkIdentity] = useState("");
   const [firstChunkStatus, setFirstChunkStatus] = useState("");
+  const [isFirstChunkUploaded, setIsFirstChunkUploaded] = useState(false);
   const [firstChunkRange, setFirstChunkRange] = useState("");
   const [firstChunkType, setFirstChunkType] = useState("");
   const [firstChunkBlobSize, setFirstChunkBlobSize] = useState(0);
   const [firstChunkBlobType, setFirstChunkBlobType] = useState("");
   const [status, setStatus] = useState("");
   const [chunkCount, setChunkCount] = useState(0);
+  const [uploadedChunkCount, setUploadedChunkCount] = useState(0);
   const [cachedChunkCount, setCachedChunkCount] = useState(0);
   const [resolvedChunkSize, setResolvedChunkSize] = useState(0);
   const [chunkSize, setChunkSize] = useState(0);
@@ -41,12 +43,14 @@ export default function App() {
               setHasFirstChunk(false);
               setFirstChunkIdentity("");
               setFirstChunkStatus("");
+              setIsFirstChunkUploaded(false);
               setFirstChunkRange("");
               setFirstChunkType("");
               setFirstChunkBlobSize(0);
               setFirstChunkBlobType("");
               setStatus(coordinator.getStatus());
               setChunkCount(coordinator.getChunkCount());
+              setUploadedChunkCount(0);
               setCachedChunkCount(0);
               setResolvedChunkSize(updatedChunkSize);
               setChunkSize(0);
@@ -59,8 +63,11 @@ export default function App() {
               const latestPrepareResult = coordinator.getPrepareResult();
               const prepared = coordinator.isPrepared();
               const hasPreparedFirstChunk = coordinator.hasChunk(0);
+              coordinator.setChunkStatus(0, "UPLOADING");
+              coordinator.setChunkStatus(0, "SUCCESS");
               const preparedFirstChunkIdentity = coordinator.getChunkIdentity(0);
               const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
+              const firstChunkUploaded = coordinator.isChunkUploaded(0);
               const firstChunkInfo = coordinator.getChunkInfo(0);
               const firstChunk = coordinator.getChunk(0);
 
@@ -69,6 +76,7 @@ export default function App() {
               setHasFirstChunk(hasPreparedFirstChunk);
               setFirstChunkIdentity(preparedFirstChunkIdentity ?? "");
               setFirstChunkStatus(preparedFirstChunkStatus ?? "");
+              setIsFirstChunkUploaded(firstChunkUploaded);
               setFileSize(prepareResult.fileSize);
               setFirstChunkRange(
                 firstChunkInfo
@@ -80,6 +88,7 @@ export default function App() {
               setFirstChunkBlobType(firstChunk?.type ?? "");
               setStatus(prepareResult.status);
               setChunkCount(prepareResult.chunkCount);
+              setUploadedChunkCount(coordinator.getUploadedChunkCount());
               setCachedChunkCount(latestPrepareResult?.chunkCount ?? 0);
               setChunkSize(prepareResult.chunkSize);
               setPrepareCalls(2);
@@ -99,12 +108,14 @@ export default function App() {
         <div>hasFirstChunk: {String(hasFirstChunk)}</div>
         {firstChunkIdentity ? <div>firstChunkIdentity: {firstChunkIdentity}</div> : null}
         {firstChunkStatus ? <div>firstChunkStatus: {firstChunkStatus}</div> : null}
+        <div>isFirstChunkUploaded: {String(isFirstChunkUploaded)}</div>
         {firstChunkRange ? <div>firstChunkRange: {firstChunkRange}</div> : null}
         {firstChunkType ? <div>firstChunkType: {firstChunkType}</div> : null}
         <div>firstChunkBlobSize: {firstChunkBlobSize}</div>
         {firstChunkBlobType ? <div>firstChunkBlobType: {firstChunkBlobType}</div> : null}
         {status ? <div>status: {status}</div> : null}
         <div>chunkCount: {chunkCount}</div>
+        <div>uploadedChunkCount: {uploadedChunkCount}</div>
         <div>cachedChunkCount: {cachedChunkCount}</div>
         <div>resolvedChunkSize: {resolvedChunkSize}</div>
         <div>chunkSize: {chunkSize}</div>

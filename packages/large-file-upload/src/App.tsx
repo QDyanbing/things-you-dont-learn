@@ -13,6 +13,7 @@ export default function App() {
   const [firstChunkStatus, setFirstChunkStatus] = useState("");
   const [isFirstChunkUploaded, setIsFirstChunkUploaded] = useState(false);
   const [restoredChunkCount, setRestoredChunkCount] = useState(0);
+  const [pendingChunkIndexes, setPendingChunkIndexes] = useState("");
   const [firstChunkRange, setFirstChunkRange] = useState("");
   const [firstChunkType, setFirstChunkType] = useState("");
   const [firstChunkBlobSize, setFirstChunkBlobSize] = useState(0);
@@ -46,6 +47,7 @@ export default function App() {
               setFirstChunkStatus("");
               setIsFirstChunkUploaded(false);
               setRestoredChunkCount(0);
+              setPendingChunkIndexes("");
               setFirstChunkRange("");
               setFirstChunkType("");
               setFirstChunkBlobSize(0);
@@ -66,9 +68,11 @@ export default function App() {
               const prepared = coordinator.isPrepared();
               const hasPreparedFirstChunk = coordinator.hasChunk(0);
               const currentRestoredChunkCount = coordinator.setUploadedChunks([0, 1]);
+              coordinator.setChunkStatus(2, "ERROR");
               const preparedFirstChunkIdentity = coordinator.getChunkIdentity(0);
               const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
               const firstChunkUploaded = coordinator.isChunkUploaded(0);
+              const currentPendingChunkIndexes = coordinator.getPendingChunkIndexes();
               const firstChunkInfo = coordinator.getChunkInfo(0);
               const firstChunk = coordinator.getChunk(0);
 
@@ -79,6 +83,7 @@ export default function App() {
               setFirstChunkStatus(preparedFirstChunkStatus ?? "");
               setIsFirstChunkUploaded(firstChunkUploaded);
               setRestoredChunkCount(currentRestoredChunkCount);
+              setPendingChunkIndexes(currentPendingChunkIndexes.join(","));
               setFileSize(prepareResult.fileSize);
               setFirstChunkRange(
                 firstChunkInfo
@@ -112,6 +117,7 @@ export default function App() {
         {firstChunkStatus ? <div>firstChunkStatus: {firstChunkStatus}</div> : null}
         <div>isFirstChunkUploaded: {String(isFirstChunkUploaded)}</div>
         <div>restoredChunkCount: {restoredChunkCount}</div>
+        <div>pendingChunkIndexes: {pendingChunkIndexes}</div>
         {firstChunkRange ? <div>firstChunkRange: {firstChunkRange}</div> : null}
         {firstChunkType ? <div>firstChunkType: {firstChunkType}</div> : null}
         <div>firstChunkBlobSize: {firstChunkBlobSize}</div>

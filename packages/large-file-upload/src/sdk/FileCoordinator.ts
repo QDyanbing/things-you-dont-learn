@@ -433,6 +433,9 @@ export class FileCoordinator {
     }, 0);
   }
 
+  /**
+   * Returns chunk indexes that still need to enter the upload flow.
+   */
   getPendingChunkIndexes(): number[] {
     return this.chunks.reduce<number[]>((pendingChunkIndexes, chunk) => {
       if (chunk.status === 'PENDING' || chunk.status === 'ERROR') {

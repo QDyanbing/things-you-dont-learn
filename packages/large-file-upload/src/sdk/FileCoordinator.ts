@@ -433,6 +433,16 @@ export class FileCoordinator {
     }, 0);
   }
 
+  getPendingChunkIndexes(): number[] {
+    return this.chunks.reduce<number[]>((pendingChunkIndexes, chunk) => {
+      if (chunk.status === 'PENDING' || chunk.status === 'ERROR') {
+        pendingChunkIndexes.push(chunk.index);
+      }
+
+      return pendingChunkIndexes;
+    }, []);
+  }
+
   /**
    * Returns the stable identity of one prepared chunk by index.
    */

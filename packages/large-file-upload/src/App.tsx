@@ -12,6 +12,7 @@ export default function App() {
   const [firstChunkIdentity, setFirstChunkIdentity] = useState("");
   const [firstChunkStatus, setFirstChunkStatus] = useState("");
   const [isFirstChunkUploaded, setIsFirstChunkUploaded] = useState(false);
+  const [restoredChunkCount, setRestoredChunkCount] = useState(0);
   const [firstChunkRange, setFirstChunkRange] = useState("");
   const [firstChunkType, setFirstChunkType] = useState("");
   const [firstChunkBlobSize, setFirstChunkBlobSize] = useState(0);
@@ -44,6 +45,7 @@ export default function App() {
               setFirstChunkIdentity("");
               setFirstChunkStatus("");
               setIsFirstChunkUploaded(false);
+              setRestoredChunkCount(0);
               setFirstChunkRange("");
               setFirstChunkType("");
               setFirstChunkBlobSize(0);
@@ -63,8 +65,7 @@ export default function App() {
               const latestPrepareResult = coordinator.getPrepareResult();
               const prepared = coordinator.isPrepared();
               const hasPreparedFirstChunk = coordinator.hasChunk(0);
-              coordinator.setChunkStatus(0, "UPLOADING");
-              coordinator.setChunkStatus(0, "SUCCESS");
+              const currentRestoredChunkCount = coordinator.setUploadedChunks([0, 1]);
               const preparedFirstChunkIdentity = coordinator.getChunkIdentity(0);
               const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
               const firstChunkUploaded = coordinator.isChunkUploaded(0);
@@ -77,6 +78,7 @@ export default function App() {
               setFirstChunkIdentity(preparedFirstChunkIdentity ?? "");
               setFirstChunkStatus(preparedFirstChunkStatus ?? "");
               setIsFirstChunkUploaded(firstChunkUploaded);
+              setRestoredChunkCount(currentRestoredChunkCount);
               setFileSize(prepareResult.fileSize);
               setFirstChunkRange(
                 firstChunkInfo
@@ -109,6 +111,7 @@ export default function App() {
         {firstChunkIdentity ? <div>firstChunkIdentity: {firstChunkIdentity}</div> : null}
         {firstChunkStatus ? <div>firstChunkStatus: {firstChunkStatus}</div> : null}
         <div>isFirstChunkUploaded: {String(isFirstChunkUploaded)}</div>
+        <div>restoredChunkCount: {restoredChunkCount}</div>
         {firstChunkRange ? <div>firstChunkRange: {firstChunkRange}</div> : null}
         {firstChunkType ? <div>firstChunkType: {firstChunkType}</div> : null}
         <div>firstChunkBlobSize: {firstChunkBlobSize}</div>

@@ -65,6 +65,8 @@ new FileCoordinator(file, options)
 | `SUCCESS` | 分片已经上传成功 | `'SUCCESS'` | - |
 | `ERROR` | 分片上传失败 | `'ERROR'` | - |
 
+当前 `getPendingChunkIndexes()` 的 pending 语义只包含 `PENDING` 和 `ERROR`，不会把已经处于 `UPLOADING` 的分片再次返回出来。
+
 ### FileCoordinatorChunkInfo
 
 | 属性 | 说明 | 类型 | 默认值 |

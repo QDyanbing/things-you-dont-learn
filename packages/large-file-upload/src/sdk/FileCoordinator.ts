@@ -396,6 +396,24 @@ export class FileCoordinator {
     return true;
   }
 
+  setUploadedChunks(indexes: number[]): number {
+    const uniqueIndexes = [...new Set(indexes)];
+    let restoredChunkCount = 0;
+
+    uniqueIndexes.forEach((index) => {
+      const chunk = this.findChunk(index);
+
+      if (!chunk) {
+        return;
+      }
+
+      chunk.status = 'SUCCESS';
+      restoredChunkCount += 1;
+    });
+
+    return restoredChunkCount;
+  }
+
   /**
    * Returns whether one prepared chunk has been marked as uploaded.
    */

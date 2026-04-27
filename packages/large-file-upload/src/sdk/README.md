@@ -19,6 +19,7 @@ const coordinator = new FileCoordinator(file, {
   },
 });
 const prepareResult = await coordinator.prepare();
+const restoredChunkCount = coordinator.setUploadedChunks([0, 3, 5]);
 const firstChunkStatus = coordinator.getChunkStatus(0);
 ```
 

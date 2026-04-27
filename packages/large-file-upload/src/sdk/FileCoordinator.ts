@@ -396,6 +396,9 @@ export class FileCoordinator {
     return true;
   }
 
+  /**
+   * Marks a batch of prepared chunks as uploaded by index.
+   */
   setUploadedChunks(indexes: number[]): number {
     const uniqueIndexes = [...new Set(indexes)];
     let restoredChunkCount = 0;

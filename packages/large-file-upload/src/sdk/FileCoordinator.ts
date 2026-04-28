@@ -496,6 +496,50 @@ export class FileCoordinator {
     }, []);
   }
 
+  async upload(): Promise<void> {
+    this.ensurePreparedForUpload();
+
+    if (this.uploadPromise) {
+      return this.uploadPromise;
+    }
+
+    const uploadTask = (async () => {
+      const pendingChunkIndexes = this.getPendingChunkIndexes();
+
+      if (pendingChunkIndexes.length === 0) {
+        this.setStatus(
+          this.getUploadedChunkCount() === this.getChunkCount()
+            ? 'COMPLETED'
+            : 'READY',
+        );
+        return;
+      }
+
+      this.setStatus('UPLOADING');
+
+      try {
+        await this.uploadPendingChunks(pendingChunkIndexes);
+        this.setStatus(
+          this.getUploadedChunkCount() === this.getChunkCount()
+            ? 'COMPLETED'
+            : 'READY',
+        );
+      } catch (error) {
+        this.setStatus('ERROR');
+        throw error;
+      }
+    })();
+
+    const wrappedUploadTask = uploadTask.finally(() => {
+      if (this.uploadPromise === wrappedUploadTask) {
+        this.uploadPromise = null;
+      }
+    });
+
+    this.uploadPromise = wrappedUploadTask;
+    return wrappedUploadTask;
+  }
+
   /**
    * Uploads one prepared chunk through the caller-provided upload handler.
    */

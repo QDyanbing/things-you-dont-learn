@@ -4,10 +4,22 @@
 const DEFAULT_CHUNK_SIZE = 5 * 1024 * 1024;
 
 /**
+ * Default concurrent chunk upload count used by the coordinator.
+ */
+const DEFAULT_CONCURRENCY = 1;
+
+/**
  * Normalizes the public chunk size into the effective runtime value.
  */
 function normalizeChunkSize(chunkSize?: number): number {
   return Math.max(1, chunkSize ?? DEFAULT_CHUNK_SIZE);
+}
+
+/**
+ * Normalizes the public concurrency into the effective runtime value.
+ */
+function normalizeConcurrency(concurrency?: number): number {
+  return Math.max(1, Math.floor(concurrency ?? DEFAULT_CONCURRENCY));
 }
 
 /**
@@ -135,6 +147,10 @@ export interface FileCoordinatorOptions {
    */
   chunkSize?: number;
   /**
+   * Maximum chunk upload count allowed to run at the same time.
+   */
+  concurrency?: number;
+  /**
    * Custom file identity generator used to override the default short id.
    */
   createFileIdentity?: FileCoordinatorCreateFileIdentity;
@@ -149,6 +165,10 @@ export interface FileCoordinatorResolvedOptions {
    * Effective chunk size normalized by the coordinator constructor.
    */
   chunkSize: number;
+  /**
+   * Effective concurrent chunk upload count used by the current coordinator.
+   */
+  concurrency: number;
   /**
    * Effective file identity generator used by the current coordinator.
    */
@@ -282,6 +302,7 @@ export class FileCoordinator {
     const resolvedOptions: FileCoordinatorResolvedOptions = {
       ...options,
       chunkSize: normalizeChunkSize(options.chunkSize),
+      concurrency: normalizeConcurrency(options.concurrency),
       createFileIdentity:
         options.createFileIdentity ?? createDefaultFileIdentity,
     };

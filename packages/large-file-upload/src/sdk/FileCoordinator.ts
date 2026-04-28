@@ -471,6 +471,42 @@ export class FileCoordinator {
     }, []);
   }
 
+  async uploadChunk(index: number): Promise<void> {
+    if (!this.options.uploadChunk) {
+      throw new Error('FileCoordinator uploadChunk handler is not configured.');
+    }
+
+    const chunkInfo = this.getChunkInfo(index);
+    const chunk = this.getChunk(index);
+
+    if (!chunkInfo || !chunk) {
+      throw new Error(`FileCoordinator chunk at index ${index} is not available.`);
+    }
+
+    this.setChunkStatus(index, 'UPLOADING');
+    this.setStatus('UPLOADING');
+
+    try {
+      await this.options.uploadChunk({
+        file: this.file,
+        fileIdentity: this.fileIdentity,
+        chunkInfo,
+        chunk,
+      });
+
+      this.setChunkStatus(index, 'SUCCESS');
+      this.setStatus(
+        this.getUploadedChunkCount() === this.getChunkCount()
+          ? 'COMPLETED'
+          : 'READY',
+      );
+    } catch (error) {
+      this.setChunkStatus(index, 'ERROR');
+      this.setStatus('ERROR');
+      throw error;
+    }
+  }
+
   /**
    * Returns the stable identity of one prepared chunk by index.
    */

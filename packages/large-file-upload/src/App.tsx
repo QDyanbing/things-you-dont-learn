@@ -34,7 +34,17 @@ export default function App() {
           showUploadList={false}
           customRequest={async ({ file, onError, onSuccess }) => {
             try {
-              const coordinator = new FileCoordinator(file as File, {});
+              const coordinator = new FileCoordinator(file as File, {
+                async uploadChunk({ chunk, chunkInfo, fileIdentity }) {
+                  const formData = new FormData();
+
+                  formData.append("file", chunk);
+                  formData.append("fileIdentity", fileIdentity);
+                  formData.append("index", String(chunkInfo.index));
+
+                  await Promise.resolve(formData);
+                },
+              });
               const updatedChunkSize = coordinator.setChunkSize(1024 * 1024);
 
               setFileName(coordinator.getFile().name);
@@ -67,7 +77,8 @@ export default function App() {
               const latestPrepareResult = coordinator.getPrepareResult();
               const prepared = coordinator.isPrepared();
               const hasPreparedFirstChunk = coordinator.hasChunk(0);
-              const currentRestoredChunkCount = coordinator.setUploadedChunks([0, 1]);
+              await coordinator.uploadChunk(0);
+              const currentRestoredChunkCount = coordinator.setUploadedChunks([1]);
               coordinator.setChunkStatus(2, "ERROR");
               const preparedFirstChunkIdentity = coordinator.getChunkIdentity(0);
               const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
@@ -93,7 +104,7 @@ export default function App() {
               setFirstChunkType(firstChunkInfo?.type ?? "");
               setFirstChunkBlobSize(firstChunk?.size ?? 0);
               setFirstChunkBlobType(firstChunk?.type ?? "");
-              setStatus(prepareResult.status);
+              setStatus(coordinator.getStatus());
               setChunkCount(prepareResult.chunkCount);
               setUploadedChunkCount(coordinator.getUploadedChunkCount());
               setCachedChunkCount(latestPrepareResult?.chunkCount ?? 0);

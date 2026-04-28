@@ -37,6 +37,8 @@ const restoredChunkCount = coordinator.setUploadedChunks([0, 3, 5]);
 const firstChunkStatus = coordinator.getChunkStatus(0);
 ```
 
+当前更推荐直接调用 `upload()` 让 SDK 自己调度整轮上传；`uploadChunk(index)` 更适合少量特殊场景下的低层控制。
+
 ## API
 
 ### Constructor

@@ -178,6 +178,9 @@ export interface FileCoordinatorChunkInfo {
   size: number;
 }
 
+/**
+ * Input payload passed to the caller-provided single chunk uploader.
+ */
 export interface FileCoordinatorUploadChunkParams {
   file: File;
   fileIdentity: FileCoordinatorFileIdentity;

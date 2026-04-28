@@ -52,6 +52,10 @@ export type FileCoordinatorCreateFileIdentity = (
   file: File,
 ) => FileCoordinatorFileIdentity;
 
+export type FileCoordinatorUploadChunkHandler = (
+  params: FileCoordinatorUploadChunkParams,
+) => Promise<void>;
+
 /**
  * Returns the relative path attached by directory uploads when available.
  */
@@ -131,6 +135,7 @@ export interface FileCoordinatorOptions {
    * Custom file identity generator used to override the default short id.
    */
   createFileIdentity?: FileCoordinatorCreateFileIdentity;
+  uploadChunk?: FileCoordinatorUploadChunkHandler;
 }
 
 export interface FileCoordinatorResolvedOptions {
@@ -142,6 +147,7 @@ export interface FileCoordinatorResolvedOptions {
    * Effective file identity generator used by the current coordinator.
    */
   createFileIdentity: FileCoordinatorCreateFileIdentity;
+  uploadChunk?: FileCoordinatorUploadChunkHandler;
 }
 
 /**

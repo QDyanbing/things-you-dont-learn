@@ -471,6 +471,9 @@ export class FileCoordinator {
     }, []);
   }
 
+  /**
+   * Uploads one prepared chunk through the caller-provided upload handler.
+   */
   async uploadChunk(index: number): Promise<void> {
     if (!this.options.uploadChunk) {
       throw new Error('FileCoordinator uploadChunk handler is not configured.');

@@ -31,6 +31,7 @@ const coordinator = new FileCoordinator(file, {
   },
 });
 const prepareResult = await coordinator.prepare();
+await coordinator.uploadChunk(0);
 const restoredChunkCount = coordinator.setUploadedChunks([0, 3, 5]);
 const firstChunkStatus = coordinator.getChunkStatus(0);
 ```
@@ -156,6 +157,7 @@ new FileCoordinator(file, options)
 | `isChunkUploaded(index)` | 判断单个分片是否已经上传完成；当前只有分片状态为 `SUCCESS` 时才会返回 `true` | `boolean` |
 | `getUploadedChunkCount()` | 获取当前已经上传完成的分片数量；当前只统计状态为 `SUCCESS` 的分片 | `number` |
 | `getPendingChunkIndexes()` | 获取当前仍需要继续进入上传流程的分片下标列表；当前会返回状态为 `PENDING` 或 `ERROR` 的分片 | `number[]` |
+| `uploadChunk(index)` | 上传指定下标的单个分片；要求先完成 `prepare()` 并且在 `options` 里传入 `uploadChunk` 处理器；调用时分片状态会进入 `UPLOADING`，成功后改为 `SUCCESS`，失败后改为 `ERROR`；当前文件全部分片上传完成后实例状态会进入 `COMPLETED` | `Promise<void>` |
 | `getChunkIdentity(index)` | 按下标获取单个分片的唯一标识；`index` 需要是从 `0` 开始的非负整数；在分片不存在或尚未 `prepare()` 时返回 `null` | `FileCoordinatorChunkIdentity \| null` |
 | `getChunkInfo(index)` | 按下标获取单个分片的元信息；返回结果里会带上当前分片的 MIME type；`index` 需要是从 `0` 开始的非负整数；在分片不存在或尚未 `prepare()` 时返回 `null` | `FileCoordinatorChunkInfo \| null` |
 | `getChunk(index)` | 按下标获取单个分片的 `Blob`；返回的 `Blob` 会继承原文件类型；`index` 需要是从 `0` 开始的非负整数；在分片不存在或尚未 `prepare()` 时返回 `null` | `Blob \| null` |

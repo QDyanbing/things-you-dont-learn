@@ -14,6 +14,7 @@
 import { FileCoordinator } from './FileCoordinator';
 
 const coordinator = new FileCoordinator(file, {
+  concurrency: 3,
   createFileIdentity(currentFile) {
     return `biz_${currentFile.name}_${currentFile.size}`;
   },
@@ -54,6 +55,7 @@ new FileCoordinator(file, options)
 | 属性 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | `chunkSize` | 单个分片的字节大小 | `number` | `5 * 1024 * 1024` |
+| `concurrency` | 分片上传时允许同时进行的最大并发数；会在实例内部归一化为大于等于 `1` 的整数 | `number` | `1` |
 | `createFileIdentity` | 自定义文件 id 计算函数；不传时会基于 `name`、`size`、`type`、`lastModified` 等元信息生成短 id | `(file: File) => FileCoordinatorFileIdentity` | 默认内置实现 |
 | `uploadChunk` | 调用方注入的单分片上传函数；SDK 不关心请求库、鉴权和接口结构，只会在实例方法 `uploadChunk(index)` 内把分片数据交给它 | `FileCoordinatorUploadChunkHandler` | - |
 
@@ -62,6 +64,7 @@ new FileCoordinator(file, options)
 | 属性 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | `chunkSize` | 当前实例最终生效的分片大小，`getOptions()` 返回的一定是归一化后的值 | `number` | - |
+| `concurrency` | 当前实例最终生效的并发上传数 | `number` | - |
 | `createFileIdentity` | 当前实例最终生效的文件 id 计算函数 | `(file: File) => FileCoordinatorFileIdentity` | - |
 | `uploadChunk` | 当前实例最终生效的单分片上传函数 | `FileCoordinatorUploadChunkHandler \| undefined` | - |
 

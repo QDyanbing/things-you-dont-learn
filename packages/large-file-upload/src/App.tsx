@@ -23,6 +23,7 @@ export default function App() {
   const [uploadedChunkCount, setUploadedChunkCount] = useState(0);
   const [cachedChunkCount, setCachedChunkCount] = useState(0);
   const [resolvedChunkSize, setResolvedChunkSize] = useState(0);
+  const [resolvedConcurrency, setResolvedConcurrency] = useState(0);
   const [chunkSize, setChunkSize] = useState(0);
   const [prepareCalls, setPrepareCalls] = useState(0);
 
@@ -35,6 +36,7 @@ export default function App() {
           customRequest={async ({ file, onError, onSuccess }) => {
             try {
               const coordinator = new FileCoordinator(file as File, {
+                concurrency: 2,
                 async uploadChunk({ chunk, chunkInfo, fileIdentity }) {
                   const formData = new FormData();
 
@@ -67,6 +69,7 @@ export default function App() {
               setUploadedChunkCount(0);
               setCachedChunkCount(0);
               setResolvedChunkSize(updatedChunkSize);
+              setResolvedConcurrency(coordinator.getOptions().concurrency);
               setChunkSize(0);
               setPrepareCalls(0);
 
@@ -77,9 +80,8 @@ export default function App() {
               const latestPrepareResult = coordinator.getPrepareResult();
               const prepared = coordinator.isPrepared();
               const hasPreparedFirstChunk = coordinator.hasChunk(0);
-              await coordinator.uploadChunk(0);
-              const currentRestoredChunkCount = coordinator.setUploadedChunks([1]);
-              coordinator.setChunkStatus(2, "ERROR");
+              const currentRestoredChunkCount = coordinator.setUploadedChunks([0]);
+              await coordinator.upload();
               const preparedFirstChunkIdentity = coordinator.getChunkIdentity(0);
               const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
               const firstChunkUploaded = coordinator.isChunkUploaded(0);
@@ -138,6 +140,7 @@ export default function App() {
         <div>uploadedChunkCount: {uploadedChunkCount}</div>
         <div>cachedChunkCount: {cachedChunkCount}</div>
         <div>resolvedChunkSize: {resolvedChunkSize}</div>
+        <div>resolvedConcurrency: {resolvedConcurrency}</div>
         <div>chunkSize: {chunkSize}</div>
         <div>prepareCalls: {prepareCalls}</div>
       </>

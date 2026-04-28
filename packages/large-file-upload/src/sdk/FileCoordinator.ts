@@ -496,6 +496,9 @@ export class FileCoordinator {
     }, []);
   }
 
+  /**
+   * Uploads every pending chunk through the configured concurrent scheduler.
+   */
   async upload(): Promise<void> {
     this.ensurePreparedForUpload();
 

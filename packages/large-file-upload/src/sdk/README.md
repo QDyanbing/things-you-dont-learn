@@ -32,8 +32,8 @@ const coordinator = new FileCoordinator(file, {
   },
 });
 const prepareResult = await coordinator.prepare();
-await coordinator.upload();
 const restoredChunkCount = coordinator.setUploadedChunks([0, 3, 5]);
+await coordinator.upload();
 const firstChunkStatus = coordinator.getChunkStatus(0);
 ```
 
@@ -59,7 +59,7 @@ new FileCoordinator(file, options)
 | `chunkSize` | 单个分片的字节大小 | `number` | `5 * 1024 * 1024` |
 | `concurrency` | 分片上传时允许同时进行的最大并发数；会在实例内部归一化为大于等于 `1` 的整数 | `number` | `1` |
 | `createFileIdentity` | 自定义文件 id 计算函数；不传时会基于 `name`、`size`、`type`、`lastModified` 等元信息生成短 id | `(file: File) => FileCoordinatorFileIdentity` | 默认内置实现 |
-| `uploadChunk` | 调用方注入的单分片上传函数；SDK 不关心请求库、鉴权和接口结构，只会在实例方法 `uploadChunk(index)` 内把分片数据交给它 | `FileCoordinatorUploadChunkHandler` | - |
+| `uploadChunk` | 调用方注入的单分片上传函数；SDK 不关心请求库、鉴权和接口结构，会在实例方法 `upload()` 或 `uploadChunk(index)` 内把分片数据交给它 | `FileCoordinatorUploadChunkHandler` | - |
 
 ### FileCoordinatorResolvedOptions
 

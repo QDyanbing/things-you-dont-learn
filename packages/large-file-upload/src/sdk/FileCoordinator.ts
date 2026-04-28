@@ -52,6 +52,9 @@ export type FileCoordinatorCreateFileIdentity = (
   file: File,
 ) => FileCoordinatorFileIdentity;
 
+/**
+ * Caller-provided uploader used by the coordinator to send one chunk.
+ */
 export type FileCoordinatorUploadChunkHandler = (
   params: FileCoordinatorUploadChunkParams,
 ) => Promise<void>;
@@ -135,6 +138,9 @@ export interface FileCoordinatorOptions {
    * Custom file identity generator used to override the default short id.
    */
   createFileIdentity?: FileCoordinatorCreateFileIdentity;
+  /**
+   * Caller-provided uploader responsible for sending one prepared chunk.
+   */
   uploadChunk?: FileCoordinatorUploadChunkHandler;
 }
 
@@ -147,6 +153,9 @@ export interface FileCoordinatorResolvedOptions {
    * Effective file identity generator used by the current coordinator.
    */
   createFileIdentity: FileCoordinatorCreateFileIdentity;
+  /**
+   * Effective single chunk uploader stored by the current coordinator.
+   */
   uploadChunk?: FileCoordinatorUploadChunkHandler;
 }
 

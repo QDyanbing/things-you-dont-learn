@@ -17,6 +17,18 @@ const coordinator = new FileCoordinator(file, {
   createFileIdentity(currentFile) {
     return `biz_${currentFile.name}_${currentFile.size}`;
   },
+  async uploadChunk({ chunk, chunkInfo, fileIdentity }) {
+    const formData = new FormData();
+
+    formData.append('file', chunk);
+    formData.append('fileIdentity', fileIdentity);
+    formData.append('index', String(chunkInfo.index));
+
+    await fetch('/api/upload/chunk', {
+      method: 'POST',
+      body: formData,
+    });
+  },
 });
 const prepareResult = await coordinator.prepare();
 const restoredChunkCount = coordinator.setUploadedChunks([0, 3, 5]);
@@ -42,6 +54,7 @@ new FileCoordinator(file, options)
 | --- | --- | --- | --- |
 | `chunkSize` | 单个分片的字节大小 | `number` | `5 * 1024 * 1024` |
 | `createFileIdentity` | 自定义文件 id 计算函数；不传时会基于 `name`、`size`、`type`、`lastModified` 等元信息生成短 id | `(file: File) => FileCoordinatorFileIdentity` | 默认内置实现 |
+| `uploadChunk` | 调用方注入的单分片上传函数；SDK 不关心请求库、鉴权和接口结构，只会在实例方法 `uploadChunk(index)` 内把分片数据交给它 | `FileCoordinatorUploadChunkHandler` | - |
 
 ### FileCoordinatorResolvedOptions
 
@@ -49,6 +62,7 @@ new FileCoordinator(file, options)
 | --- | --- | --- | --- |
 | `chunkSize` | 当前实例最终生效的分片大小，`getOptions()` 返回的一定是归一化后的值 | `number` | - |
 | `createFileIdentity` | 当前实例最终生效的文件 id 计算函数 | `(file: File) => FileCoordinatorFileIdentity` | - |
+| `uploadChunk` | 当前实例最终生效的单分片上传函数 | `FileCoordinatorUploadChunkHandler \| undefined` | - |
 
 ### FileCoordinatorChunkIdentity
 
@@ -86,6 +100,12 @@ new FileCoordinator(file, options)
 | `fileIdentity` | 当前文件的唯一标识 | `FileCoordinatorFileIdentity` | - |
 | `chunkInfo` | 当前准备上传的分片元信息 | `FileCoordinatorChunkInfo` | - |
 | `chunk` | 当前准备上传的分片 `Blob` 数据 | `Blob` | - |
+
+### FileCoordinatorUploadChunkHandler
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `-` | 调用方传入的单分片上传处理函数；通常在这里接入鉴权、请求头、接口地址和表单结构 | `(params: FileCoordinatorUploadChunkParams) => Promise<void>` | - |
 
 ### FileCoordinatorStatus
 

@@ -330,7 +330,7 @@ export class FileCoordinator {
    * Returns the normalized runtime options of the current coordinator.
    *
    * Unlike the input `FileCoordinatorOptions`, the returned object always
-   * contains the resolved `chunkSize`.
+   * contains the resolved `chunkSize` and `concurrency`.
    */
   getOptions(): FileCoordinatorResolvedOptions {
     return { ...this.options };

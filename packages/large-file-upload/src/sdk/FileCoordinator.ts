@@ -178,6 +178,13 @@ export interface FileCoordinatorChunkInfo {
   size: number;
 }
 
+export interface FileCoordinatorUploadChunkParams {
+  file: File;
+  fileIdentity: FileCoordinatorFileIdentity;
+  chunkInfo: FileCoordinatorChunkInfo;
+  chunk: Blob;
+}
+
 interface FileCoordinatorChunkRecord extends FileCoordinatorChunkInfo {
   status: FileCoordinatorChunkStatus;
 }

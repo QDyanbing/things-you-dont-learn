@@ -655,6 +655,49 @@ export class FileCoordinator {
   }
 
   /**
+   * Uploads a batch of prepared chunks with the configured concurrency.
+   */
+  private async uploadPendingChunks(indexes: number[]): Promise<void> {
+    const pendingIndexes = [...indexes];
+    const workerCount = Math.min(this.options.concurrency, pendingIndexes.length);
+    let firstError: unknown = null;
+
+    const runWorker = async () => {
+      while (pendingIndexes.length > 0) {
+        if (firstError) {
+          return;
+        }
+
+        const index = pendingIndexes.shift();
+
+        if (index === undefined) {
+          return;
+        }
+
+        try {
+          await this.uploadPreparedChunk(index);
+        } catch (error) {
+          if (!firstError) {
+            firstError = error;
+          }
+
+          return;
+        }
+      }
+    };
+
+    await Promise.all(
+      Array.from({ length: workerCount }, () => {
+        return runWorker();
+      }),
+    );
+
+    if (firstError) {
+      throw firstError;
+    }
+  }
+
+  /**
    * Splits the current file into deterministic chunks based on `chunkSize`.
    */
   private createChunks(): FileCoordinatorChunkRecord[] {

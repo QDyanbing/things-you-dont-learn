@@ -280,6 +280,10 @@ export class FileCoordinator {
    */
   private preparePromise: Promise<FileCoordinatorPrepareResult> | null = null;
   /**
+   * Active upload task reused by concurrent `upload()` calls.
+   */
+  private uploadPromise: Promise<void> | null = null;
+  /**
    * Latest successful preparation summary of the current file.
    */
   private prepareResult: FileCoordinatorPrepareResult | null = null;
@@ -496,29 +500,12 @@ export class FileCoordinator {
    * Uploads one prepared chunk through the caller-provided upload handler.
    */
   async uploadChunk(index: number): Promise<void> {
-    if (!this.options.uploadChunk) {
-      throw new Error('FileCoordinator uploadChunk handler is not configured.');
-    }
-
-    const chunkInfo = this.getChunkInfo(index);
-    const chunk = this.getChunk(index);
-
-    if (!chunkInfo || !chunk) {
-      throw new Error(`FileCoordinator chunk at index ${index} is not available.`);
-    }
-
+    this.ensurePreparedForUpload();
     this.setChunkStatus(index, 'UPLOADING');
     this.setStatus('UPLOADING');
 
     try {
-      await this.options.uploadChunk({
-        file: this.file,
-        fileIdentity: this.fileIdentity,
-        chunkInfo,
-        chunk,
-      });
-
-      this.setChunkStatus(index, 'SUCCESS');
+      await this.uploadPreparedChunk(index);
       this.setStatus(
         this.getUploadedChunkCount() === this.getChunkCount()
           ? 'COMPLETED'
@@ -594,6 +581,15 @@ export class FileCoordinator {
   }
 
   /**
+   * Throws when upload is requested before a successful `prepare()` run.
+   */
+  private ensurePreparedForUpload() {
+    if (!this.prepareResult) {
+      throw new Error('FileCoordinator prepare() must complete before upload.');
+    }
+  }
+
+  /**
    * Clears the previously prepared chunk metadata before rebuilding it.
    */
   private resetChunks() {
@@ -624,6 +620,38 @@ export class FileCoordinator {
     }
 
     return this.chunks[normalizedIndex] ?? null;
+  }
+
+  /**
+   * Runs the caller-provided upload handler for one prepared chunk.
+   */
+  private async uploadPreparedChunk(index: number): Promise<void> {
+    if (!this.options.uploadChunk) {
+      throw new Error('FileCoordinator uploadChunk handler is not configured.');
+    }
+
+    const chunkInfo = this.getChunkInfo(index);
+    const chunk = this.getChunk(index);
+
+    if (!chunkInfo || !chunk) {
+      throw new Error(`FileCoordinator chunk at index ${index} is not available.`);
+    }
+
+    this.setChunkStatus(index, 'UPLOADING');
+
+    try {
+      await this.options.uploadChunk({
+        file: this.file,
+        fileIdentity: this.fileIdentity,
+        chunkInfo,
+        chunk,
+      });
+
+      this.setChunkStatus(index, 'SUCCESS');
+    } catch (error) {
+      this.setChunkStatus(index, 'ERROR');
+      throw error;
+    }
   }
 
   /**

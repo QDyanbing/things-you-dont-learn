@@ -78,6 +78,15 @@ new FileCoordinator(file, options)
 | `end` | 当前分片的结束字节位置，不包含当前值 | `number` | - |
 | `size` | 当前分片的字节大小 | `number` | - |
 
+### FileCoordinatorUploadChunkParams
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `file` | 当前实例持有的原始文件对象 | `File` | - |
+| `fileIdentity` | 当前文件的唯一标识 | `FileCoordinatorFileIdentity` | - |
+| `chunkInfo` | 当前准备上传的分片元信息 | `FileCoordinatorChunkInfo` | - |
+| `chunk` | 当前准备上传的分片 `Blob` 数据 | `Blob` | - |
+
 ### FileCoordinatorStatus
 
 | 属性 | 说明 | 类型 | 默认值 |

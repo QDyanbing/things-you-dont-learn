@@ -90,6 +90,8 @@ new FileCoordinator(file, options)
 
 当前 `getPendingChunkIndexes()` 的 pending 语义只包含 `PENDING` 和 `ERROR`，不会把已经处于 `UPLOADING` 的分片再次返回出来。
 
+当前 `getProgress()` 的 `uploadedBytes` 统计口径是：`SUCCESS` 分片按整片大小计入，`UPLOADING` 分片按最近一次 `reportProgress` 回传值计入，`PENDING` 和 `ERROR` 分片默认不计入整体进度。
+
 ### FileCoordinatorChunkInfo
 
 | 属性 | 说明 | 类型 | 默认值 |

@@ -229,6 +229,7 @@ export interface FileCoordinatorUploadChunkParams {
 
 interface FileCoordinatorChunkRecord extends FileCoordinatorChunkInfo {
   status: FileCoordinatorChunkStatus;
+  uploadedBytes: number;
 }
 
 /**
@@ -458,6 +459,15 @@ export class FileCoordinator {
     }
 
     chunk.status = status;
+
+    if (status === 'PENDING') {
+      chunk.uploadedBytes = 0;
+    }
+
+    if (status === 'SUCCESS') {
+      chunk.uploadedBytes = chunk.size;
+    }
+
     return true;
   }
 
@@ -476,6 +486,7 @@ export class FileCoordinator {
       }
 
       chunk.status = 'SUCCESS';
+      chunk.uploadedBytes = chunk.size;
       restoredChunkCount += 1;
     });
 
@@ -700,6 +711,7 @@ export class FileCoordinator {
     }
 
     this.setChunkStatus(index, 'UPLOADING');
+    this.updateChunkUploadedBytes(index, 0);
 
     try {
       await this.options.uploadChunk({
@@ -707,6 +719,9 @@ export class FileCoordinator {
         fileIdentity: this.fileIdentity,
         chunkInfo,
         chunk,
+        reportProgress: (loaded, total) => {
+          this.updateChunkUploadedBytes(index, loaded, total);
+        },
       });
 
       this.setChunkStatus(index, 'SUCCESS');
@@ -760,6 +775,27 @@ export class FileCoordinator {
   }
 
   /**
+   * Stores the latest uploaded byte count of one prepared chunk.
+   */
+  private updateChunkUploadedBytes(
+    index: number,
+    loaded: number,
+    total?: number,
+  ) {
+    const chunk = this.findChunk(index);
+
+    if (!chunk) {
+      return;
+    }
+
+    const normalizedLoaded = Math.max(0, loaded);
+    const effectiveTotal = total ?? chunk.size;
+    const normalizedTotal = Math.max(1, effectiveTotal);
+
+    chunk.uploadedBytes = Math.min(normalizedLoaded, normalizedTotal, chunk.size);
+  }
+
+  /**
    * Splits the current file into deterministic chunks based on `chunkSize`.
    */
   private createChunks(): FileCoordinatorChunkRecord[] {
@@ -780,6 +816,7 @@ export class FileCoordinator {
         index,
         chunkIdentity: createChunkIdentity(this.fileIdentity, index, start, end),
         status: 'PENDING',
+        uploadedBytes: 0,
         type: this.file.type,
         start,
         end,

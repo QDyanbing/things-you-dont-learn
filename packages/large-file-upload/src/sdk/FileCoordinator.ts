@@ -509,6 +509,9 @@ export class FileCoordinator {
     }, 0);
   }
 
+  /**
+   * Returns the aggregated upload progress snapshot of the current file.
+   */
   getProgress(): FileCoordinatorProgress {
     const uploadedBytes = this.chunks.reduce((currentUploadedBytes, chunk) => {
       return currentUploadedBytes + this.getChunkUploadedBytesForProgress(chunk);

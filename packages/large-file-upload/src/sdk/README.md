@@ -18,12 +18,14 @@ const coordinator = new FileCoordinator(file, {
   createFileIdentity(currentFile) {
     return `biz_${currentFile.name}_${currentFile.size}`;
   },
-  async uploadChunk({ chunk, chunkInfo, fileIdentity }) {
+  async uploadChunk({ chunk, chunkInfo, fileIdentity, reportProgress }) {
     const formData = new FormData();
 
     formData.append('file', chunk);
     formData.append('fileIdentity', fileIdentity);
     formData.append('index', String(chunkInfo.index));
+    reportProgress(chunk.size / 2, chunk.size);
+    reportProgress(chunk.size, chunk.size);
 
     await fetch('/api/upload/chunk', {
       method: 'POST',
@@ -34,6 +36,7 @@ const coordinator = new FileCoordinator(file, {
 const prepareResult = await coordinator.prepare();
 const restoredChunkCount = coordinator.setUploadedChunks([0, 3, 5]);
 await coordinator.upload();
+const progress = coordinator.getProgress();
 const firstChunkStatus = coordinator.getChunkStatus(0);
 ```
 
@@ -172,6 +175,7 @@ new FileCoordinator(file, options)
 | `setUploadedChunks(indexes)` | 批量把一组分片下标标记为已上传成功；适合在断点续传时恢复服务端已经确认完成的分片；无效下标会被忽略，返回成功写入的分片数量 | `number` |
 | `isChunkUploaded(index)` | 判断单个分片是否已经上传完成；当前只有分片状态为 `SUCCESS` 时才会返回 `true` | `boolean` |
 | `getUploadedChunkCount()` | 获取当前已经上传完成的分片数量；当前只统计状态为 `SUCCESS` 的分片 | `number` |
+| `getProgress()` | 获取当前文件的聚合上传进度快照；会返回总字节数、已计入进度的上传字节数、整体百分比和已完成分片数量 | `FileCoordinatorProgress` |
 | `getPendingChunkIndexes()` | 获取当前仍需要继续进入上传流程的分片下标列表；当前会返回状态为 `PENDING` 或 `ERROR` 的分片 | `number[]` |
 | `upload()` | 让 SDK 按当前 `concurrency` 自动调度所有待上传分片；会复用同一轮并发上传任务，成功后根据是否全部完成把实例状态更新为 `READY` 或 `COMPLETED`，失败时进入 `ERROR` | `Promise<void>` |
 | `uploadChunk(index)` | 上传指定下标的单个分片；要求先完成 `prepare()` 并且在 `options` 里传入 `uploadChunk` 处理器；调用时分片状态会进入 `UPLOADING`，成功后改为 `SUCCESS`，失败后改为 `ERROR`；当前文件全部分片上传完成后实例状态会进入 `COMPLETED` | `Promise<void>` |

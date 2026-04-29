@@ -221,6 +221,9 @@ export interface FileCoordinatorUploadChunkParams {
   fileIdentity: FileCoordinatorFileIdentity;
   chunkInfo: FileCoordinatorChunkInfo;
   chunk: Blob;
+  /**
+   * Reports the latest uploaded byte count of the current chunk back to the SDK.
+   */
   reportProgress: (loaded: number, total?: number) => void;
 }
 

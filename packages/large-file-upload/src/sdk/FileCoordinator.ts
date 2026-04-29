@@ -255,6 +255,9 @@ export interface FileCoordinatorPrepareResult {
   chunkSize: number;
 }
 
+/**
+ * Aggregated upload progress snapshot of the current file.
+ */
 export interface FileCoordinatorProgress {
   totalBytes: number;
   uploadedBytes: number;

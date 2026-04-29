@@ -113,6 +113,16 @@ new FileCoordinator(file, options)
 | --- | --- | --- | --- |
 | `-` | 调用方传入的单分片上传处理函数；通常在这里接入鉴权、请求头、接口地址和表单结构 | `(params: FileCoordinatorUploadChunkParams) => Promise<void>` | - |
 
+### FileCoordinatorProgress
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `totalBytes` | 当前文件总字节数 | `number` | - |
+| `uploadedBytes` | 当前已经计入聚合进度的上传字节数 | `number` | - |
+| `percent` | 当前整体上传百分比，范围为 `0` 到 `100` | `number` | - |
+| `chunkCount` | 当前文件分片总数 | `number` | - |
+| `uploadedChunkCount` | 当前状态已经是 `SUCCESS` 的分片数量 | `number` | - |
+
 ### FileCoordinatorStatus
 
 | 属性 | 说明 | 类型 | 默认值 |

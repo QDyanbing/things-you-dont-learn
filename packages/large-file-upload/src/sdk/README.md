@@ -106,6 +106,7 @@ new FileCoordinator(file, options)
 | `fileIdentity` | 当前文件的唯一标识 | `FileCoordinatorFileIdentity` | - |
 | `chunkInfo` | 当前准备上传的分片元信息 | `FileCoordinatorChunkInfo` | - |
 | `chunk` | 当前准备上传的分片 `Blob` 数据 | `Blob` | - |
+| `reportProgress` | 由 SDK 注入的单分片进度上报函数；调用方可以在请求过程中持续回传 `loaded`，让 SDK 聚合整体上传进度 | `(loaded: number, total?: number) => void` | - |
 
 ### FileCoordinatorUploadChunkHandler
 

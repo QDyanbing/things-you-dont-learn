@@ -221,6 +221,7 @@ export interface FileCoordinatorUploadChunkParams {
   fileIdentity: FileCoordinatorFileIdentity;
   chunkInfo: FileCoordinatorChunkInfo;
   chunk: Blob;
+  reportProgress: (loaded: number, total?: number) => void;
 }
 
 interface FileCoordinatorChunkRecord extends FileCoordinatorChunkInfo {

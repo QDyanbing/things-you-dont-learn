@@ -509,6 +509,21 @@ export class FileCoordinator {
     }, 0);
   }
 
+  getProgress(): FileCoordinatorProgress {
+    const uploadedBytes = this.chunks.reduce((currentUploadedBytes, chunk) => {
+      return currentUploadedBytes + this.getChunkUploadedBytesForProgress(chunk);
+    }, 0);
+    const totalBytes = this.file.size;
+
+    return {
+      totalBytes,
+      uploadedBytes,
+      percent: totalBytes > 0 ? (uploadedBytes / totalBytes) * 100 : 0,
+      chunkCount: this.chunks.length,
+      uploadedChunkCount: this.getUploadedChunkCount(),
+    };
+  }
+
   /**
    * Returns chunk indexes that still need to enter the upload flow.
    */
@@ -793,6 +808,23 @@ export class FileCoordinator {
     const normalizedTotal = Math.max(1, effectiveTotal);
 
     chunk.uploadedBytes = Math.min(normalizedLoaded, normalizedTotal, chunk.size);
+  }
+
+  /**
+   * Returns the current byte contribution of one chunk in the public progress snapshot.
+   */
+  private getChunkUploadedBytesForProgress(
+    chunk: FileCoordinatorChunkRecord,
+  ): number {
+    if (chunk.status === 'SUCCESS') {
+      return chunk.size;
+    }
+
+    if (chunk.status === 'UPLOADING') {
+      return chunk.uploadedBytes;
+    }
+
+    return 0;
   }
 
   /**

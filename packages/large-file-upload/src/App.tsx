@@ -22,6 +22,9 @@ export default function App() {
   const [chunkCount, setChunkCount] = useState(0);
   const [uploadedChunkCount, setUploadedChunkCount] = useState(0);
   const [cachedChunkCount, setCachedChunkCount] = useState(0);
+  const [progressUploadedBytes, setProgressUploadedBytes] = useState(0);
+  const [progressTotalBytes, setProgressTotalBytes] = useState(0);
+  const [progressPercent, setProgressPercent] = useState(0);
   const [resolvedChunkSize, setResolvedChunkSize] = useState(0);
   const [resolvedConcurrency, setResolvedConcurrency] = useState(0);
   const [chunkSize, setChunkSize] = useState(0);
@@ -37,12 +40,14 @@ export default function App() {
             try {
               const coordinator = new FileCoordinator(file as File, {
                 concurrency: 2,
-                async uploadChunk({ chunk, chunkInfo, fileIdentity }) {
+                async uploadChunk({ chunk, chunkInfo, fileIdentity, reportProgress }) {
                   const formData = new FormData();
 
                   formData.append("file", chunk);
                   formData.append("fileIdentity", fileIdentity);
                   formData.append("index", String(chunkInfo.index));
+                  reportProgress(chunk.size / 2, chunk.size);
+                  reportProgress(chunk.size, chunk.size);
 
                   await Promise.resolve(formData);
                 },
@@ -68,6 +73,9 @@ export default function App() {
               setChunkCount(coordinator.getChunkCount());
               setUploadedChunkCount(0);
               setCachedChunkCount(0);
+              setProgressUploadedBytes(0);
+              setProgressTotalBytes(0);
+              setProgressPercent(0);
               setResolvedChunkSize(updatedChunkSize);
               setResolvedConcurrency(coordinator.getOptions().concurrency);
               setChunkSize(0);
@@ -86,6 +94,7 @@ export default function App() {
               const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
               const firstChunkUploaded = coordinator.isChunkUploaded(0);
               const currentPendingChunkIndexes = coordinator.getPendingChunkIndexes();
+              const progress = coordinator.getProgress();
               const firstChunkInfo = coordinator.getChunkInfo(0);
               const firstChunk = coordinator.getChunk(0);
 
@@ -110,6 +119,9 @@ export default function App() {
               setChunkCount(prepareResult.chunkCount);
               setUploadedChunkCount(coordinator.getUploadedChunkCount());
               setCachedChunkCount(latestPrepareResult?.chunkCount ?? 0);
+              setProgressUploadedBytes(progress.uploadedBytes);
+              setProgressTotalBytes(progress.totalBytes);
+              setProgressPercent(progress.percent);
               setChunkSize(prepareResult.chunkSize);
               setPrepareCalls(2);
               onSuccess?.({}, file);
@@ -139,6 +151,9 @@ export default function App() {
         <div>chunkCount: {chunkCount}</div>
         <div>uploadedChunkCount: {uploadedChunkCount}</div>
         <div>cachedChunkCount: {cachedChunkCount}</div>
+        <div>progressUploadedBytes: {progressUploadedBytes}</div>
+        <div>progressTotalBytes: {progressTotalBytes}</div>
+        <div>progressPercent: {progressPercent}</div>
         <div>resolvedChunkSize: {resolvedChunkSize}</div>
         <div>resolvedConcurrency: {resolvedConcurrency}</div>
         <div>chunkSize: {chunkSize}</div>

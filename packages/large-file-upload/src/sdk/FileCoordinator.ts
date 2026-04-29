@@ -255,6 +255,14 @@ export interface FileCoordinatorPrepareResult {
   chunkSize: number;
 }
 
+export interface FileCoordinatorProgress {
+  totalBytes: number;
+  uploadedBytes: number;
+  percent: number;
+  chunkCount: number;
+  uploadedChunkCount: number;
+}
+
 /**
  * Coordinates one file instance and prepares internal chunk metadata for later upload steps.
  */

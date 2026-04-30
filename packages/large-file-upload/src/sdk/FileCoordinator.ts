@@ -22,6 +22,20 @@ function normalizeConcurrency(concurrency?: number): number {
   return Math.max(1, Math.floor(concurrency ?? DEFAULT_CONCURRENCY));
 }
 
+function createUploadAbortError(): Error {
+  return new DOMException('FileCoordinator upload canceled.', 'AbortError');
+}
+
+function isAbortError(error: unknown): boolean {
+  return (
+    (error instanceof DOMException && error.name === 'AbortError') ||
+    (typeof error === 'object' &&
+      error !== null &&
+      'name' in error &&
+      error.name === 'AbortError')
+  );
+}
+
 /**
  * Public status exposed by the current coordinator instance.
  */
@@ -304,6 +318,10 @@ export class FileCoordinator {
    */
   private uploadPromise: Promise<void> | null = null;
   /**
+   * Abort controller shared by the current active upload task.
+   */
+  private uploadAbortController: AbortController | null = null;
+  /**
    * Latest successful preparation summary of the current file.
    */
   private prepareResult: FileCoordinatorPrepareResult | null = null;
@@ -566,18 +584,21 @@ export class FileCoordinator {
         return;
       }
 
+      const abortController = this.startUploadAbortController();
       this.setStatus('UPLOADING');
 
       try {
-        await this.uploadPendingChunks(pendingChunkIndexes);
+        await this.uploadPendingChunks(pendingChunkIndexes, abortController.signal);
         this.setStatus(
           this.getUploadedChunkCount() === this.getChunkCount()
             ? 'COMPLETED'
             : 'READY',
         );
       } catch (error) {
-        this.setStatus('ERROR');
+        this.setStatus(isAbortError(error) ? 'CANCELED' : 'ERROR');
         throw error;
+      } finally {
+        this.clearUploadAbortController(abortController);
       }
     })();
 
@@ -596,20 +617,21 @@ export class FileCoordinator {
    */
   async uploadChunk(index: number): Promise<void> {
     this.ensurePreparedForUpload();
-    this.setChunkStatus(index, 'UPLOADING');
-    this.setStatus('UPLOADING');
+    const abortController = this.startUploadAbortController();
 
     try {
-      await this.uploadPreparedChunk(index);
+      this.setStatus('UPLOADING');
+      await this.uploadPreparedChunk(index, abortController.signal);
       this.setStatus(
         this.getUploadedChunkCount() === this.getChunkCount()
           ? 'COMPLETED'
           : 'READY',
       );
     } catch (error) {
-      this.setChunkStatus(index, 'ERROR');
-      this.setStatus('ERROR');
+      this.setStatus(isAbortError(error) ? 'CANCELED' : 'ERROR');
       throw error;
+    } finally {
+      this.clearUploadAbortController(abortController);
     }
   }
 
@@ -676,6 +698,25 @@ export class FileCoordinator {
   }
 
   /**
+   * Creates and stores the abort controller used by the current upload task.
+   */
+  private startUploadAbortController(): AbortController {
+    const abortController = new AbortController();
+
+    this.uploadAbortController = abortController;
+    return abortController;
+  }
+
+  /**
+   * Clears the active upload abort controller when the owning task finishes.
+   */
+  private clearUploadAbortController(abortController: AbortController) {
+    if (this.uploadAbortController === abortController) {
+      this.uploadAbortController = null;
+    }
+  }
+
+  /**
    * Throws when upload is requested before a successful `prepare()` run.
    */
   private ensurePreparedForUpload() {
@@ -720,7 +761,10 @@ export class FileCoordinator {
   /**
    * Runs the caller-provided upload handler for one prepared chunk.
    */
-  private async uploadPreparedChunk(index: number): Promise<void> {
+  private async uploadPreparedChunk(
+    index: number,
+    signal: AbortSignal,
+  ): Promise<void> {
     if (!this.options.uploadChunk) {
       throw new Error('FileCoordinator uploadChunk handler is not configured.');
     }
@@ -732,6 +776,10 @@ export class FileCoordinator {
       throw new Error(`FileCoordinator chunk at index ${index} is not available.`);
     }
 
+    if (signal.aborted) {
+      throw createUploadAbortError();
+    }
+
     this.setChunkStatus(index, 'UPLOADING');
     this.updateChunkUploadedBytes(index, 0);
 
@@ -741,7 +789,7 @@ export class FileCoordinator {
         fileIdentity: this.fileIdentity,
         chunkInfo,
         chunk,
-        signal: new AbortController().signal,
+        signal,
         reportProgress: (loaded, total) => {
           this.updateChunkUploadedBytes(index, loaded, total);
         },
@@ -749,6 +797,12 @@ export class FileCoordinator {
 
       this.setChunkStatus(index, 'SUCCESS');
     } catch (error) {
+      if (isAbortError(error) || signal.aborted) {
+        this.setChunkStatus(index, 'PENDING');
+        this.updateChunkUploadedBytes(index, 0);
+        throw createUploadAbortError();
+      }
+
       this.setChunkStatus(index, 'ERROR');
       throw error;
     }
@@ -757,14 +811,17 @@ export class FileCoordinator {
   /**
    * Uploads a batch of prepared chunks with the configured concurrency.
    */
-  private async uploadPendingChunks(indexes: number[]): Promise<void> {
+  private async uploadPendingChunks(
+    indexes: number[],
+    signal: AbortSignal,
+  ): Promise<void> {
     const pendingIndexes = [...indexes];
     const workerCount = Math.min(this.options.concurrency, pendingIndexes.length);
     let firstError: unknown = null;
 
     const runWorker = async () => {
       while (pendingIndexes.length > 0) {
-        if (firstError) {
+        if (firstError || signal.aborted) {
           return;
         }
 
@@ -775,7 +832,7 @@ export class FileCoordinator {
         }
 
         try {
-          await this.uploadPreparedChunk(index);
+          await this.uploadPreparedChunk(index, signal);
         } catch (error) {
           if (!firstError) {
             firstError = error;
@@ -794,6 +851,10 @@ export class FileCoordinator {
 
     if (firstError) {
       throw firstError;
+    }
+
+    if (signal.aborted) {
+      throw createUploadAbortError();
     }
   }
 

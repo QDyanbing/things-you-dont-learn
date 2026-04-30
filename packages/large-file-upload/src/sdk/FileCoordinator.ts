@@ -562,6 +562,16 @@ export class FileCoordinator {
     }, []);
   }
 
+  cancel(): boolean {
+    if (!this.uploadAbortController || this.uploadAbortController.signal.aborted) {
+      return false;
+    }
+
+    this.uploadAbortController.abort();
+    this.setStatus('CANCELED');
+    return true;
+  }
+
   /**
    * Uploads every pending chunk through the configured concurrent scheduler.
    */

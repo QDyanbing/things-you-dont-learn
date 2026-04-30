@@ -22,6 +22,7 @@ export default function App() {
   const [chunkCount, setChunkCount] = useState(0);
   const [uploadedChunkCount, setUploadedChunkCount] = useState(0);
   const [cachedChunkCount, setCachedChunkCount] = useState(0);
+  const [cancelResult, setCancelResult] = useState(false);
   const [progressUploadedBytes, setProgressUploadedBytes] = useState(0);
   const [progressTotalBytes, setProgressTotalBytes] = useState(0);
   const [progressPercent, setProgressPercent] = useState(0);
@@ -40,14 +41,33 @@ export default function App() {
             try {
               const coordinator = new FileCoordinator(file as File, {
                 concurrency: 2,
-                async uploadChunk({ chunk, chunkInfo, fileIdentity, reportProgress }) {
+                async uploadChunk({ chunk, chunkInfo, fileIdentity, signal, reportProgress }) {
                   const formData = new FormData();
 
                   formData.append("file", chunk);
                   formData.append("fileIdentity", fileIdentity);
                   formData.append("index", String(chunkInfo.index));
                   reportProgress(chunk.size / 2, chunk.size);
-                  reportProgress(chunk.size, chunk.size);
+
+                  await new Promise<void>((resolve, reject) => {
+                    const timer = window.setTimeout(() => {
+                      signal.removeEventListener("abort", handleAbort);
+                      reportProgress(chunk.size, chunk.size);
+                      resolve();
+                    }, 120);
+
+                    function handleAbort() {
+                      window.clearTimeout(timer);
+                      reject(new DOMException("Upload canceled.", "AbortError"));
+                    }
+
+                    if (signal.aborted) {
+                      handleAbort();
+                      return;
+                    }
+
+                    signal.addEventListener("abort", handleAbort, { once: true });
+                  });
 
                   await Promise.resolve(formData);
                 },
@@ -73,6 +93,7 @@ export default function App() {
               setChunkCount(coordinator.getChunkCount());
               setUploadedChunkCount(0);
               setCachedChunkCount(0);
+              setCancelResult(false);
               setProgressUploadedBytes(0);
               setProgressTotalBytes(0);
               setProgressPercent(0);
@@ -89,7 +110,9 @@ export default function App() {
               const prepared = coordinator.isPrepared();
               const hasPreparedFirstChunk = coordinator.hasChunk(0);
               const currentRestoredChunkCount = coordinator.setUploadedChunks([0]);
-              await coordinator.upload();
+              const uploadTask = coordinator.upload();
+              const currentCancelResult = coordinator.cancel();
+              await uploadTask.catch(() => undefined);
               const preparedFirstChunkIdentity = coordinator.getChunkIdentity(0);
               const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
               const firstChunkUploaded = coordinator.isChunkUploaded(0);
@@ -119,6 +142,7 @@ export default function App() {
               setChunkCount(prepareResult.chunkCount);
               setUploadedChunkCount(coordinator.getUploadedChunkCount());
               setCachedChunkCount(latestPrepareResult?.chunkCount ?? 0);
+              setCancelResult(currentCancelResult);
               setProgressUploadedBytes(progress.uploadedBytes);
               setProgressTotalBytes(progress.totalBytes);
               setProgressPercent(progress.percent);
@@ -151,6 +175,7 @@ export default function App() {
         <div>chunkCount: {chunkCount}</div>
         <div>uploadedChunkCount: {uploadedChunkCount}</div>
         <div>cachedChunkCount: {cachedChunkCount}</div>
+        <div>cancelResult: {String(cancelResult)}</div>
         <div>progressUploadedBytes: {progressUploadedBytes}</div>
         <div>progressTotalBytes: {progressTotalBytes}</div>
         <div>progressPercent: {progressPercent}</div>

@@ -38,11 +38,12 @@ const prepareResult = await coordinator.prepare();
 const restoredChunkCount = coordinator.setUploadedChunks([0, 3, 5]);
 await coordinator.upload();
 const progress = coordinator.getProgress();
-const canceled = coordinator.cancel();
 const firstChunkStatus = coordinator.getChunkStatus(0);
 ```
 
 当前更推荐直接调用 `upload()` 让 SDK 自己调度整轮上传；`uploadChunk(index)` 更适合少量特殊场景下的低层控制。
+
+如果需要取消当前活跃上传，可以保留 `const uploadTask = coordinator.upload()` 返回的 Promise，再在外层调用 `coordinator.cancel()` 触发这一轮上传的中断。
 
 ## API
 

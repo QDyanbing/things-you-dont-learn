@@ -221,6 +221,7 @@ export interface FileCoordinatorUploadChunkParams {
   fileIdentity: FileCoordinatorFileIdentity;
   chunkInfo: FileCoordinatorChunkInfo;
   chunk: Blob;
+  signal: AbortSignal;
   /**
    * Reports the latest uploaded byte count of the current chunk back to the SDK.
    */
@@ -737,6 +738,7 @@ export class FileCoordinator {
         fileIdentity: this.fileIdentity,
         chunkInfo,
         chunk,
+        signal: new AbortController().signal,
         reportProgress: (loaded, total) => {
           this.updateChunkUploadedBytes(index, loaded, total);
         },

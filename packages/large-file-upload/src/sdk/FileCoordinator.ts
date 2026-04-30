@@ -221,6 +221,9 @@ export interface FileCoordinatorUploadChunkParams {
   fileIdentity: FileCoordinatorFileIdentity;
   chunkInfo: FileCoordinatorChunkInfo;
   chunk: Blob;
+  /**
+   * Abort signal controlled by the coordinator for the current upload task.
+   */
   signal: AbortSignal;
   /**
    * Reports the latest uploaded byte count of the current chunk back to the SDK.

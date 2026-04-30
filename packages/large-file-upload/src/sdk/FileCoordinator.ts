@@ -562,6 +562,9 @@ export class FileCoordinator {
     }, []);
   }
 
+  /**
+   * Cancels the current active upload task when one is running.
+   */
   cancel(): boolean {
     if (!this.uploadAbortController || this.uploadAbortController.signal.aborted) {
       return false;

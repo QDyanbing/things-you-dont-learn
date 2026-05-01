@@ -589,8 +589,20 @@ export class FileCoordinator {
       return false;
     }
 
+    this.uploadAbortReason = 'CANCEL';
     this.uploadAbortController.abort();
     this.setStatus('CANCELED');
+    return true;
+  }
+
+  pause(): boolean {
+    if (!this.uploadAbortController || this.uploadAbortController.signal.aborted) {
+      return false;
+    }
+
+    this.uploadAbortReason = 'PAUSE';
+    this.uploadAbortController.abort();
+    this.setStatus('PAUSED');
     return true;
   }
 

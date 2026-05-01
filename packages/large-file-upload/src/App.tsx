@@ -24,6 +24,8 @@ export default function App() {
   const [uploadedChunkCount, setUploadedChunkCount] = useState(0);
   const [cachedChunkCount, setCachedChunkCount] = useState(0);
   const [cancelResult, setCancelResult] = useState(false);
+  const [pauseResult, setPauseResult] = useState(false);
+  const [resumeResult, setResumeResult] = useState(false);
   const [progressUploadedBytes, setProgressUploadedBytes] = useState(0);
   const [progressTotalBytes, setProgressTotalBytes] = useState(0);
   const [progressPercent, setProgressPercent] = useState(0);
@@ -96,6 +98,8 @@ export default function App() {
               setUploadedChunkCount(0);
               setCachedChunkCount(0);
               setCancelResult(false);
+              setPauseResult(false);
+              setResumeResult(false);
               setProgressUploadedBytes(0);
               setProgressTotalBytes(0);
               setProgressPercent(0);
@@ -114,8 +118,9 @@ export default function App() {
               const currentRestoredChunkCount = coordinator.setUploadedChunks([0]);
               const uploadTask = coordinator.upload();
               const currentUploadingChunkIndexes = coordinator.getUploadingChunkIndexes();
-              const currentCancelResult = coordinator.cancel();
+              const currentPauseResult = coordinator.pause();
               await uploadTask.catch(() => undefined);
+              const currentResumeResult = await coordinator.resume();
               const preparedFirstChunkIdentity = coordinator.getChunkIdentity(0);
               const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
               const firstChunkUploaded = coordinator.isChunkUploaded(0);
@@ -146,7 +151,9 @@ export default function App() {
               setChunkCount(prepareResult.chunkCount);
               setUploadedChunkCount(coordinator.getUploadedChunkCount());
               setCachedChunkCount(latestPrepareResult?.chunkCount ?? 0);
-              setCancelResult(currentCancelResult);
+              setCancelResult(false);
+              setPauseResult(currentPauseResult);
+              setResumeResult(currentResumeResult);
               setProgressUploadedBytes(progress.uploadedBytes);
               setProgressTotalBytes(progress.totalBytes);
               setProgressPercent(progress.percent);
@@ -181,6 +188,8 @@ export default function App() {
         <div>uploadedChunkCount: {uploadedChunkCount}</div>
         <div>cachedChunkCount: {cachedChunkCount}</div>
         <div>cancelResult: {String(cancelResult)}</div>
+        <div>pauseResult: {String(pauseResult)}</div>
+        <div>resumeResult: {String(resumeResult)}</div>
         <div>progressUploadedBytes: {progressUploadedBytes}</div>
         <div>progressTotalBytes: {progressTotalBytes}</div>
         <div>progressPercent: {progressPercent}</div>

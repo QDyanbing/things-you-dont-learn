@@ -562,6 +562,16 @@ export class FileCoordinator {
     }, []);
   }
 
+  getUploadingChunkIndexes(): number[] {
+    return this.chunks.reduce<number[]>((uploadingChunkIndexes, chunk) => {
+      if (chunk.status === 'UPLOADING') {
+        uploadingChunkIndexes.push(chunk.index);
+      }
+
+      return uploadingChunkIndexes;
+    }, []);
+  }
+
   /**
    * Cancels the current active upload task when one is running.
    */

@@ -562,6 +562,9 @@ export class FileCoordinator {
     }, []);
   }
 
+  /**
+   * Returns chunk indexes that are currently running inside the upload flow.
+   */
   getUploadingChunkIndexes(): number[] {
     return this.chunks.reduce<number[]>((uploadingChunkIndexes, chunk) => {
       if (chunk.status === 'UPLOADING') {

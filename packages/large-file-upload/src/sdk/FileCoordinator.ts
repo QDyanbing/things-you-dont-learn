@@ -609,6 +609,23 @@ export class FileCoordinator {
     return true;
   }
 
+  async resume(): Promise<boolean> {
+    if (this.status !== 'PAUSED') {
+      return false;
+    }
+
+    if (this.uploadPromise) {
+      await this.uploadPromise.catch(() => undefined);
+    }
+
+    if (this.status !== 'PAUSED') {
+      return false;
+    }
+
+    await this.upload();
+    return true;
+  }
+
   /**
    * Uploads every pending chunk through the configured concurrent scheduler.
    */

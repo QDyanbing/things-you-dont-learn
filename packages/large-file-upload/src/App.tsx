@@ -14,6 +14,7 @@ export default function App() {
   const [isFirstChunkUploaded, setIsFirstChunkUploaded] = useState(false);
   const [restoredChunkCount, setRestoredChunkCount] = useState(0);
   const [pendingChunkIndexes, setPendingChunkIndexes] = useState("");
+  const [uploadingChunkIndexes, setUploadingChunkIndexes] = useState("");
   const [firstChunkRange, setFirstChunkRange] = useState("");
   const [firstChunkType, setFirstChunkType] = useState("");
   const [firstChunkBlobSize, setFirstChunkBlobSize] = useState(0);
@@ -85,6 +86,7 @@ export default function App() {
               setIsFirstChunkUploaded(false);
               setRestoredChunkCount(0);
               setPendingChunkIndexes("");
+              setUploadingChunkIndexes("");
               setFirstChunkRange("");
               setFirstChunkType("");
               setFirstChunkBlobSize(0);
@@ -111,6 +113,7 @@ export default function App() {
               const hasPreparedFirstChunk = coordinator.hasChunk(0);
               const currentRestoredChunkCount = coordinator.setUploadedChunks([0]);
               const uploadTask = coordinator.upload();
+              const currentUploadingChunkIndexes = coordinator.getUploadingChunkIndexes();
               const currentCancelResult = coordinator.cancel();
               await uploadTask.catch(() => undefined);
               const preparedFirstChunkIdentity = coordinator.getChunkIdentity(0);
@@ -129,6 +132,7 @@ export default function App() {
               setIsFirstChunkUploaded(firstChunkUploaded);
               setRestoredChunkCount(currentRestoredChunkCount);
               setPendingChunkIndexes(currentPendingChunkIndexes.join(","));
+              setUploadingChunkIndexes(currentUploadingChunkIndexes.join(","));
               setFileSize(prepareResult.fileSize);
               setFirstChunkRange(
                 firstChunkInfo
@@ -167,6 +171,7 @@ export default function App() {
         <div>isFirstChunkUploaded: {String(isFirstChunkUploaded)}</div>
         <div>restoredChunkCount: {restoredChunkCount}</div>
         <div>pendingChunkIndexes: {pendingChunkIndexes}</div>
+        <div>uploadingChunkIndexes: {uploadingChunkIndexes}</div>
         {firstChunkRange ? <div>firstChunkRange: {firstChunkRange}</div> : null}
         {firstChunkType ? <div>firstChunkType: {firstChunkType}</div> : null}
         <div>firstChunkBlobSize: {firstChunkBlobSize}</div>

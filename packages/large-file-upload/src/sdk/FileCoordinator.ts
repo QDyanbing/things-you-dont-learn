@@ -609,6 +609,9 @@ export class FileCoordinator {
     return true;
   }
 
+  /**
+   * Resumes upload scheduling after a successful `pause()` call.
+   */
   async resume(): Promise<boolean> {
     if (this.status !== 'PAUSED') {
       return false;

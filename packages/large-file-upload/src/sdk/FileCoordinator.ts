@@ -627,7 +627,7 @@ export class FileCoordinator {
             : 'READY',
         );
       } catch (error) {
-        this.setStatus(isAbortError(error) ? 'CANCELED' : 'ERROR');
+        this.setStatus(isAbortError(error) ? this.getAbortStatus() : 'ERROR');
         throw error;
       } finally {
         this.clearUploadAbortController(abortController);
@@ -660,7 +660,7 @@ export class FileCoordinator {
           : 'READY',
       );
     } catch (error) {
-      this.setStatus(isAbortError(error) ? 'CANCELED' : 'ERROR');
+      this.setStatus(isAbortError(error) ? this.getAbortStatus() : 'ERROR');
       throw error;
     } finally {
       this.clearUploadAbortController(abortController);
@@ -745,7 +745,15 @@ export class FileCoordinator {
   private clearUploadAbortController(abortController: AbortController) {
     if (this.uploadAbortController === abortController) {
       this.uploadAbortController = null;
+      this.uploadAbortReason = null;
     }
+  }
+
+  /**
+   * Converts the current abort reason into the public coordinator status.
+   */
+  private getAbortStatus(): FileCoordinatorStatus {
+    return this.uploadAbortReason === 'PAUSE' ? 'PAUSED' : 'CANCELED';
   }
 
   /**

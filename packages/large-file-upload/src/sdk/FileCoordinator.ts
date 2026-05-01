@@ -595,6 +595,9 @@ export class FileCoordinator {
     return true;
   }
 
+  /**
+   * Pauses the current active upload task when one is running.
+   */
   pause(): boolean {
     if (!this.uploadAbortController || this.uploadAbortController.signal.aborted) {
       return false;

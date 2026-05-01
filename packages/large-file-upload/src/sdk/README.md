@@ -45,6 +45,8 @@ const firstChunkStatus = coordinator.getChunkStatus(0);
 
 如果需要取消当前活跃上传，可以保留 `const uploadTask = coordinator.upload()` 返回的 Promise，再在外层调用 `coordinator.cancel()` 触发这一轮上传的中断。
 
+如果只是临时暂停当前活跃上传，可以调用 `coordinator.pause()`；被暂停中的分片会恢复回 `PENDING`，实例状态会进入 `PAUSED`。
+
 ## API
 
 ### Constructor

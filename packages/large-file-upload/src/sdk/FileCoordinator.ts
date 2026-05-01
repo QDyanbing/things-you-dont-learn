@@ -36,6 +36,8 @@ function isAbortError(error: unknown): boolean {
   );
 }
 
+type FileCoordinatorUploadAbortReason = 'CANCEL' | 'PAUSE';
+
 /**
  * Public status exposed by the current coordinator instance.
  */
@@ -321,6 +323,10 @@ export class FileCoordinator {
    * Abort controller shared by the current active upload task.
    */
   private uploadAbortController: AbortController | null = null;
+  /**
+   * Reason attached to the current active upload abort flow.
+   */
+  private uploadAbortReason: FileCoordinatorUploadAbortReason | null = null;
   /**
    * Latest successful preparation summary of the current file.
    */

@@ -29,6 +29,7 @@ export default function App() {
   const [resumeResult, setResumeResult] = useState(false);
   const [progressUploadedBytes, setProgressUploadedBytes] = useState(0);
   const [progressTotalBytes, setProgressTotalBytes] = useState(0);
+  const [progressRemainingBytes, setProgressRemainingBytes] = useState(0);
   const [progressPercent, setProgressPercent] = useState(0);
   const [resolvedChunkSize, setResolvedChunkSize] = useState(0);
   const [resolvedConcurrency, setResolvedConcurrency] = useState(0);
@@ -104,6 +105,7 @@ export default function App() {
               setResumeResult(false);
               setProgressUploadedBytes(0);
               setProgressTotalBytes(0);
+              setProgressRemainingBytes(0);
               setProgressPercent(0);
               setResolvedChunkSize(updatedChunkSize);
               setResolvedConcurrency(coordinator.getOptions().concurrency);
@@ -173,6 +175,7 @@ export default function App() {
               setResumeResult(currentResumeResult);
               setProgressUploadedBytes(progress.uploadedBytes);
               setProgressTotalBytes(progress.totalBytes);
+              setProgressRemainingBytes(progress.remainingBytes);
               setProgressPercent(progress.percent);
               setChunkSize(prepareResult.chunkSize);
               setPrepareCalls(2);
@@ -210,6 +213,7 @@ export default function App() {
         <div>resumeResult: {String(resumeResult)}</div>
         <div>progressUploadedBytes: {progressUploadedBytes}</div>
         <div>progressTotalBytes: {progressTotalBytes}</div>
+        <div>progressRemainingBytes: {progressRemainingBytes}</div>
         <div>progressPercent: {progressPercent}</div>
         <div>resolvedChunkSize: {resolvedChunkSize}</div>
         <div>resolvedConcurrency: {resolvedConcurrency}</div>

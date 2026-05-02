@@ -600,6 +600,9 @@ export class FileCoordinator {
     }, []);
   }
 
+  /**
+   * Clears prepared chunk upload state when no upload task is active.
+   */
   resetUploadProgress(): number {
     if (!this.prepareResult || this.hasActiveUploadTask()) {
       return 0;

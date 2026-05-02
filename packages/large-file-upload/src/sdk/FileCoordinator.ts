@@ -581,6 +581,9 @@ export class FileCoordinator {
     }, []);
   }
 
+  /**
+   * Returns chunk indexes that failed during the latest upload attempts.
+   */
   getFailedChunkIndexes(): number[] {
     return this.chunks.reduce<number[]>((failedChunkIndexes, chunk) => {
       if (chunk.status === 'ERROR') {

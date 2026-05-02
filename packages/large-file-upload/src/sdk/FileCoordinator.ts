@@ -286,6 +286,7 @@ export interface FileCoordinatorPrepareResult {
 export interface FileCoordinatorProgress {
   totalBytes: number;
   uploadedBytes: number;
+  remainingBytes: number;
   percent: number;
   chunkCount: number;
   uploadedChunkCount: number;
@@ -545,10 +546,12 @@ export class FileCoordinator {
       return currentUploadedBytes + this.getChunkUploadedBytesForProgress(chunk);
     }, 0);
     const totalBytes = this.file.size;
+    const remainingBytes = Math.max(0, totalBytes - uploadedBytes);
 
     return {
       totalBytes,
       uploadedBytes,
+      remainingBytes,
       percent: totalBytes > 0 ? (uploadedBytes / totalBytes) * 100 : 0,
       chunkCount: this.chunks.length,
       uploadedChunkCount: this.getUploadedChunkCount(),

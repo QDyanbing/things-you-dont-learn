@@ -286,6 +286,9 @@ export interface FileCoordinatorPrepareResult {
 export interface FileCoordinatorProgress {
   totalBytes: number;
   uploadedBytes: number;
+  /**
+   * Byte count not yet included in the aggregated uploaded progress.
+   */
   remainingBytes: number;
   percent: number;
   chunkCount: number;

@@ -24,6 +24,7 @@ export default function App() {
   const [chunkCount, setChunkCount] = useState(0);
   const [uploadedChunkCount, setUploadedChunkCount] = useState(0);
   const [cachedChunkCount, setCachedChunkCount] = useState(0);
+  const [resetChunkCount, setResetChunkCount] = useState(0);
   const [cancelResult, setCancelResult] = useState(false);
   const [pauseResult, setPauseResult] = useState(false);
   const [resumeResult, setResumeResult] = useState(false);
@@ -100,6 +101,7 @@ export default function App() {
               setChunkCount(coordinator.getChunkCount());
               setUploadedChunkCount(0);
               setCachedChunkCount(0);
+              setResetChunkCount(0);
               setCancelResult(false);
               setPauseResult(false);
               setResumeResult(false);
@@ -126,8 +128,6 @@ export default function App() {
               await uploadTask.catch(() => undefined);
               const currentResumeResult = await coordinator.resume();
               const preparedFirstChunkIdentity = coordinator.getChunkIdentity(0);
-              const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
-              const firstChunkUploaded = coordinator.isChunkUploaded(0);
               const currentFailedChunkIndexes = hasPreparedFirstChunk
                 ? (() => {
                     const originalStatus = coordinator.getChunkStatus(0);
@@ -142,6 +142,9 @@ export default function App() {
                     return failedIndexes;
                   })()
                 : [];
+              const currentResetChunkCount = coordinator.resetUploadProgress();
+              const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
+              const firstChunkUploaded = coordinator.isChunkUploaded(0);
               const currentPendingChunkIndexes = coordinator.getPendingChunkIndexes();
               const progress = coordinator.getProgress();
               const firstChunkInfo = coordinator.getChunkInfo(0);
@@ -170,6 +173,7 @@ export default function App() {
               setChunkCount(prepareResult.chunkCount);
               setUploadedChunkCount(coordinator.getUploadedChunkCount());
               setCachedChunkCount(latestPrepareResult?.chunkCount ?? 0);
+              setResetChunkCount(currentResetChunkCount);
               setCancelResult(false);
               setPauseResult(currentPauseResult);
               setResumeResult(currentResumeResult);
@@ -208,6 +212,7 @@ export default function App() {
         <div>chunkCount: {chunkCount}</div>
         <div>uploadedChunkCount: {uploadedChunkCount}</div>
         <div>cachedChunkCount: {cachedChunkCount}</div>
+        <div>resetChunkCount: {resetChunkCount}</div>
         <div>cancelResult: {String(cancelResult)}</div>
         <div>pauseResult: {String(pauseResult)}</div>
         <div>resumeResult: {String(resumeResult)}</div>

@@ -600,6 +600,20 @@ export class FileCoordinator {
     }, []);
   }
 
+  resetUploadProgress(): number {
+    if (!this.prepareResult || this.hasActiveUploadTask()) {
+      return 0;
+    }
+
+    this.chunks.forEach((chunk) => {
+      chunk.status = 'PENDING';
+      chunk.uploadedBytes = 0;
+    });
+    this.setStatus('READY');
+
+    return this.chunks.length;
+  }
+
   /**
    * Cancels the current active upload task when one is running.
    */
@@ -801,6 +815,13 @@ export class FileCoordinator {
       this.uploadAbortController = null;
       this.uploadAbortReason = null;
     }
+  }
+
+  private hasActiveUploadTask(): boolean {
+    return (
+      this.uploadAbortController !== null &&
+      !this.uploadAbortController.signal.aborted
+    );
   }
 
   /**

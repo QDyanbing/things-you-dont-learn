@@ -15,6 +15,7 @@ export default function App() {
   const [restoredChunkCount, setRestoredChunkCount] = useState(0);
   const [pendingChunkIndexes, setPendingChunkIndexes] = useState("");
   const [uploadingChunkIndexes, setUploadingChunkIndexes] = useState("");
+  const [failedChunkIndexes, setFailedChunkIndexes] = useState("");
   const [firstChunkRange, setFirstChunkRange] = useState("");
   const [firstChunkType, setFirstChunkType] = useState("");
   const [firstChunkBlobSize, setFirstChunkBlobSize] = useState(0);
@@ -89,6 +90,7 @@ export default function App() {
               setRestoredChunkCount(0);
               setPendingChunkIndexes("");
               setUploadingChunkIndexes("");
+              setFailedChunkIndexes("");
               setFirstChunkRange("");
               setFirstChunkType("");
               setFirstChunkBlobSize(0);
@@ -124,6 +126,20 @@ export default function App() {
               const preparedFirstChunkIdentity = coordinator.getChunkIdentity(0);
               const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
               const firstChunkUploaded = coordinator.isChunkUploaded(0);
+              const currentFailedChunkIndexes = hasPreparedFirstChunk
+                ? (() => {
+                    const originalStatus = coordinator.getChunkStatus(0);
+
+                    coordinator.setChunkStatus(0, "ERROR");
+                    const failedIndexes = coordinator.getFailedChunkIndexes();
+
+                    if (originalStatus) {
+                      coordinator.setChunkStatus(0, originalStatus);
+                    }
+
+                    return failedIndexes;
+                  })()
+                : [];
               const currentPendingChunkIndexes = coordinator.getPendingChunkIndexes();
               const progress = coordinator.getProgress();
               const firstChunkInfo = coordinator.getChunkInfo(0);
@@ -138,6 +154,7 @@ export default function App() {
               setRestoredChunkCount(currentRestoredChunkCount);
               setPendingChunkIndexes(currentPendingChunkIndexes.join(","));
               setUploadingChunkIndexes(currentUploadingChunkIndexes.join(","));
+              setFailedChunkIndexes(currentFailedChunkIndexes.join(","));
               setFileSize(prepareResult.fileSize);
               setFirstChunkRange(
                 firstChunkInfo
@@ -179,6 +196,7 @@ export default function App() {
         <div>restoredChunkCount: {restoredChunkCount}</div>
         <div>pendingChunkIndexes: {pendingChunkIndexes}</div>
         <div>uploadingChunkIndexes: {uploadingChunkIndexes}</div>
+        <div>failedChunkIndexes: {failedChunkIndexes}</div>
         {firstChunkRange ? <div>firstChunkRange: {firstChunkRange}</div> : null}
         {firstChunkType ? <div>firstChunkType: {firstChunkType}</div> : null}
         <div>firstChunkBlobSize: {firstChunkBlobSize}</div>

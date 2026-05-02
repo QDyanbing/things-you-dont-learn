@@ -137,6 +137,7 @@ new FileCoordinator(file, options)
 | --- | --- | --- | --- |
 | `totalBytes` | 当前文件总字节数 | `number` | - |
 | `uploadedBytes` | 当前已经计入聚合进度的上传字节数 | `number` | - |
+| `remainingBytes` | 当前尚未计入聚合进度的剩余字节数 | `number` | - |
 | `percent` | 当前整体上传百分比，范围为 `0` 到 `100` | `number` | - |
 | `chunkCount` | 当前文件分片总数 | `number` | - |
 | `uploadedChunkCount` | 当前状态已经是 `SUCCESS` 的分片数量 | `number` | - |

@@ -889,7 +889,7 @@ export class FileCoordinator {
    * Returns indexes of prepared chunks matching any of the provided statuses.
    */
   private getChunkIndexesByStatus(
-    statuses: FileCoordinatorChunkStatus[],
+    statuses: readonly FileCoordinatorChunkStatus[],
   ): number[] {
     return this.chunks.reduce<number[]>((chunkIndexes, chunk) => {
       if (statuses.includes(chunk.status)) {

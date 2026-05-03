@@ -29,6 +29,9 @@ function createUploadAbortError(): Error {
   return new DOMException('FileCoordinator upload canceled.', 'AbortError');
 }
 
+/**
+ * Returns whether an unknown thrown value represents an abort error.
+ */
 function isAbortError(error: unknown): boolean {
   return (
     (error instanceof DOMException && error.name === 'AbortError') ||

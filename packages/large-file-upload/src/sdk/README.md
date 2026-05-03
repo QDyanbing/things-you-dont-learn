@@ -99,7 +99,7 @@ new FileCoordinator(file, options)
 
 `getFailedChunkIndexes()` 只观察当前状态为 `ERROR` 的分片；这些分片仍会被 `getPendingChunkIndexes()` 返回，并能在下一次 `upload()` 调用里继续参与调度。
 
-`resetUploadProgress()` 只会在当前没有活跃上传任务时生效；它不会重新切片，也不会清空 `prepare()` 生成的分片元信息，只会把分片状态和本地上传字节进度恢复到初始上传态。
+`resetUploadProgress()` 只会在当前没有活跃上传任务时生效；它不会重新切片，也不会清空 `prepare()` 生成的分片元信息，只会把分片状态和本地上传字节进度恢复到初始上传态。返回值表示实际发生变化的分片数量，原本已经处于初始上传态的分片不会计入。
 
 当前 `getProgress()` 的 `uploadedBytes` 统计口径是：`SUCCESS` 分片按整片大小计入，`UPLOADING` 分片按最近一次 `reportProgress` 回传值计入，`PENDING` 和 `ERROR` 分片默认不计入整体进度。
 
@@ -198,7 +198,7 @@ new FileCoordinator(file, options)
 | `getPendingChunkIndexes()` | 获取当前仍需要继续进入上传流程的分片下标列表；当前会返回状态为 `PENDING` 或 `ERROR` 的分片 | `number[]` |
 | `getUploadingChunkIndexes()` | 获取当前处于 `UPLOADING` 状态的分片下标列表；适合在取消、暂停或调试时观察当前正在执行的分片 | `number[]` |
 | `getFailedChunkIndexes()` | 获取当前上传失败的分片下标列表；当前只会返回状态为 `ERROR` 的分片 | `number[]` |
-| `resetUploadProgress()` | 清空当前已准备分片的上传运行态；会把分片恢复为 `PENDING`，把实例状态恢复为 `READY`，并返回被重置的分片数量 | `number` |
+| `resetUploadProgress()` | 清空当前已准备分片的上传运行态；会把分片恢复为 `PENDING`，把实例状态恢复为 `READY`，并返回实际发生变化的分片数量 | `number` |
 | `cancel()` | 取消当前活跃的上传任务；会触发当前这一轮上传的 `signal.abort()`，成功取消时返回 `true`，没有活跃上传任务时返回 `false` | `boolean` |
 | `pause()` | 暂停当前活跃的上传任务；会触发当前这一轮上传的 `signal.abort()`，成功暂停时返回 `true`，没有活跃上传任务时返回 `false` | `boolean` |
 | `resume()` | 从 `PAUSED` 状态恢复上传；会重新调用内部并发调度并继续上传当前仍为 `PENDING` 或 `ERROR` 的分片，不处于 `PAUSED` 状态时返回 `false` | `Promise<boolean>` |

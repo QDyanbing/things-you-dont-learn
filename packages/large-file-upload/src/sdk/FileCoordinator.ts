@@ -615,8 +615,7 @@ export class FileCoordinator {
     }
 
     this.chunks.forEach((chunk) => {
-      chunk.status = 'PENDING';
-      chunk.uploadedBytes = 0;
+      this.resetChunkUploadState(chunk);
     });
     this.setStatus('READY');
 
@@ -898,6 +897,14 @@ export class FileCoordinator {
 
       return chunkIndexes;
     }, []);
+  }
+
+  /**
+   * Restores one prepared chunk to its initial upload runtime state.
+   */
+  private resetChunkUploadState(chunk: FileCoordinatorChunkRecord) {
+    chunk.status = 'PENDING';
+    chunk.uploadedBytes = 0;
   }
 
   /**

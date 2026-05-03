@@ -284,6 +284,9 @@ export interface FileCoordinatorPrepareResult {
  * Aggregated upload progress snapshot of the current file.
  */
 export interface FileCoordinatorProgress {
+  /**
+   * Total byte size of the current file.
+   */
   totalBytes: number;
   uploadedBytes: number;
   /**

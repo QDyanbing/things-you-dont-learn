@@ -614,12 +614,12 @@ export class FileCoordinator {
       return 0;
     }
 
-    this.chunks.forEach((chunk) => {
-      this.resetChunkUploadState(chunk);
-    });
+    const resetChunkCount = this.chunks.reduce((count, chunk) => {
+      return count + (this.resetChunkUploadState(chunk) ? 1 : 0);
+    }, 0);
     this.setStatus('READY');
 
-    return this.chunks.length;
+    return resetChunkCount;
   }
 
   /**
@@ -902,9 +902,13 @@ export class FileCoordinator {
   /**
    * Restores one prepared chunk to its initial upload runtime state.
    */
-  private resetChunkUploadState(chunk: FileCoordinatorChunkRecord) {
+  private resetChunkUploadState(chunk: FileCoordinatorChunkRecord): boolean {
+    const changed = chunk.status !== 'PENDING' || chunk.uploadedBytes !== 0;
+
     chunk.status = 'PENDING';
     chunk.uploadedBytes = 0;
+
+    return changed;
   }
 
   /**

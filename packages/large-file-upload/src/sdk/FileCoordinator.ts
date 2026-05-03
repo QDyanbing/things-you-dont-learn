@@ -22,6 +22,9 @@ function normalizeConcurrency(concurrency?: number): number {
   return Math.max(1, Math.floor(concurrency ?? DEFAULT_CONCURRENCY));
 }
 
+/**
+ * Creates the normalized abort error used by upload cancellation flows.
+ */
 function createUploadAbortError(): Error {
   return new DOMException('FileCoordinator upload canceled.', 'AbortError');
 }

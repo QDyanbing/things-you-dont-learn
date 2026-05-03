@@ -140,6 +140,9 @@ function createDefaultFileIdentity(file: File): FileCoordinatorFileIdentity {
   return `file_${hashText(identitySource)}`;
 }
 
+/**
+ * Creates the default short identity string for one prepared chunk.
+ */
 function createChunkIdentity(
   fileIdentity: FileCoordinatorFileIdentity,
   index: number,

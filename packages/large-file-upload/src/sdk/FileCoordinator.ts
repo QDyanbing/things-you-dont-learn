@@ -300,7 +300,13 @@ export interface FileCoordinatorProgress {
    * Aggregated upload percent from 0 to 100.
    */
   percent: number;
+  /**
+   * Total prepared chunk count for the current file.
+   */
   chunkCount: number;
+  /**
+   * Prepared chunk count whose runtime status is `SUCCESS`.
+   */
   uploadedChunkCount: number;
 }
 

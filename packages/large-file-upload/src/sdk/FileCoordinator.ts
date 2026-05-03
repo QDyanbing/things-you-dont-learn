@@ -844,6 +844,9 @@ export class FileCoordinator {
     }
   }
 
+  /**
+   * Returns whether an upload task currently owns a non-aborted signal.
+   */
   private hasActiveUploadTask(): boolean {
     return (
       this.uploadAbortController !== null &&

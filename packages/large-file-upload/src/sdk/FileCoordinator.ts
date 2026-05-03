@@ -288,6 +288,9 @@ export interface FileCoordinatorProgress {
    * Total byte size of the current file.
    */
   totalBytes: number;
+  /**
+   * Byte count currently included in the aggregated upload progress.
+   */
   uploadedBytes: number;
   /**
    * Byte count not yet included in the aggregated uploaded progress.

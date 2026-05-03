@@ -589,39 +589,21 @@ export class FileCoordinator {
    * Returns chunk indexes that still need to enter the upload flow.
    */
   getPendingChunkIndexes(): number[] {
-    return this.chunks.reduce<number[]>((pendingChunkIndexes, chunk) => {
-      if (chunk.status === 'PENDING' || chunk.status === 'ERROR') {
-        pendingChunkIndexes.push(chunk.index);
-      }
-
-      return pendingChunkIndexes;
-    }, []);
+    return this.getChunkIndexesByStatus(['PENDING', 'ERROR']);
   }
 
   /**
    * Returns chunk indexes that are currently running inside the upload flow.
    */
   getUploadingChunkIndexes(): number[] {
-    return this.chunks.reduce<number[]>((uploadingChunkIndexes, chunk) => {
-      if (chunk.status === 'UPLOADING') {
-        uploadingChunkIndexes.push(chunk.index);
-      }
-
-      return uploadingChunkIndexes;
-    }, []);
+    return this.getChunkIndexesByStatus(['UPLOADING']);
   }
 
   /**
    * Returns chunk indexes that failed during the latest upload attempts.
    */
   getFailedChunkIndexes(): number[] {
-    return this.chunks.reduce<number[]>((failedChunkIndexes, chunk) => {
-      if (chunk.status === 'ERROR') {
-        failedChunkIndexes.push(chunk.index);
-      }
-
-      return failedChunkIndexes;
-    }, []);
+    return this.getChunkIndexesByStatus(['ERROR']);
   }
 
   /**
@@ -901,6 +883,21 @@ export class FileCoordinator {
     }
 
     return this.chunks[normalizedIndex] ?? null;
+  }
+
+  /**
+   * Returns indexes of prepared chunks matching any of the provided statuses.
+   */
+  private getChunkIndexesByStatus(
+    statuses: FileCoordinatorChunkStatus[],
+  ): number[] {
+    return this.chunks.reduce<number[]>((chunkIndexes, chunk) => {
+      if (statuses.includes(chunk.status)) {
+        chunkIndexes.push(chunk.index);
+      }
+
+      return chunkIndexes;
+    }, []);
   }
 
   /**

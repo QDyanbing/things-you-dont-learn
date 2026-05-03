@@ -2,6 +2,26 @@ import { useState } from "react";
 import { Button, ConfigProvider, Upload } from "antd";
 import { FileCoordinator } from "./sdk/FileCoordinator";
 
+/**
+ * Temporarily marks one chunk as failed so the demo can show the failed-index getter.
+ */
+function readFailedChunkIndexesPreview(
+  coordinator: FileCoordinator,
+  index: number,
+) {
+  const originalStatus = coordinator.getChunkStatus(index);
+
+  if (!originalStatus) {
+    return [];
+  }
+
+  coordinator.setChunkStatus(index, "ERROR");
+  const failedIndexes = coordinator.getFailedChunkIndexes();
+  coordinator.setChunkStatus(index, originalStatus);
+
+  return failedIndexes;
+}
+
 export default function App() {
   const [fileName, setFileName] = useState("");
   const [fileSize, setFileSize] = useState(0);
@@ -128,20 +148,10 @@ export default function App() {
               await uploadTask.catch(() => undefined);
               const currentResumeResult = await coordinator.resume();
               const preparedFirstChunkIdentity = coordinator.getChunkIdentity(0);
-              const currentFailedChunkIndexes = hasPreparedFirstChunk
-                ? (() => {
-                    const originalStatus = coordinator.getChunkStatus(0);
-
-                    coordinator.setChunkStatus(0, "ERROR");
-                    const failedIndexes = coordinator.getFailedChunkIndexes();
-
-                    if (originalStatus) {
-                      coordinator.setChunkStatus(0, originalStatus);
-                    }
-
-                    return failedIndexes;
-                  })()
-                : [];
+              const currentFailedChunkIndexes = readFailedChunkIndexesPreview(
+                coordinator,
+                0,
+              );
               const currentResetChunkCount = coordinator.resetUploadProgress();
               const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
               const firstChunkUploaded = coordinator.isChunkUploaded(0);

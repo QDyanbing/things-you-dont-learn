@@ -296,6 +296,9 @@ export interface FileCoordinatorProgress {
    * Byte count not yet included in the aggregated uploaded progress.
    */
   remainingBytes: number;
+  /**
+   * Aggregated upload percent from 0 to 100.
+   */
   percent: number;
   chunkCount: number;
   uploadedChunkCount: number;

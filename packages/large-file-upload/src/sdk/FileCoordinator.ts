@@ -682,6 +682,21 @@ export class FileCoordinator {
     return resetChunkCount;
   }
 
+  resetFailedChunks(): number {
+    if (!this.prepareResult || this.hasActiveUploadTask()) {
+      return 0;
+    }
+
+    return this.chunks.reduce((resetChunkCount, chunk) => {
+      if (chunk.status !== 'ERROR') {
+        return resetChunkCount;
+      }
+
+      this.resetChunkUploadState(chunk);
+      return resetChunkCount + 1;
+    }, 0);
+  }
+
   /**
    * Cancels the current active upload task when one is running.
    */

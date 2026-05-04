@@ -33,6 +33,7 @@ export default function App() {
   const [firstChunkStatus, setFirstChunkStatus] = useState("");
   const [isFirstChunkUploaded, setIsFirstChunkUploaded] = useState(false);
   const [restoredChunkCount, setRestoredChunkCount] = useState(0);
+  const [uploadedChunkIndexes, setUploadedChunkIndexes] = useState("");
   const [pendingChunkIndexes, setPendingChunkIndexes] = useState("");
   const [uploadingChunkIndexes, setUploadingChunkIndexes] = useState("");
   const [failedChunkIndexes, setFailedChunkIndexes] = useState("");
@@ -110,6 +111,7 @@ export default function App() {
               setFirstChunkStatus("");
               setIsFirstChunkUploaded(false);
               setRestoredChunkCount(0);
+              setUploadedChunkIndexes("");
               setPendingChunkIndexes("");
               setUploadingChunkIndexes("");
               setFailedChunkIndexes("");
@@ -142,6 +144,7 @@ export default function App() {
               const prepared = coordinator.isPrepared();
               const hasPreparedFirstChunk = coordinator.hasChunk(0);
               const currentRestoredChunkCount = coordinator.setUploadedChunks([0]);
+              const currentUploadedChunkIndexes = coordinator.getUploadedChunkIndexes();
               const uploadTask = coordinator.upload();
               const currentUploadingChunkIndexes = coordinator.getUploadingChunkIndexes();
               const currentPauseResult = coordinator.pause();
@@ -167,6 +170,7 @@ export default function App() {
               setFirstChunkStatus(preparedFirstChunkStatus ?? "");
               setIsFirstChunkUploaded(firstChunkUploaded);
               setRestoredChunkCount(currentRestoredChunkCount);
+              setUploadedChunkIndexes(currentUploadedChunkIndexes.join(","));
               setPendingChunkIndexes(currentPendingChunkIndexes.join(","));
               setUploadingChunkIndexes(currentUploadingChunkIndexes.join(","));
               setFailedChunkIndexes(currentFailedChunkIndexes.join(","));
@@ -211,6 +215,7 @@ export default function App() {
         {firstChunkStatus ? <div>firstChunkStatus: {firstChunkStatus}</div> : null}
         <div>isFirstChunkUploaded: {String(isFirstChunkUploaded)}</div>
         <div>restoredChunkCount: {restoredChunkCount}</div>
+        <div>uploadedChunkIndexes: {uploadedChunkIndexes}</div>
         <div>pendingChunkIndexes: {pendingChunkIndexes}</div>
         <div>uploadingChunkIndexes: {uploadingChunkIndexes}</div>
         <div>failedChunkIndexes: {failedChunkIndexes}</div>

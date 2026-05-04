@@ -41,6 +41,8 @@ export default function App() {
   const [firstChunkType, setFirstChunkType] = useState("");
   const [firstChunkBlobSize, setFirstChunkBlobSize] = useState(0);
   const [firstChunkBlobType, setFirstChunkBlobType] = useState("");
+  const [firstChunkProgressPercent, setFirstChunkProgressPercent] = useState(0);
+  const [firstChunkRemainingBytes, setFirstChunkRemainingBytes] = useState(0);
   const [status, setStatus] = useState("");
   const [chunkCount, setChunkCount] = useState(0);
   const [uploadedChunkCount, setUploadedChunkCount] = useState(0);
@@ -119,6 +121,8 @@ export default function App() {
               setFirstChunkType("");
               setFirstChunkBlobSize(0);
               setFirstChunkBlobType("");
+              setFirstChunkProgressPercent(0);
+              setFirstChunkRemainingBytes(0);
               setStatus(coordinator.getStatus());
               setChunkCount(coordinator.getChunkCount());
               setUploadedChunkCount(0);
@@ -162,6 +166,7 @@ export default function App() {
               const progress = coordinator.getProgress();
               const firstChunkInfo = coordinator.getChunkInfo(0);
               const firstChunk = coordinator.getChunk(0);
+              const firstChunkProgress = coordinator.getChunkProgress(0);
 
               setFileIdentity(prepareResult.fileIdentity);
               setIsPrepared(prepared);
@@ -183,6 +188,8 @@ export default function App() {
               setFirstChunkType(firstChunkInfo?.type ?? "");
               setFirstChunkBlobSize(firstChunk?.size ?? 0);
               setFirstChunkBlobType(firstChunk?.type ?? "");
+              setFirstChunkProgressPercent(firstChunkProgress?.percent ?? 0);
+              setFirstChunkRemainingBytes(firstChunkProgress?.remainingBytes ?? 0);
               setStatus(coordinator.getStatus());
               setChunkCount(prepareResult.chunkCount);
               setUploadedChunkCount(coordinator.getUploadedChunkCount());
@@ -223,6 +230,8 @@ export default function App() {
         {firstChunkType ? <div>firstChunkType: {firstChunkType}</div> : null}
         <div>firstChunkBlobSize: {firstChunkBlobSize}</div>
         {firstChunkBlobType ? <div>firstChunkBlobType: {firstChunkBlobType}</div> : null}
+        <div>firstChunkProgressPercent: {firstChunkProgressPercent}</div>
+        <div>firstChunkRemainingBytes: {firstChunkRemainingBytes}</div>
         {status ? <div>status: {status}</div> : null}
         <div>chunkCount: {chunkCount}</div>
         <div>uploadedChunkCount: {uploadedChunkCount}</div>

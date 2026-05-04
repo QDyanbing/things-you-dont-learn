@@ -565,6 +565,9 @@ export class FileCoordinator {
     }, 0);
   }
 
+  /**
+   * Returns chunk indexes that have been marked as uploaded successfully.
+   */
   getUploadedChunkIndexes(): number[] {
     return this.getChunkIndexesByStatus(['SUCCESS']);
   }

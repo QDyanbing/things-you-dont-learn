@@ -565,6 +565,10 @@ export class FileCoordinator {
     }, 0);
   }
 
+  getUploadedChunkIndexes(): number[] {
+    return this.getChunkIndexesByStatus(['SUCCESS']);
+  }
+
   /**
    * Returns the aggregated upload progress snapshot of the current file.
    */

@@ -319,6 +319,15 @@ export interface FileCoordinatorProgress {
   uploadedChunkCount: number;
 }
 
+export interface FileCoordinatorChunkProgress {
+  index: number;
+  status: FileCoordinatorChunkStatus;
+  totalBytes: number;
+  uploadedBytes: number;
+  remainingBytes: number;
+  percent: number;
+}
+
 /**
  * Coordinates one file instance and prepares internal chunk metadata for later upload steps.
  */
@@ -589,6 +598,26 @@ export class FileCoordinator {
       percent: totalBytes > 0 ? (uploadedBytes / totalBytes) * 100 : 0,
       chunkCount: this.chunks.length,
       uploadedChunkCount: this.getUploadedChunkCount(),
+    };
+  }
+
+  getChunkProgress(index: number): FileCoordinatorChunkProgress | null {
+    const chunk = this.findChunk(index);
+
+    if (!chunk) {
+      return null;
+    }
+
+    const uploadedBytes = this.getChunkUploadedBytesForProgress(chunk);
+    const totalBytes = chunk.size;
+
+    return {
+      index: chunk.index,
+      status: chunk.status,
+      totalBytes,
+      uploadedBytes,
+      remainingBytes: Math.max(0, totalBytes - uploadedBytes),
+      percent: totalBytes > 0 ? (uploadedBytes / totalBytes) * 100 : 0,
     };
   }
 

@@ -319,12 +319,33 @@ export interface FileCoordinatorProgress {
   uploadedChunkCount: number;
 }
 
+/**
+ * Upload progress snapshot of one prepared chunk.
+ */
 export interface FileCoordinatorChunkProgress {
+  /**
+   * Zero-based chunk index.
+   */
   index: number;
+  /**
+   * Current runtime status of the chunk.
+   */
   status: FileCoordinatorChunkStatus;
+  /**
+   * Total byte size of the chunk.
+   */
   totalBytes: number;
+  /**
+   * Byte count currently included in this chunk progress.
+   */
   uploadedBytes: number;
+  /**
+   * Byte count not yet included in this chunk progress.
+   */
   remainingBytes: number;
+  /**
+   * Chunk upload percent from 0 to 100.
+   */
   percent: number;
 }
 
@@ -601,6 +622,9 @@ export class FileCoordinator {
     };
   }
 
+  /**
+   * Returns the upload progress snapshot of one prepared chunk.
+   */
   getChunkProgress(index: number): FileCoordinatorChunkProgress | null {
     const chunk = this.findChunk(index);
 

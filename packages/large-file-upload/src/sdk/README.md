@@ -107,6 +107,8 @@ new FileCoordinator(file, options)
 
 当前 `getProgress()` 的 `uploadedBytes` 统计口径是：`SUCCESS` 分片按整片大小计入，`UPLOADING` 分片按最近一次 `reportProgress` 回传值计入，`PENDING` 和 `ERROR` 分片默认不计入整体进度。
 
+`getChunkProgress(index)` 使用同一套字节统计口径，只是把范围限制在单个分片上；无效下标会返回 `null`。
+
 其中 `remainingBytes` 是基于当前本地快照计算出的 `totalBytes - uploadedBytes`，不会额外查询服务端状态。
 
 当前上传过程中如果请求层响应了 `signal` 中断，SDK 会把被取消中的分片恢复回 `PENDING`，这样后续重新调用 `upload()` 时还能继续调度这些分片。

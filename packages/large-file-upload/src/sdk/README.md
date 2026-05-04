@@ -150,6 +150,17 @@ new FileCoordinator(file, options)
 | `chunkCount` | 当前文件分片总数 | `number` | - |
 | `uploadedChunkCount` | 当前状态已经是 `SUCCESS` 的分片数量 | `number` | - |
 
+### FileCoordinatorChunkProgress
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `index` | 当前分片下标 | `number` | - |
+| `status` | 当前分片运行时状态 | `FileCoordinatorChunkStatus` | - |
+| `totalBytes` | 当前分片总字节数 | `number` | - |
+| `uploadedBytes` | 当前分片已经计入进度的上传字节数 | `number` | - |
+| `remainingBytes` | 当前分片尚未计入进度的剩余字节数 | `number` | - |
+| `percent` | 当前分片上传百分比，范围为 `0` 到 `100` | `number` | - |
+
 ### FileCoordinatorStatus
 
 | 属性 | 说明 | 类型 | 默认值 |
@@ -200,6 +211,7 @@ new FileCoordinator(file, options)
 | `getUploadedChunkCount()` | 获取当前已经上传完成的分片数量；当前只统计状态为 `SUCCESS` 的分片 | `number` |
 | `getUploadedChunkIndexes()` | 获取当前已经上传完成的分片下标列表；当前只返回状态为 `SUCCESS` 的分片 | `number[]` |
 | `getProgress()` | 获取当前文件的聚合上传进度快照；会返回总字节数、已计入进度的上传字节数、整体百分比和已完成分片数量 | `FileCoordinatorProgress` |
+| `getChunkProgress(index)` | 按下标获取单个分片的进度快照；分片不存在或尚未 `prepare()` 时返回 `null` | `FileCoordinatorChunkProgress \| null` |
 | `getPendingChunkIndexes()` | 获取当前仍需要继续进入上传流程的分片下标列表；当前会返回状态为 `PENDING` 或 `ERROR` 的分片 | `number[]` |
 | `getUploadingChunkIndexes()` | 获取当前处于 `UPLOADING` 状态的分片下标列表；适合在取消、暂停或调试时观察当前正在执行的分片 | `number[]` |
 | `getFailedChunkIndexes()` | 获取当前上传失败的分片下标列表；当前只会返回状态为 `ERROR` 的分片 | `number[]` |

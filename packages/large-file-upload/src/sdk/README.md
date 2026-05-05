@@ -167,6 +167,15 @@ new FileCoordinator(file, options)
 | `remainingBytes` | 当前分片尚未计入进度的剩余字节数 | `number` | - |
 | `percent` | 当前分片上传百分比，范围为 `0` 到 `100` | `number` | - |
 
+### FileCoordinatorChunkStatusCounts
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `pending` | 当前状态为 `PENDING` 的分片数量 | `number` | - |
+| `uploading` | 当前状态为 `UPLOADING` 的分片数量 | `number` | - |
+| `success` | 当前状态为 `SUCCESS` 的分片数量 | `number` | - |
+| `error` | 当前状态为 `ERROR` 的分片数量 | `number` | - |
+
 ### FileCoordinatorStatus
 
 | 属性 | 说明 | 类型 | 默认值 |
@@ -222,6 +231,7 @@ new FileCoordinator(file, options)
 | `getPendingChunkIndexes()` | 获取当前仍需要继续进入上传流程的分片下标列表；当前会返回状态为 `PENDING` 或 `ERROR` 的分片 | `number[]` |
 | `getUploadingChunkIndexes()` | 获取当前处于 `UPLOADING` 状态的分片下标列表；适合在取消、暂停或调试时观察当前正在执行的分片 | `number[]` |
 | `getFailedChunkIndexes()` | 获取当前上传失败的分片下标列表；当前只会返回状态为 `ERROR` 的分片 | `number[]` |
+| `getChunkStatusCounts()` | 获取当前所有分片按运行时状态聚合后的数量快照 | `FileCoordinatorChunkStatusCounts` |
 | `resetUploadProgress()` | 清空当前已准备分片的上传运行态；会把分片恢复为 `PENDING`，把实例状态恢复为 `READY`，并返回实际发生变化的分片数量 | `number` |
 | `resetFailedChunks()` | 清空当前失败分片的上传运行态；会把 `ERROR` 分片恢复为 `PENDING`，并返回被重置的失败分片数量 | `number` |
 | `cancel()` | 取消当前活跃的上传任务；会触发当前这一轮上传的 `signal.abort()`，成功取消时返回 `true`，没有活跃上传任务时返回 `false` | `boolean` |

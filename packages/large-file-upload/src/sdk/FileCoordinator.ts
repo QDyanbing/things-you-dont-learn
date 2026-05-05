@@ -728,6 +728,10 @@ export class FileCoordinator {
     );
   }
 
+  hasFailedChunks(): boolean {
+    return this.chunks.some((chunk) => chunk.status === 'ERROR');
+  }
+
   /**
    * Clears prepared chunk upload state when no upload task is active.
    */

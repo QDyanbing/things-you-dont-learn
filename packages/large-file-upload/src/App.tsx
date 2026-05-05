@@ -33,6 +33,7 @@ export default function App() {
   const [isFirstChunkUploaded, setIsFirstChunkUploaded] = useState(false);
   const [restoredChunkCount, setRestoredChunkCount] = useState(0);
   const [uploadedChunkIndexes, setUploadedChunkIndexes] = useState("");
+  const [queuedChunkIndexes, setQueuedChunkIndexes] = useState("");
   const [pendingChunkIndexes, setPendingChunkIndexes] = useState("");
   const [uploadingChunkIndexes, setUploadingChunkIndexes] = useState("");
   const [failedChunkIndexes, setFailedChunkIndexes] = useState("");
@@ -114,6 +115,7 @@ export default function App() {
               setIsFirstChunkUploaded(false);
               setRestoredChunkCount(0);
               setUploadedChunkIndexes("");
+              setQueuedChunkIndexes("");
               setPendingChunkIndexes("");
               setUploadingChunkIndexes("");
               setFailedChunkIndexes("");
@@ -164,6 +166,7 @@ export default function App() {
               const currentResetChunkCount = coordinator.resetUploadProgress();
               const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
               const firstChunkUploaded = coordinator.isChunkUploaded(0);
+              const currentQueuedChunkIndexes = coordinator.getQueuedChunkIndexes();
               const currentPendingChunkIndexes = coordinator.getPendingChunkIndexes();
               const progress = coordinator.getProgress();
               const firstChunkInfo = coordinator.getChunkInfo(0);
@@ -178,6 +181,7 @@ export default function App() {
               setIsFirstChunkUploaded(firstChunkUploaded);
               setRestoredChunkCount(currentRestoredChunkCount);
               setUploadedChunkIndexes(currentUploadedChunkIndexes.join(","));
+              setQueuedChunkIndexes(currentQueuedChunkIndexes.join(","));
               setPendingChunkIndexes(currentPendingChunkIndexes.join(","));
               setUploadingChunkIndexes(currentUploadingChunkIndexes.join(","));
               setFailedChunkIndexes(currentFailedChunkIndexes.join(","));
@@ -226,6 +230,7 @@ export default function App() {
         <div>isFirstChunkUploaded: {String(isFirstChunkUploaded)}</div>
         <div>restoredChunkCount: {restoredChunkCount}</div>
         <div>uploadedChunkIndexes: {uploadedChunkIndexes}</div>
+        <div>queuedChunkIndexes: {queuedChunkIndexes}</div>
         <div>pendingChunkIndexes: {pendingChunkIndexes}</div>
         <div>uploadingChunkIndexes: {uploadingChunkIndexes}</div>
         <div>failedChunkIndexes: {failedChunkIndexes}</div>

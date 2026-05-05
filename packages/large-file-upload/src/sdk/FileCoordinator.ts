@@ -349,10 +349,25 @@ export interface FileCoordinatorChunkProgress {
   percent: number;
 }
 
+/**
+ * Chunk count snapshot grouped by runtime status.
+ */
 export interface FileCoordinatorChunkStatusCounts {
+  /**
+   * Count of chunks currently waiting for upload.
+   */
   pending: number;
+  /**
+   * Count of chunks currently running inside the upload flow.
+   */
   uploading: number;
+  /**
+   * Count of chunks uploaded successfully.
+   */
   success: number;
+  /**
+   * Count of chunks that failed during upload.
+   */
   error: number;
 }
 
@@ -680,6 +695,9 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['ERROR']);
   }
 
+  /**
+   * Returns prepared chunk counts grouped by runtime status.
+   */
   getChunkStatusCounts(): FileCoordinatorChunkStatusCounts {
     return this.chunks.reduce<FileCoordinatorChunkStatusCounts>(
       (counts, chunk) => {

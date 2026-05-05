@@ -37,6 +37,7 @@ export default function App() {
   const [pendingChunkIndexes, setPendingChunkIndexes] = useState("");
   const [uploadingChunkIndexes, setUploadingChunkIndexes] = useState("");
   const [failedChunkIndexes, setFailedChunkIndexes] = useState("");
+  const [hasFailedChunks, setHasFailedChunks] = useState(false);
   const [chunkStatusCounts, setChunkStatusCounts] = useState("");
   const [firstChunkRange, setFirstChunkRange] = useState("");
   const [firstChunkType, setFirstChunkType] = useState("");
@@ -120,6 +121,7 @@ export default function App() {
               setPendingChunkIndexes("");
               setUploadingChunkIndexes("");
               setFailedChunkIndexes("");
+              setHasFailedChunks(false);
               setChunkStatusCounts("");
               setFirstChunkRange("");
               setFirstChunkType("");
@@ -164,6 +166,7 @@ export default function App() {
                 coordinator,
                 0,
               );
+              const currentHasFailedChunks = coordinator.hasFailedChunks();
               const currentResetFailedChunkCount = coordinator.resetFailedChunks();
               const currentResetChunkCount = coordinator.resetUploadProgress();
               const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
@@ -188,6 +191,7 @@ export default function App() {
               setPendingChunkIndexes(currentPendingChunkIndexes.join(","));
               setUploadingChunkIndexes(currentUploadingChunkIndexes.join(","));
               setFailedChunkIndexes(currentFailedChunkIndexes.join(","));
+              setHasFailedChunks(currentHasFailedChunks);
               setChunkStatusCounts(
                 [
                   statusCounts.pending,
@@ -245,6 +249,7 @@ export default function App() {
         <div>pendingChunkIndexes: {pendingChunkIndexes}</div>
         <div>uploadingChunkIndexes: {uploadingChunkIndexes}</div>
         <div>failedChunkIndexes: {failedChunkIndexes}</div>
+        <div>hasFailedChunks: {String(hasFailedChunks)}</div>
         <div>chunkStatusCounts: {chunkStatusCounts}</div>
         {firstChunkRange ? <div>firstChunkRange: {firstChunkRange}</div> : null}
         {firstChunkType ? <div>firstChunkType: {firstChunkType}</div> : null}

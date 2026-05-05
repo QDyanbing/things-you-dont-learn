@@ -645,6 +645,10 @@ export class FileCoordinator {
     };
   }
 
+  getQueuedChunkIndexes(): number[] {
+    return this.getChunkIndexesByStatus(['PENDING']);
+  }
+
   /**
    * Returns chunk indexes that still need to enter the upload flow.
    */

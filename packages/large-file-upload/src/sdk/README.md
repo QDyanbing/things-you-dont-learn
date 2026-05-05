@@ -105,6 +105,8 @@ new FileCoordinator(file, options)
 
 `getFailedChunkIndexes()` 只观察当前状态为 `ERROR` 的分片；这些分片仍会被 `getPendingChunkIndexes()` 返回，并能在下一次 `upload()` 调用里继续参与调度。
 
+`getChunkStatusCounts()` 会按当前本地分片状态聚合计数，状态口径和各个 `get*ChunkIndexes()` 方法保持一致。
+
 `resetUploadProgress()` 只会在当前没有活跃上传任务时生效；它不会重新切片，也不会清空 `prepare()` 生成的分片元信息，只会把分片状态和本地上传字节进度恢复到初始上传态。返回值表示实际发生变化的分片数量，原本已经处于初始上传态的分片不会计入。
 
 `resetFailedChunks()` 是更窄的状态整理方法，只会处理当前为 `ERROR` 的分片；它不会主动发起上传，调用方可以在清理失败态后再次调用 `upload()`。

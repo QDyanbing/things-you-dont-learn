@@ -728,6 +728,9 @@ export class FileCoordinator {
     );
   }
 
+  /**
+   * Returns whether any prepared chunk is currently marked as failed.
+   */
   hasFailedChunks(): boolean {
     return this.chunks.some((chunk) => chunk.status === 'ERROR');
   }

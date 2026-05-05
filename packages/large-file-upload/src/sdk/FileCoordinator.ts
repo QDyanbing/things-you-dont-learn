@@ -349,6 +349,13 @@ export interface FileCoordinatorChunkProgress {
   percent: number;
 }
 
+export interface FileCoordinatorChunkStatusCounts {
+  pending: number;
+  uploading: number;
+  success: number;
+  error: number;
+}
+
 /**
  * Coordinates one file instance and prepares internal chunk metadata for later upload steps.
  */
@@ -671,6 +678,36 @@ export class FileCoordinator {
    */
   getFailedChunkIndexes(): number[] {
     return this.getChunkIndexesByStatus(['ERROR']);
+  }
+
+  getChunkStatusCounts(): FileCoordinatorChunkStatusCounts {
+    return this.chunks.reduce<FileCoordinatorChunkStatusCounts>(
+      (counts, chunk) => {
+        if (chunk.status === 'PENDING') {
+          counts.pending += 1;
+        }
+
+        if (chunk.status === 'UPLOADING') {
+          counts.uploading += 1;
+        }
+
+        if (chunk.status === 'SUCCESS') {
+          counts.success += 1;
+        }
+
+        if (chunk.status === 'ERROR') {
+          counts.error += 1;
+        }
+
+        return counts;
+      },
+      {
+        pending: 0,
+        uploading: 0,
+        success: 0,
+        error: 0,
+      },
+    );
   }
 
   /**

@@ -259,8 +259,17 @@ export interface FileCoordinatorUploadChunkParams {
   reportProgress: (loaded: number, total?: number) => void;
 }
 
+/**
+ * Internal prepared chunk record with mutable upload runtime state.
+ */
 interface FileCoordinatorChunkRecord extends FileCoordinatorChunkInfo {
+  /**
+   * Mutable runtime status tracked by the coordinator.
+   */
   status: FileCoordinatorChunkStatus;
+  /**
+   * Latest uploaded byte count reported for this chunk.
+   */
   uploadedBytes: number;
 }
 

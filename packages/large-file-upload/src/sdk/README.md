@@ -72,7 +72,7 @@ new FileCoordinator(file, options)
 | `chunkSize` | 单个分片的字节大小 | `number` | `5 * 1024 * 1024` |
 | `concurrency` | 分片上传时允许同时进行的最大并发数；会在实例内部归一化为大于等于 `1` 的整数 | `number` | `1` |
 | `createFileIdentity` | 自定义文件 id 计算函数；不传时会基于 `name`、`size`、`type`、`lastModified` 等元信息生成短 id | `(file: File) => FileCoordinatorFileIdentity` | 默认内置实现 |
-| `uploadChunk` | 调用方注入的单分片上传函数；SDK 不关心请求库、鉴权和接口结构，会在实例方法 `upload()` 或 `uploadChunk(index)` 内把分片数据交给它 | `FileCoordinatorUploadChunkHandler` | - |
+| `uploadChunk` | 调用方注入的单分片上传函数；SDK 会把分片数据、取消信号和进度上报函数交给它，请求库、鉴权和接口结构由调用方决定 | `FileCoordinatorUploadChunkHandler` | - |
 
 ### FileCoordinatorResolvedOptions
 

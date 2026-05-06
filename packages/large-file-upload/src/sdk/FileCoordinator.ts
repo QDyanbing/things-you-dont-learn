@@ -249,9 +249,21 @@ export interface FileCoordinatorChunkInfo {
  * Input payload passed to the caller-provided single chunk uploader.
  */
 export interface FileCoordinatorUploadChunkParams {
+  /**
+   * Original file bound to the current coordinator.
+   */
   file: File;
+  /**
+   * Stable identity of the current file.
+   */
   fileIdentity: FileCoordinatorFileIdentity;
+  /**
+   * Public metadata of the chunk being uploaded.
+   */
   chunkInfo: FileCoordinatorChunkInfo;
+  /**
+   * Blob slice selected for the current chunk.
+   */
   chunk: Blob;
   /**
    * Abort signal controlled by the coordinator for the current upload task.

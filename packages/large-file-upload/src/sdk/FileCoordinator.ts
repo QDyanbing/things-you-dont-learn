@@ -653,7 +653,7 @@ export class FileCoordinator {
   }
 
   /**
-   * Returns the aggregated upload progress snapshot of the current file.
+   * Returns the current local aggregated upload progress snapshot.
    */
   getProgress(): FileCoordinatorProgress {
     const uploadedBytes = this.chunks.reduce((currentUploadedBytes, chunk) => {
@@ -673,7 +673,7 @@ export class FileCoordinator {
   }
 
   /**
-   * Returns the upload progress snapshot of one prepared chunk.
+   * Returns the current local upload progress snapshot of one prepared chunk.
    */
   getChunkProgress(index: number): FileCoordinatorChunkProgress | null {
     const chunk = this.findChunk(index);

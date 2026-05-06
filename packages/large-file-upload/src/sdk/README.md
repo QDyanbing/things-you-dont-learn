@@ -46,7 +46,7 @@ const shouldShowRetry = coordinator.hasFailedChunks();
 const firstChunkStatus = coordinator.getChunkStatus(0);
 ```
 
-当前更推荐直接调用 `upload()` 让 SDK 自己调度整轮上传；`uploadChunk(index)` 更适合少量特殊场景下的低层控制。
+常规接入更推荐调用 `upload()`，让 SDK 按 `concurrency` 自动调度整轮上传；`uploadChunk(index)` 更适合调试、单片补传或外层已经自行管理调度队列的场景。
 
 如果需要取消当前活跃上传，可以保留 `const uploadTask = coordinator.upload()` 返回的 Promise，再在外层调用 `coordinator.cancel()` 触发这一轮上传的中断。
 

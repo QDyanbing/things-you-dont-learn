@@ -39,7 +39,10 @@ const restoredChunkCount = coordinator.setUploadedChunks([0, 3, 5]);
 await coordinator.upload();
 const progress = coordinator.getProgress();
 const remainingBytes = progress.remainingBytes;
+const statusCounts = coordinator.getChunkStatusCounts();
+const queuedChunkIndexes = coordinator.getQueuedChunkIndexes();
 const failedChunkIndexes = coordinator.getFailedChunkIndexes();
+const shouldShowRetry = coordinator.hasFailedChunks();
 const firstChunkStatus = coordinator.getChunkStatus(0);
 ```
 

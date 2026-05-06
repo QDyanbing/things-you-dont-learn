@@ -185,6 +185,9 @@ export interface FileCoordinatorOptions {
   uploadChunk?: FileCoordinatorUploadChunkHandler;
 }
 
+/**
+ * Runtime configuration after constructor defaults and normalization are applied.
+ */
 export interface FileCoordinatorResolvedOptions {
   /**
    * Effective chunk size normalized by the coordinator constructor.

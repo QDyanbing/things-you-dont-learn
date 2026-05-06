@@ -169,10 +169,14 @@ function normalizeChunkIndex(index: number): number | null {
 export interface FileCoordinatorOptions {
   /**
    * Chunk size in bytes used to split the current file.
+   *
+   * Values below 1 are normalized to 1.
    */
   chunkSize?: number;
   /**
    * Maximum chunk upload count allowed to run at the same time.
+   *
+   * Values below 1 are normalized to 1 after flooring.
    */
   concurrency?: number;
   /**

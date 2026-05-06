@@ -45,7 +45,7 @@ function isAbortError(error: unknown): boolean {
 type FileCoordinatorUploadAbortReason = 'CANCEL' | 'PAUSE';
 
 /**
- * Public status exposed by the current coordinator instance.
+ * Public lifecycle status exposed by the current coordinator instance.
  */
 export type FileCoordinatorStatus =
   | 'INIT'

@@ -852,6 +852,10 @@ export class FileCoordinator {
     return true;
   }
 
+  canResume(): boolean {
+    return this.status === 'PAUSED';
+  }
+
   /**
    * Uploads every pending chunk through the configured concurrent scheduler.
    */

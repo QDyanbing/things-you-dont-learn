@@ -786,6 +786,10 @@ export class FileCoordinator {
     return resetChunkCount;
   }
 
+  canResetUploadProgress(): boolean {
+    return this.prepareResult !== null && !this.hasActiveUploadTask();
+  }
+
   /**
    * Restores failed chunks to the pending state when no upload task is active.
    */

@@ -246,6 +246,7 @@ new FileCoordinator(file, options)
 | `getChunkStatusCounts()` | 获取当前所有分片按运行时状态聚合后的数量快照 | `FileCoordinatorChunkStatusCounts` |
 | `hasFailedChunks()` | 判断当前是否存在上传失败的分片；当前只要存在状态为 `ERROR` 的分片就返回 `true` | `boolean` |
 | `resetUploadProgress()` | 清空当前已准备分片的上传运行态；会把分片恢复为 `PENDING`，把实例状态恢复为 `READY`，并返回实际发生变化的分片数量 | `number` |
+| `canResetUploadProgress()` | 判断当前是否可以安全清空上传运行态；要求已完成 `prepare()` 且没有活跃上传任务 | `boolean` |
 | `resetFailedChunks()` | 清空当前失败分片的上传运行态；会把 `ERROR` 分片恢复为 `PENDING`，并返回被重置的失败分片数量 | `number` |
 | `cancel()` | 取消当前活跃的上传任务；会触发当前这一轮上传的 `signal.abort()`，成功取消时返回 `true`，没有活跃上传任务时返回 `false` | `boolean` |
 | `pause()` | 暂停当前活跃的上传任务；会触发当前这一轮上传的 `signal.abort()`，成功暂停时返回 `true`，没有活跃上传任务时返回 `false` | `boolean` |

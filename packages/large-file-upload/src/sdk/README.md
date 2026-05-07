@@ -52,6 +52,8 @@ const firstChunkStatus = coordinator.getChunkStatus(0);
 
 如果只是临时暂停，可以调用 `coordinator.pause()`；被暂停中的分片会恢复回 `PENDING`，实例状态会进入 `PAUSED`，之后可通过 `resume()` 继续。
 
+`canResume()` 是围绕 `PAUSED` 状态的轻量判断，适合用来控制恢复按钮是否可用；真正恢复时仍应调用 `resume()`。
+
 ## API
 
 ### Constructor

@@ -786,6 +786,9 @@ export class FileCoordinator {
     return resetChunkCount;
   }
 
+  /**
+   * Returns whether prepared upload runtime state can be reset safely.
+   */
   canResetUploadProgress(): boolean {
     return this.prepareResult !== null && !this.hasActiveUploadTask();
   }

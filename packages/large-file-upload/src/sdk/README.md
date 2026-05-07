@@ -236,6 +236,7 @@ new FileCoordinator(file, options)
 | `getChunkProgress(index)` | 按下标获取单个分片的进度快照；分片不存在或尚未 `prepare()` 时返回 `null` | `FileCoordinatorChunkProgress \| null` |
 | `getQueuedChunkIndexes()` | 获取当前处于严格等待上传状态的分片下标列表；当前只返回状态为 `PENDING` 的分片 | `number[]` |
 | `getPendingChunkIndexes()` | 获取当前仍需要继续进入上传流程的分片下标列表；当前会返回状态为 `PENDING` 或 `ERROR` 的分片 | `number[]` |
+| `getNextPendingChunkIndex()` | 获取下一块仍需要进入上传流程的分片下标；没有待调度分片时返回 `null` | `number \| null` |
 | `getUploadingChunkIndexes()` | 获取当前处于 `UPLOADING` 状态的分片下标列表；适合在取消、暂停或调试时观察当前正在执行的分片 | `number[]` |
 | `getFailedChunkIndexes()` | 获取当前上传失败的分片下标列表；当前只会返回状态为 `ERROR` 的分片 | `number[]` |
 | `getChunkStatusCounts()` | 获取当前所有分片按运行时状态聚合后的数量快照 | `FileCoordinatorChunkStatusCounts` |

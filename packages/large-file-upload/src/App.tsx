@@ -54,6 +54,7 @@ export default function App() {
   const [resetChunkCount, setResetChunkCount] = useState(0);
   const [cancelResult, setCancelResult] = useState(false);
   const [pauseResult, setPauseResult] = useState(false);
+  const [canResume, setCanResume] = useState(false);
   const [resumeResult, setResumeResult] = useState(false);
   const [progressUploadedBytes, setProgressUploadedBytes] = useState(0);
   const [progressTotalBytes, setProgressTotalBytes] = useState(0);
@@ -139,6 +140,7 @@ export default function App() {
               setResetChunkCount(0);
               setCancelResult(false);
               setPauseResult(false);
+              setCanResume(false);
               setResumeResult(false);
               setProgressUploadedBytes(0);
               setProgressTotalBytes(0);
@@ -161,6 +163,7 @@ export default function App() {
               const uploadTask = coordinator.upload();
               const currentUploadingChunkIndexes = coordinator.getUploadingChunkIndexes();
               const currentPauseResult = coordinator.pause();
+              const currentCanResume = coordinator.canResume();
               await uploadTask.catch(() => undefined);
               const currentResumeResult = await coordinator.resume();
               const preparedFirstChunkIdentity = coordinator.getChunkIdentity(0);
@@ -227,6 +230,7 @@ export default function App() {
               setResetChunkCount(currentResetChunkCount);
               setCancelResult(false);
               setPauseResult(currentPauseResult);
+              setCanResume(currentCanResume);
               setResumeResult(currentResumeResult);
               setProgressUploadedBytes(progress.uploadedBytes);
               setProgressTotalBytes(progress.totalBytes);
@@ -274,6 +278,7 @@ export default function App() {
         <div>resetChunkCount: {resetChunkCount}</div>
         <div>cancelResult: {String(cancelResult)}</div>
         <div>pauseResult: {String(pauseResult)}</div>
+        <div>canResume: {String(canResume)}</div>
         <div>resumeResult: {String(resumeResult)}</div>
         <div>progressUploadedBytes: {progressUploadedBytes}</div>
         <div>progressTotalBytes: {progressTotalBytes}</div>

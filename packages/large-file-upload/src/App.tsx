@@ -51,6 +51,7 @@ export default function App() {
   const [uploadedChunkCount, setUploadedChunkCount] = useState(0);
   const [cachedChunkCount, setCachedChunkCount] = useState(0);
   const [resetFailedChunkCount, setResetFailedChunkCount] = useState(0);
+  const [canResetUploadProgress, setCanResetUploadProgress] = useState(false);
   const [resetChunkCount, setResetChunkCount] = useState(0);
   const [cancelResult, setCancelResult] = useState(false);
   const [pauseResult, setPauseResult] = useState(false);
@@ -137,6 +138,7 @@ export default function App() {
               setUploadedChunkCount(0);
               setCachedChunkCount(0);
               setResetFailedChunkCount(0);
+              setCanResetUploadProgress(false);
               setResetChunkCount(0);
               setCancelResult(false);
               setPauseResult(false);
@@ -173,6 +175,7 @@ export default function App() {
               );
               const currentHasFailedChunks = coordinator.hasFailedChunks();
               const currentResetFailedChunkCount = coordinator.resetFailedChunks();
+              const currentCanResetUploadProgress = coordinator.canResetUploadProgress();
               const currentResetChunkCount = coordinator.resetUploadProgress();
               const preparedFirstChunkStatus = coordinator.getChunkStatus(0);
               const firstChunkUploaded = coordinator.isChunkUploaded(0);
@@ -227,6 +230,7 @@ export default function App() {
               setUploadedChunkCount(coordinator.getUploadedChunkCount());
               setCachedChunkCount(latestPrepareResult?.chunkCount ?? 0);
               setResetFailedChunkCount(currentResetFailedChunkCount);
+              setCanResetUploadProgress(currentCanResetUploadProgress);
               setResetChunkCount(currentResetChunkCount);
               setCancelResult(false);
               setPauseResult(currentPauseResult);
@@ -275,6 +279,7 @@ export default function App() {
         <div>uploadedChunkCount: {uploadedChunkCount}</div>
         <div>cachedChunkCount: {cachedChunkCount}</div>
         <div>resetFailedChunkCount: {resetFailedChunkCount}</div>
+        <div>canResetUploadProgress: {String(canResetUploadProgress)}</div>
         <div>resetChunkCount: {resetChunkCount}</div>
         <div>cancelResult: {String(cancelResult)}</div>
         <div>pauseResult: {String(pauseResult)}</div>

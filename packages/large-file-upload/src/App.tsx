@@ -35,6 +35,7 @@ export default function App() {
   const [uploadedChunkIndexes, setUploadedChunkIndexes] = useState("");
   const [queuedChunkIndexes, setQueuedChunkIndexes] = useState("");
   const [pendingChunkIndexes, setPendingChunkIndexes] = useState("");
+  const [nextPendingChunkIndex, setNextPendingChunkIndex] = useState("");
   const [uploadingChunkIndexes, setUploadingChunkIndexes] = useState("");
   const [failedChunkIndexes, setFailedChunkIndexes] = useState("");
   const [hasFailedChunks, setHasFailedChunks] = useState(false);
@@ -119,6 +120,7 @@ export default function App() {
               setUploadedChunkIndexes("");
               setQueuedChunkIndexes("");
               setPendingChunkIndexes("");
+              setNextPendingChunkIndex("");
               setUploadingChunkIndexes("");
               setFailedChunkIndexes("");
               setHasFailedChunks(false);
@@ -173,6 +175,7 @@ export default function App() {
               const firstChunkUploaded = coordinator.isChunkUploaded(0);
               const currentQueuedChunkIndexes = coordinator.getQueuedChunkIndexes();
               const currentPendingChunkIndexes = coordinator.getPendingChunkIndexes();
+              const currentNextPendingChunkIndex = coordinator.getNextPendingChunkIndex();
               const progress = coordinator.getProgress();
               const statusCounts = coordinator.getChunkStatusCounts();
               const firstChunkInfo = coordinator.getChunkInfo(0);
@@ -189,6 +192,11 @@ export default function App() {
               setUploadedChunkIndexes(currentUploadedChunkIndexes.join(","));
               setQueuedChunkIndexes(currentQueuedChunkIndexes.join(","));
               setPendingChunkIndexes(currentPendingChunkIndexes.join(","));
+              setNextPendingChunkIndex(
+                currentNextPendingChunkIndex === null
+                  ? ""
+                  : String(currentNextPendingChunkIndex),
+              );
               setUploadingChunkIndexes(currentUploadingChunkIndexes.join(","));
               setFailedChunkIndexes(currentFailedChunkIndexes.join(","));
               setHasFailedChunks(currentHasFailedChunks);
@@ -247,6 +255,7 @@ export default function App() {
         <div>uploadedChunkIndexes: {uploadedChunkIndexes}</div>
         <div>queuedChunkIndexes: {queuedChunkIndexes}</div>
         <div>pendingChunkIndexes: {pendingChunkIndexes}</div>
+        <div>nextPendingChunkIndex: {nextPendingChunkIndex}</div>
         <div>uploadingChunkIndexes: {uploadingChunkIndexes}</div>
         <div>failedChunkIndexes: {failedChunkIndexes}</div>
         <div>hasFailedChunks: {String(hasFailedChunks)}</div>

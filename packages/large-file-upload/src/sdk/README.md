@@ -118,6 +118,8 @@ new FileCoordinator(file, options)
 
 `resetUploadProgress()` 只会在当前没有活跃上传任务时生效；它不会重新切片，也不会清空 `prepare()` 生成的分片元信息，只会把分片状态和本地上传字节进度恢复到初始上传态。返回值只统计实际发生变化的分片，原本已经处于初始上传态的分片不会计入。
 
+`canResetUploadProgress()` 复用 `resetUploadProgress()` 的保护条件，适合在 UI 上提前禁用重置入口。
+
 `resetFailedChunks()` 是更窄的状态整理方法，只会处理当前为 `ERROR` 的分片；它同样不会主动发起上传，调用方可以在清理失败态后再次调用 `upload()`。
 
 `getProgress()` 的 `uploadedBytes` 统计口径是：`SUCCESS` 分片按整片大小计入，`UPLOADING` 分片按最近一次 `reportProgress` 回传值计入，`PENDING` 和 `ERROR` 分片默认不计入整体进度。

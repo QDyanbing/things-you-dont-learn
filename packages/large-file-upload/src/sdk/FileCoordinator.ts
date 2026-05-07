@@ -852,6 +852,9 @@ export class FileCoordinator {
     return true;
   }
 
+  /**
+   * Returns whether the current coordinator can accept a resume request.
+   */
   canResume(): boolean {
     return this.status === 'PAUSED';
   }

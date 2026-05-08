@@ -853,6 +853,9 @@ export class FileCoordinator {
     return true;
   }
 
+  /**
+   * Returns whether the current coordinator can accept a pause request.
+   */
   canPause(): boolean {
     return this.hasActiveUploadTask();
   }

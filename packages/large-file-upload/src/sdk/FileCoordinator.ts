@@ -709,6 +709,10 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['PENDING', 'ERROR']);
   }
 
+  getRemainingChunkCount(): number {
+    return this.getPendingChunkIndexes().length;
+  }
+
   /**
    * Returns the first chunk index that still needs upload scheduling.
    */

@@ -832,6 +832,10 @@ export class FileCoordinator {
     return true;
   }
 
+  canCancel(): boolean {
+    return this.hasActiveUploadTask();
+  }
+
   /**
    * Pauses the current active upload task when one is running.
    */

@@ -35,6 +35,7 @@ export default function App() {
   const [uploadedChunkIndexes, setUploadedChunkIndexes] = useState("");
   const [queuedChunkIndexes, setQueuedChunkIndexes] = useState("");
   const [pendingChunkIndexes, setPendingChunkIndexes] = useState("");
+  const [remainingChunkCount, setRemainingChunkCount] = useState(0);
   const [nextPendingChunkIndex, setNextPendingChunkIndex] = useState("");
   const [uploadingChunkIndexes, setUploadingChunkIndexes] = useState("");
   const [failedChunkIndexes, setFailedChunkIndexes] = useState("");
@@ -122,6 +123,7 @@ export default function App() {
               setUploadedChunkIndexes("");
               setQueuedChunkIndexes("");
               setPendingChunkIndexes("");
+              setRemainingChunkCount(0);
               setNextPendingChunkIndex("");
               setUploadingChunkIndexes("");
               setFailedChunkIndexes("");
@@ -181,6 +183,7 @@ export default function App() {
               const firstChunkUploaded = coordinator.isChunkUploaded(0);
               const currentQueuedChunkIndexes = coordinator.getQueuedChunkIndexes();
               const currentPendingChunkIndexes = coordinator.getPendingChunkIndexes();
+              const currentRemainingChunkCount = coordinator.getRemainingChunkCount();
               const currentNextPendingChunkIndex = coordinator.getNextPendingChunkIndex();
               const progress = coordinator.getProgress();
               const statusCounts = coordinator.getChunkStatusCounts();
@@ -198,6 +201,7 @@ export default function App() {
               setUploadedChunkIndexes(currentUploadedChunkIndexes.join(","));
               setQueuedChunkIndexes(currentQueuedChunkIndexes.join(","));
               setPendingChunkIndexes(currentPendingChunkIndexes.join(","));
+              setRemainingChunkCount(currentRemainingChunkCount);
               setNextPendingChunkIndex(
                 currentNextPendingChunkIndex === null
                   ? ""
@@ -263,6 +267,7 @@ export default function App() {
         <div>uploadedChunkIndexes: {uploadedChunkIndexes}</div>
         <div>queuedChunkIndexes: {queuedChunkIndexes}</div>
         <div>pendingChunkIndexes: {pendingChunkIndexes}</div>
+        <div>remainingChunkCount: {remainingChunkCount}</div>
         <div>nextPendingChunkIndex: {nextPendingChunkIndex}</div>
         <div>uploadingChunkIndexes: {uploadingChunkIndexes}</div>
         <div>failedChunkIndexes: {failedChunkIndexes}</div>

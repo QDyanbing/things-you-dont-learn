@@ -832,6 +832,9 @@ export class FileCoordinator {
     return true;
   }
 
+  /**
+   * Returns whether the current coordinator can accept a cancel request.
+   */
   canCancel(): boolean {
     return this.hasActiveUploadTask();
   }

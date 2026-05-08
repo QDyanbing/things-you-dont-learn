@@ -102,6 +102,8 @@ new FileCoordinator(file, options)
 
 `getPendingChunkIndexes()` 面向“下一轮仍需调度”的视角，会包含 `PENDING` 和 `ERROR`，不会把已经处于 `UPLOADING` 的分片再次返回出来。
 
+`getRemainingChunkCount()` 使用同一套“仍需调度”口径，适合只需要数量而不关心具体下标的 UI。
+
 `getQueuedChunkIndexes()` 面向“严格等待上传”的视角，只返回 `PENDING` 分片；如果调用方需要把失败分片也纳入下一轮调度，应继续使用 `getPendingChunkIndexes()`。
 
 `getNextPendingChunkIndex()` 复用 `getPendingChunkIndexes()` 的调度口径，会从 `PENDING` 和 `ERROR` 分片里返回下标最靠前的一块。

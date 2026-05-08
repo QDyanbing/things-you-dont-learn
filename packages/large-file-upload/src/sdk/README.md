@@ -258,6 +258,7 @@ new FileCoordinator(file, options)
 | `cancel()` | 取消当前活跃的上传任务；会触发当前这一轮上传的 `signal.abort()`，成功取消时返回 `true`，没有活跃上传任务时返回 `false` | `boolean` |
 | `canCancel()` | 判断当前实例是否有可取消的活跃上传任务 | `boolean` |
 | `pause()` | 暂停当前活跃的上传任务；会触发当前这一轮上传的 `signal.abort()`，成功暂停时返回 `true`，没有活跃上传任务时返回 `false` | `boolean` |
+| `canPause()` | 判断当前实例是否有可暂停的活跃上传任务 | `boolean` |
 | `resume()` | 从 `PAUSED` 状态恢复上传；会重新调用内部并发调度并继续上传当前仍为 `PENDING` 或 `ERROR` 的分片，不处于 `PAUSED` 状态时返回 `false` | `Promise<boolean>` |
 | `canResume()` | 判断当前实例是否处于可恢复上传状态；当前等价于状态是否为 `PAUSED` | `boolean` |
 | `upload()` | 让 SDK 按当前 `concurrency` 自动调度所有待上传分片；会复用同一轮并发上传任务，成功后根据是否全部完成把实例状态更新为 `READY` 或 `COMPLETED`，失败时进入 `ERROR` | `Promise<void>` |

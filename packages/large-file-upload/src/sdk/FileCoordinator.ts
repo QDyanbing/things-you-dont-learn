@@ -709,6 +709,9 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['PENDING', 'ERROR']);
   }
 
+  /**
+   * Returns how many chunks still need upload scheduling.
+   */
   getRemainingChunkCount(): number {
     return this.getPendingChunkIndexes().length;
   }

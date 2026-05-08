@@ -54,6 +54,7 @@ export default function App() {
   const [resetFailedChunkCount, setResetFailedChunkCount] = useState(0);
   const [canResetUploadProgress, setCanResetUploadProgress] = useState(false);
   const [resetChunkCount, setResetChunkCount] = useState(0);
+  const [canCancel, setCanCancel] = useState(false);
   const [cancelResult, setCancelResult] = useState(false);
   const [pauseResult, setPauseResult] = useState(false);
   const [canResume, setCanResume] = useState(false);
@@ -142,6 +143,7 @@ export default function App() {
               setResetFailedChunkCount(0);
               setCanResetUploadProgress(false);
               setResetChunkCount(0);
+              setCanCancel(false);
               setCancelResult(false);
               setPauseResult(false);
               setCanResume(false);
@@ -165,6 +167,7 @@ export default function App() {
               const currentRestoredChunkCount = coordinator.setUploadedChunks([0]);
               const currentUploadedChunkIndexes = coordinator.getUploadedChunkIndexes();
               const uploadTask = coordinator.upload();
+              const currentCanCancel = coordinator.canCancel();
               const currentUploadingChunkIndexes = coordinator.getUploadingChunkIndexes();
               const currentPauseResult = coordinator.pause();
               const currentCanResume = coordinator.canResume();
@@ -236,6 +239,7 @@ export default function App() {
               setResetFailedChunkCount(currentResetFailedChunkCount);
               setCanResetUploadProgress(currentCanResetUploadProgress);
               setResetChunkCount(currentResetChunkCount);
+              setCanCancel(currentCanCancel);
               setCancelResult(false);
               setPauseResult(currentPauseResult);
               setCanResume(currentCanResume);
@@ -286,6 +290,7 @@ export default function App() {
         <div>resetFailedChunkCount: {resetFailedChunkCount}</div>
         <div>canResetUploadProgress: {String(canResetUploadProgress)}</div>
         <div>resetChunkCount: {resetChunkCount}</div>
+        <div>canCancel: {String(canCancel)}</div>
         <div>cancelResult: {String(cancelResult)}</div>
         <div>pauseResult: {String(pauseResult)}</div>
         <div>canResume: {String(canResume)}</div>

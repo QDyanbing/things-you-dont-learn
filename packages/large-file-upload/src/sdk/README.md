@@ -254,6 +254,7 @@ new FileCoordinator(file, options)
 | `canResetUploadProgress()` | 判断当前是否可以安全清空上传运行态；要求已完成 `prepare()` 且没有活跃上传任务 | `boolean` |
 | `resetFailedChunks()` | 清空当前失败分片的上传运行态；会把 `ERROR` 分片恢复为 `PENDING`，并返回被重置的失败分片数量 | `number` |
 | `cancel()` | 取消当前活跃的上传任务；会触发当前这一轮上传的 `signal.abort()`，成功取消时返回 `true`，没有活跃上传任务时返回 `false` | `boolean` |
+| `canCancel()` | 判断当前实例是否有可取消的活跃上传任务 | `boolean` |
 | `pause()` | 暂停当前活跃的上传任务；会触发当前这一轮上传的 `signal.abort()`，成功暂停时返回 `true`，没有活跃上传任务时返回 `false` | `boolean` |
 | `resume()` | 从 `PAUSED` 状态恢复上传；会重新调用内部并发调度并继续上传当前仍为 `PENDING` 或 `ERROR` 的分片，不处于 `PAUSED` 状态时返回 `false` | `Promise<boolean>` |
 | `canResume()` | 判断当前实例是否处于可恢复上传状态；当前等价于状态是否为 `PAUSED` | `boolean` |

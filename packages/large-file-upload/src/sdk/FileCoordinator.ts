@@ -853,6 +853,10 @@ export class FileCoordinator {
     return true;
   }
 
+  canPause(): boolean {
+    return this.hasActiveUploadTask();
+  }
+
   /**
    * Resumes upload scheduling after a successful `pause()` call.
    */

@@ -56,6 +56,7 @@ export default function App() {
   const [resetChunkCount, setResetChunkCount] = useState(0);
   const [canCancel, setCanCancel] = useState(false);
   const [cancelResult, setCancelResult] = useState(false);
+  const [canPause, setCanPause] = useState(false);
   const [pauseResult, setPauseResult] = useState(false);
   const [canResume, setCanResume] = useState(false);
   const [resumeResult, setResumeResult] = useState(false);
@@ -145,6 +146,7 @@ export default function App() {
               setResetChunkCount(0);
               setCanCancel(false);
               setCancelResult(false);
+              setCanPause(false);
               setPauseResult(false);
               setCanResume(false);
               setResumeResult(false);
@@ -168,6 +170,7 @@ export default function App() {
               const currentUploadedChunkIndexes = coordinator.getUploadedChunkIndexes();
               const uploadTask = coordinator.upload();
               const currentCanCancel = coordinator.canCancel();
+              const currentCanPause = coordinator.canPause();
               const currentUploadingChunkIndexes = coordinator.getUploadingChunkIndexes();
               const currentPauseResult = coordinator.pause();
               const currentCanResume = coordinator.canResume();
@@ -241,6 +244,7 @@ export default function App() {
               setResetChunkCount(currentResetChunkCount);
               setCanCancel(currentCanCancel);
               setCancelResult(false);
+              setCanPause(currentCanPause);
               setPauseResult(currentPauseResult);
               setCanResume(currentCanResume);
               setResumeResult(currentResumeResult);
@@ -292,6 +296,7 @@ export default function App() {
         <div>resetChunkCount: {resetChunkCount}</div>
         <div>canCancel: {String(canCancel)}</div>
         <div>cancelResult: {String(cancelResult)}</div>
+        <div>canPause: {String(canPause)}</div>
         <div>pauseResult: {String(pauseResult)}</div>
         <div>canResume: {String(canResume)}</div>
         <div>resumeResult: {String(resumeResult)}</div>

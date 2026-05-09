@@ -38,6 +38,7 @@ export default function App() {
   const [remainingChunkCount, setRemainingChunkCount] = useState(0);
   const [nextPendingChunkIndex, setNextPendingChunkIndex] = useState("");
   const [uploadingChunkIndexes, setUploadingChunkIndexes] = useState("");
+  const [uploadingChunkCount, setUploadingChunkCount] = useState(0);
   const [failedChunkIndexes, setFailedChunkIndexes] = useState("");
   const [failedChunkCount, setFailedChunkCount] = useState(0);
   const [hasFailedChunks, setHasFailedChunks] = useState(false);
@@ -129,6 +130,7 @@ export default function App() {
               setRemainingChunkCount(0);
               setNextPendingChunkIndex("");
               setUploadingChunkIndexes("");
+              setUploadingChunkCount(0);
               setFailedChunkIndexes("");
               setFailedChunkCount(0);
               setHasFailedChunks(false);
@@ -174,6 +176,7 @@ export default function App() {
               const currentCanCancel = coordinator.canCancel();
               const currentCanPause = coordinator.canPause();
               const currentUploadingChunkIndexes = coordinator.getUploadingChunkIndexes();
+              const currentUploadingChunkCount = coordinator.getUploadingChunkCount();
               const currentPauseResult = coordinator.pause();
               const currentCanResume = coordinator.canResume();
               await uploadTask.catch(() => undefined);
@@ -217,6 +220,7 @@ export default function App() {
                   : String(currentNextPendingChunkIndex),
               );
               setUploadingChunkIndexes(currentUploadingChunkIndexes.join(","));
+              setUploadingChunkCount(currentUploadingChunkCount);
               setFailedChunkIndexes(currentFailedChunkIndexes.join(","));
               setFailedChunkCount(currentFailedChunkCount);
               setHasFailedChunks(currentHasFailedChunks);
@@ -282,6 +286,7 @@ export default function App() {
         <div>remainingChunkCount: {remainingChunkCount}</div>
         <div>nextPendingChunkIndex: {nextPendingChunkIndex}</div>
         <div>uploadingChunkIndexes: {uploadingChunkIndexes}</div>
+        <div>uploadingChunkCount: {uploadingChunkCount}</div>
         <div>failedChunkIndexes: {failedChunkIndexes}</div>
         <div>failedChunkCount: {failedChunkCount}</div>
         <div>hasFailedChunks: {String(hasFailedChunks)}</div>

@@ -58,6 +58,8 @@ const firstChunkStatus = coordinator.getChunkStatus(0);
 
 `canResume()` 是围绕 `PAUSED` 状态的轻量判断，适合用来控制恢复按钮是否可用；真正恢复时仍应调用 `resume()`。
 
+`canUpload()` 是开始上传前的轻量判断，适合控制上传按钮；真正执行时仍应调用 `upload()`，由 SDK 内部复用或校验当前上传任务。
+
 ## API
 
 ### Constructor

@@ -118,6 +118,8 @@ new FileCoordinator(file, options)
 
 `getFailedChunkIndexes()` 只观察当前状态为 `ERROR` 的分片；这些分片仍会被 `getPendingChunkIndexes()` 返回，并能在下一次 `upload()` 调用里继续参与调度。
 
+`getFailedChunkCount()` 是失败分片列表的数量视角，适合只需要展示失败数量或徽标的场景。
+
 `getChunkStatusCounts()` 会按当前本地分片状态聚合计数，状态口径和各个 `get*ChunkIndexes()` 方法保持一致。
 
 `hasFailedChunks()` 是 `getFailedChunkIndexes().length > 0` 的便捷判断，适合用来控制是否展示失败重试入口。

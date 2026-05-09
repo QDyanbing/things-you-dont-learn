@@ -730,6 +730,10 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['UPLOADING']);
   }
 
+  getUploadingChunkCount(): number {
+    return this.getUploadingChunkIndexes().length;
+  }
+
   /**
    * Returns chunk indexes that failed during the latest upload attempts.
    */

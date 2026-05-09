@@ -901,6 +901,9 @@ export class FileCoordinator {
     return this.status === 'PAUSED';
   }
 
+  /**
+   * Returns whether the current coordinator can start upload scheduling.
+   */
   canUpload(): boolean {
     return (
       this.prepareResult !== null &&

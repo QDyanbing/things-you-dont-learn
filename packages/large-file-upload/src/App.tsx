@@ -62,6 +62,7 @@ export default function App() {
   const [pauseResult, setPauseResult] = useState(false);
   const [canResume, setCanResume] = useState(false);
   const [resumeResult, setResumeResult] = useState(false);
+  const [canUpload, setCanUpload] = useState(false);
   const [progressUploadedBytes, setProgressUploadedBytes] = useState(0);
   const [progressTotalBytes, setProgressTotalBytes] = useState(0);
   const [progressRemainingBytes, setProgressRemainingBytes] = useState(0);
@@ -154,6 +155,7 @@ export default function App() {
               setPauseResult(false);
               setCanResume(false);
               setResumeResult(false);
+              setCanUpload(false);
               setProgressUploadedBytes(0);
               setProgressTotalBytes(0);
               setProgressRemainingBytes(0);
@@ -172,6 +174,7 @@ export default function App() {
               const hasPreparedFirstChunk = coordinator.hasChunk(0);
               const currentRestoredChunkCount = coordinator.setUploadedChunks([0]);
               const currentUploadedChunkIndexes = coordinator.getUploadedChunkIndexes();
+              const currentCanUpload = coordinator.canUpload();
               const uploadTask = coordinator.upload();
               const currentCanCancel = coordinator.canCancel();
               const currentCanPause = coordinator.canPause();
@@ -256,6 +259,7 @@ export default function App() {
               setPauseResult(currentPauseResult);
               setCanResume(currentCanResume);
               setResumeResult(currentResumeResult);
+              setCanUpload(currentCanUpload);
               setProgressUploadedBytes(progress.uploadedBytes);
               setProgressTotalBytes(progress.totalBytes);
               setProgressRemainingBytes(progress.remainingBytes);
@@ -310,6 +314,7 @@ export default function App() {
         <div>pauseResult: {String(pauseResult)}</div>
         <div>canResume: {String(canResume)}</div>
         <div>resumeResult: {String(resumeResult)}</div>
+        <div>canUpload: {String(canUpload)}</div>
         <div>progressUploadedBytes: {progressUploadedBytes}</div>
         <div>progressTotalBytes: {progressTotalBytes}</div>
         <div>progressRemainingBytes: {progressRemainingBytes}</div>

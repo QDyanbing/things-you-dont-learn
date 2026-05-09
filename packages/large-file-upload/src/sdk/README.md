@@ -253,6 +253,7 @@ new FileCoordinator(file, options)
 | `getRemainingChunkCount()` | 获取当前仍需要进入上传流程的分片数量；当前和 `getPendingChunkIndexes().length` 口径一致 | `number` |
 | `getNextPendingChunkIndex()` | 获取下一块仍需要进入上传流程的分片下标；没有待调度分片时返回 `null` | `number \| null` |
 | `getUploadingChunkIndexes()` | 获取当前处于 `UPLOADING` 状态的分片下标列表；适合在取消、暂停或调试时观察当前正在执行的分片 | `number[]` |
+| `getUploadingChunkCount()` | 获取当前处于 `UPLOADING` 状态的分片数量；当前和 `getUploadingChunkIndexes().length` 口径一致 | `number` |
 | `getFailedChunkIndexes()` | 获取当前上传失败的分片下标列表；当前只会返回状态为 `ERROR` 的分片 | `number[]` |
 | `getFailedChunkCount()` | 获取当前上传失败的分片数量；当前和 `getFailedChunkIndexes().length` 口径一致 | `number` |
 | `getChunkStatusCounts()` | 获取当前所有分片按运行时状态聚合后的数量快照 | `FileCoordinatorChunkStatusCounts` |

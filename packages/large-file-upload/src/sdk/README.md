@@ -116,6 +116,8 @@ new FileCoordinator(file, options)
 
 和它相对的是，`getUploadingChunkIndexes()` 只会返回当前已经进入上传执行中的分片，不会包含 `PENDING`、`SUCCESS` 或 `ERROR` 状态的分片。
 
+`getUploadingChunkCount()` 是上传中分片列表的数量视角，适合展示当前并发占用情况。
+
 `getFailedChunkIndexes()` 只观察当前状态为 `ERROR` 的分片；这些分片仍会被 `getPendingChunkIndexes()` 返回，并能在下一次 `upload()` 调用里继续参与调度。
 
 `getFailedChunkCount()` 是失败分片列表的数量视角，适合只需要展示失败数量或徽标的场景。

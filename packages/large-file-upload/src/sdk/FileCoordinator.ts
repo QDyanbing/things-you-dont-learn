@@ -737,6 +737,10 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['ERROR']);
   }
 
+  getFailedChunkCount(): number {
+    return this.getFailedChunkIndexes().length;
+  }
+
   /**
    * Returns prepared chunk counts grouped by runtime status.
    */

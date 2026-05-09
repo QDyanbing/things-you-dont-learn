@@ -901,6 +901,14 @@ export class FileCoordinator {
     return this.status === 'PAUSED';
   }
 
+  canUpload(): boolean {
+    return (
+      this.prepareResult !== null &&
+      !this.hasActiveUploadTask() &&
+      this.getRemainingChunkCount() > 0
+    );
+  }
+
   /**
    * Uploads every pending chunk through the configured concurrent scheduler.
    */

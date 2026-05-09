@@ -730,6 +730,9 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['UPLOADING']);
   }
 
+  /**
+   * Returns how many chunks are currently running inside the upload flow.
+   */
   getUploadingChunkCount(): number {
     return this.getUploadingChunkIndexes().length;
   }

@@ -249,6 +249,7 @@ new FileCoordinator(file, options)
 | `setUploadedChunks(indexes)` | 批量把一组分片下标标记为已上传成功；适合在断点续传时恢复服务端已经确认完成的分片；无效下标会被忽略，返回成功写入的分片数量 | `number` |
 | `isChunkUploaded(index)` | 判断单个分片是否已经上传完成；当前只有分片状态为 `SUCCESS` 时才会返回 `true` | `boolean` |
 | `getUploadedChunkCount()` | 获取当前已经上传完成的分片数量；当前只统计状态为 `SUCCESS` 的分片 | `number` |
+| `getCompletionRatio()` | 获取当前已成功分片数量占总分片数量的比例；未准备分片时返回 `0` | `number` |
 | `getUploadedChunkIndexes()` | 获取当前已经上传完成的分片下标列表；当前只返回状态为 `SUCCESS` 的分片 | `number[]` |
 | `getProgress()` | 获取当前文件的聚合上传进度快照；会返回总字节数、已计入进度的上传字节数、整体百分比和已完成分片数量 | `FileCoordinatorProgress` |
 | `getChunkProgress(index)` | 按下标获取单个分片的进度快照；分片不存在或尚未 `prepare()` 时返回 `null` | `FileCoordinatorChunkProgress \| null` |

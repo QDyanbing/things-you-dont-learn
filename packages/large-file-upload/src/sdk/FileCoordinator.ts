@@ -664,11 +664,18 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['SUCCESS']);
   }
 
-  /** Returns the last chunk index that has been uploaded successfully. */
+  /**
+   * Returns the last chunk index that has been uploaded successfully.
+   *
+   * The returned value is based on the current `SUCCESS` chunk order and is
+   * `null` when no prepared chunk has reached `SUCCESS`.
+   */
   getLastUploadedChunkIndex(): number | null {
     const uploadedChunkIndexes = this.getUploadedChunkIndexes();
 
-    return uploadedChunkIndexes.at(-1) ?? null;
+    return uploadedChunkIndexes.length > 0
+      ? uploadedChunkIndexes[uploadedChunkIndexes.length - 1]
+      : null;
   }
 
   /**

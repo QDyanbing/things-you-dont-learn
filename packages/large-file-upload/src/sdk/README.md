@@ -36,6 +36,7 @@ const coordinator = new FileCoordinator(file, {
 });
 const prepareResult = await coordinator.prepare();
 const restoredChunkCount = coordinator.setUploadedChunks([0, 3, 5]);
+const completionRatio = coordinator.getCompletionRatio();
 await coordinator.upload();
 const progress = coordinator.getProgress();
 const remainingBytes = progress.remainingBytes;
@@ -115,6 +116,8 @@ new FileCoordinator(file, options)
 `getNextPendingChunkIndex()` 复用 `getPendingChunkIndexes()` 的调度口径，会从 `PENDING` 和 `ERROR` 分片里返回下标最靠前的一块。
 
 `getUploadedChunkIndexes()` 和 `getUploadedChunkCount()` 使用同一套成功口径，只有当前状态为 `SUCCESS` 的分片会被计入。
+
+`getCompletionRatio()` 也是基于 `SUCCESS` 分片数量计算，返回值范围是 `0` 到 `1`；它适合展示分片完成度，字节级百分比仍应使用 `getProgress().percent`。
 
 和它相对的是，`getUploadingChunkIndexes()` 只会返回当前已经进入上传执行中的分片，不会包含 `PENDING`、`SUCCESS` 或 `ERROR` 状态的分片。
 

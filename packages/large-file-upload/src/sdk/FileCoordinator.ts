@@ -664,6 +664,13 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['SUCCESS']);
   }
 
+  /** Returns the last chunk index that has been uploaded successfully. */
+  getLastUploadedChunkIndex(): number | null {
+    const uploadedChunkIndexes = this.getUploadedChunkIndexes();
+
+    return uploadedChunkIndexes.at(-1) ?? null;
+  }
+
   /**
    * Returns the current local aggregated upload progress snapshot.
    */

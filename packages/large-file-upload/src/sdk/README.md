@@ -257,6 +257,7 @@ new FileCoordinator(file, options)
 | `getProgress()` | 获取当前文件的聚合上传进度快照；会返回总字节数、已计入进度的上传字节数、整体百分比和已完成分片数量 | `FileCoordinatorProgress` |
 | `getChunkProgress(index)` | 按下标获取单个分片的进度快照；分片不存在或尚未 `prepare()` 时返回 `null` | `FileCoordinatorChunkProgress \| null` |
 | `getQueuedChunkIndexes()` | 获取当前处于严格等待上传状态的分片下标列表；当前只返回状态为 `PENDING` 的分片 | `number[]` |
+| `getFirstQueuedChunkIndex()` | 获取第一块严格等待上传的分片下标；没有 `PENDING` 分片时返回 `null` | `number \| null` |
 | `getPendingChunkIndexes()` | 获取当前仍需要继续进入上传流程的分片下标列表；当前会返回状态为 `PENDING` 或 `ERROR` 的分片 | `number[]` |
 | `getRemainingChunkCount()` | 获取当前仍需要进入上传流程的分片数量；当前和 `getPendingChunkIndexes().length` 口径一致 | `number` |
 | `getNextPendingChunkIndex()` | 获取下一块仍需要进入上传流程的分片下标；没有待调度分片时返回 `null` | `number \| null` |

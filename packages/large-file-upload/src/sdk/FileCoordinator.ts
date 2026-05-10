@@ -714,6 +714,11 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['PENDING']);
   }
 
+  /** Returns the first chunk index that is strictly waiting for upload. */
+  getFirstQueuedChunkIndex(): number | null {
+    return this.getQueuedChunkIndexes()[0] ?? null;
+  }
+
   /**
    * Returns chunk indexes that still need to enter the upload flow.
    */

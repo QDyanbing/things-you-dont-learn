@@ -52,6 +52,7 @@ export default function App() {
   const [status, setStatus] = useState("");
   const [chunkCount, setChunkCount] = useState(0);
   const [uploadedChunkCount, setUploadedChunkCount] = useState(0);
+  const [completionRatio, setCompletionRatio] = useState(0);
   const [cachedChunkCount, setCachedChunkCount] = useState(0);
   const [resetFailedChunkCount, setResetFailedChunkCount] = useState(0);
   const [canResetUploadProgress, setCanResetUploadProgress] = useState(false);
@@ -145,6 +146,7 @@ export default function App() {
               setStatus(coordinator.getStatus());
               setChunkCount(coordinator.getChunkCount());
               setUploadedChunkCount(0);
+              setCompletionRatio(0);
               setCachedChunkCount(0);
               setResetFailedChunkCount(0);
               setCanResetUploadProgress(false);
@@ -174,6 +176,7 @@ export default function App() {
               const hasPreparedFirstChunk = coordinator.hasChunk(0);
               const currentRestoredChunkCount = coordinator.setUploadedChunks([0]);
               const currentUploadedChunkIndexes = coordinator.getUploadedChunkIndexes();
+              const currentCompletionRatio = coordinator.getCompletionRatio();
               const currentCanUpload = coordinator.canUpload();
               const uploadTask = coordinator.upload();
               const currentCanCancel = coordinator.canCancel();
@@ -249,6 +252,7 @@ export default function App() {
               setStatus(coordinator.getStatus());
               setChunkCount(prepareResult.chunkCount);
               setUploadedChunkCount(coordinator.getUploadedChunkCount());
+              setCompletionRatio(currentCompletionRatio);
               setCachedChunkCount(latestPrepareResult?.chunkCount ?? 0);
               setResetFailedChunkCount(currentResetFailedChunkCount);
               setCanResetUploadProgress(currentCanResetUploadProgress);
@@ -304,6 +308,7 @@ export default function App() {
         {status ? <div>status: {status}</div> : null}
         <div>chunkCount: {chunkCount}</div>
         <div>uploadedChunkCount: {uploadedChunkCount}</div>
+        <div>completionRatio: {completionRatio}</div>
         <div>cachedChunkCount: {cachedChunkCount}</div>
         <div>resetFailedChunkCount: {resetFailedChunkCount}</div>
         <div>canResetUploadProgress: {String(canResetUploadProgress)}</div>

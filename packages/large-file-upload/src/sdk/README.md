@@ -42,6 +42,7 @@ const progress = coordinator.getProgress();
 const remainingBytes = progress.remainingBytes;
 const statusCounts = coordinator.getChunkStatusCounts();
 const queuedChunkIndexes = coordinator.getQueuedChunkIndexes();
+const firstQueuedChunkIndex = coordinator.getFirstQueuedChunkIndex();
 const failedChunkIndexes = coordinator.getFailedChunkIndexes();
 const shouldShowRetry = coordinator.hasFailedChunks();
 const firstChunkStatus = coordinator.getChunkStatus(0);
@@ -112,6 +113,8 @@ new FileCoordinator(file, options)
 `getRemainingChunkCount()` 使用同一套“仍需调度”口径，适合只需要数量而不关心具体下标的 UI。
 
 `getQueuedChunkIndexes()` 面向“严格等待上传”的视角，只返回 `PENDING` 分片；如果调用方需要把失败分片也纳入下一轮调度，应继续使用 `getPendingChunkIndexes()`。
+
+`getFirstQueuedChunkIndex()` 复用严格等待上传口径，只会从 `PENDING` 分片里返回下标最靠前的一块；没有排队分片时返回 `null`。
 
 `getNextPendingChunkIndex()` 复用 `getPendingChunkIndexes()` 的调度口径，会从 `PENDING` 和 `ERROR` 分片里返回下标最靠前的一块。
 

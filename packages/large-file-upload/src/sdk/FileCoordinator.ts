@@ -645,6 +645,13 @@ export class FileCoordinator {
     }, 0);
   }
 
+  /** Returns the successful chunk ratio from 0 to 1. */
+  getCompletionRatio(): number {
+    const chunkCount = this.getChunkCount();
+
+    return chunkCount > 0 ? this.getUploadedChunkCount() / chunkCount : 0;
+  }
+
   /**
    * Returns chunk indexes that have been marked as uploaded successfully.
    */

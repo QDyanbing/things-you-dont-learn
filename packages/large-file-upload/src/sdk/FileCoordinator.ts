@@ -645,7 +645,12 @@ export class FileCoordinator {
     }, 0);
   }
 
-  /** Returns the successful chunk ratio from 0 to 1. */
+  /**
+   * Returns the ratio of successfully uploaded chunks to all prepared chunks.
+   *
+   * This is a chunk-count ratio from `0` to `1`; use `getProgress()` when the
+   * caller needs byte-level progress.
+   */
   getCompletionRatio(): number {
     const chunkCount = this.getChunkCount();
 

@@ -296,5 +296,6 @@ new FileCoordinator(file, options)
 | `uploadChunk(index)` | 上传指定下标的单个分片；要求先完成 `prepare()` 并且在 `options` 里传入 `uploadChunk` 处理器；调用时分片状态会进入 `UPLOADING`，成功后改为 `SUCCESS`，失败后改为 `ERROR`；当前文件全部分片上传完成后实例状态会进入 `COMPLETED` | `Promise<void>` |
 | `getChunkIdentity(index)` | 按下标获取单个分片的唯一标识；`index` 需要是从 `0` 开始的非负整数；在分片不存在或尚未 `prepare()` 时返回 `null` | `FileCoordinatorChunkIdentity \| null` |
 | `getChunkInfo(index)` | 按下标获取单个分片的元信息；返回结果里会带上当前分片的 MIME type；`index` 需要是从 `0` 开始的非负整数；在分片不存在或尚未 `prepare()` 时返回 `null` | `FileCoordinatorChunkInfo \| null` |
+| `getChunkByteRange(index)` | 按下标获取单个分片的字节范围；只返回 `start`、`end` 和 `size`，分片不存在或尚未 `prepare()` 时返回 `null` | `FileCoordinatorChunkByteRange \| null` |
 | `getChunk(index)` | 按下标获取单个分片的 `Blob`；返回的 `Blob` 会继承原文件类型；`index` 需要是从 `0` 开始的非负整数；在分片不存在或尚未 `prepare()` 时返回 `null` | `Blob \| null` |
 | `getPrepareResult()` | 获取最近一次 prepare 的结果快照；在调用 `prepare()` 前返回 `null` | `FileCoordinatorPrepareResult \| null` |

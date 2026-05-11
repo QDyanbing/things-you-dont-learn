@@ -781,6 +781,11 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['ERROR']);
   }
 
+  /** Returns the first chunk index that is currently marked as failed. */
+  getFirstFailedChunkIndex(): number | null {
+    return this.getFailedChunkIndexes()[0] ?? null;
+  }
+
   /**
    * Returns how many chunks are currently marked as failed.
    */

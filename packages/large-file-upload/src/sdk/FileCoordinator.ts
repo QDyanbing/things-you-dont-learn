@@ -245,6 +245,12 @@ export interface FileCoordinatorChunkInfo {
   size: number;
 }
 
+export interface FileCoordinatorChunkByteRange {
+  start: number;
+  end: number;
+  size: number;
+}
+
 /**
  * Input payload passed to the caller-provided single chunk uploader.
  */
@@ -1065,6 +1071,21 @@ export class FileCoordinator {
       index: chunk.index,
       chunkIdentity: chunk.chunkIdentity,
       type: chunk.type,
+      start: chunk.start,
+      end: chunk.end,
+      size: chunk.size,
+    };
+  }
+
+  /** Returns the byte range of one prepared chunk by index. */
+  getChunkByteRange(index: number): FileCoordinatorChunkByteRange | null {
+    const chunk = this.findChunk(index);
+
+    if (!chunk) {
+      return null;
+    }
+
+    return {
       start: chunk.start,
       end: chunk.end,
       size: chunk.size,

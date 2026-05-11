@@ -48,6 +48,7 @@ export default function App() {
   const [hasFailedChunks, setHasFailedChunks] = useState(false);
   const [chunkStatusCounts, setChunkStatusCounts] = useState("");
   const [firstChunkRange, setFirstChunkRange] = useState("");
+  const [firstChunkByteRange, setFirstChunkByteRange] = useState("");
   const [firstChunkType, setFirstChunkType] = useState("");
   const [firstChunkBlobSize, setFirstChunkBlobSize] = useState(0);
   const [firstChunkBlobType, setFirstChunkBlobType] = useState("");
@@ -146,6 +147,7 @@ export default function App() {
               setHasFailedChunks(false);
               setChunkStatusCounts("");
               setFirstChunkRange("");
+              setFirstChunkByteRange("");
               setFirstChunkType("");
               setFirstChunkBlobSize(0);
               setFirstChunkBlobType("");
@@ -218,6 +220,7 @@ export default function App() {
               const progress = coordinator.getProgress();
               const statusCounts = coordinator.getChunkStatusCounts();
               const firstChunkInfo = coordinator.getChunkInfo(0);
+              const firstChunkByteRangeSnapshot = coordinator.getChunkByteRange(0);
               const firstChunk = coordinator.getChunk(0);
               const firstChunkProgress = coordinator.getChunkProgress(0);
 
@@ -270,6 +273,15 @@ export default function App() {
               setFirstChunkRange(
                 firstChunkInfo
                   ? `${firstChunkInfo.start}-${firstChunkInfo.end}`
+                  : "",
+              );
+              setFirstChunkByteRange(
+                firstChunkByteRangeSnapshot
+                  ? [
+                      firstChunkByteRangeSnapshot.start,
+                      firstChunkByteRangeSnapshot.end,
+                      firstChunkByteRangeSnapshot.size,
+                    ].join("/")
                   : "",
               );
               setFirstChunkType(firstChunkInfo?.type ?? "");
@@ -332,6 +344,7 @@ export default function App() {
         <div>hasFailedChunks: {String(hasFailedChunks)}</div>
         <div>chunkStatusCounts: {chunkStatusCounts}</div>
         {firstChunkRange ? <div>firstChunkRange: {firstChunkRange}</div> : null}
+        {firstChunkByteRange ? <div>firstChunkByteRange: {firstChunkByteRange}</div> : null}
         {firstChunkType ? <div>firstChunkType: {firstChunkType}</div> : null}
         <div>firstChunkBlobSize: {firstChunkBlobSize}</div>
         {firstChunkBlobType ? <div>firstChunkBlobType: {firstChunkBlobType}</div> : null}

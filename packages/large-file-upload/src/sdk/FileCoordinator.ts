@@ -245,9 +245,21 @@ export interface FileCoordinatorChunkInfo {
   size: number;
 }
 
+/**
+ * Lightweight byte range of one prepared chunk.
+ */
 export interface FileCoordinatorChunkByteRange {
+  /**
+   * Inclusive start byte offset of the chunk.
+   */
   start: number;
+  /**
+   * Exclusive end byte offset of the chunk.
+   */
   end: number;
+  /**
+   * Byte length of the chunk.
+   */
   size: number;
 }
 
@@ -1077,7 +1089,12 @@ export class FileCoordinator {
     };
   }
 
-  /** Returns the byte range of one prepared chunk by index. */
+  /**
+   * Returns the byte range of one prepared chunk by index.
+   *
+   * Use this when the caller needs offsets without chunk identity, MIME type,
+   * or a `Blob` allocation.
+   */
   getChunkByteRange(index: number): FileCoordinatorChunkByteRange | null {
     const chunk = this.findChunk(index);
 

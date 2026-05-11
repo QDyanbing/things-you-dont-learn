@@ -728,7 +728,12 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['PENDING']);
   }
 
-  /** Returns whether any chunk is strictly waiting for upload. */
+  /**
+   * Returns whether any chunk is strictly waiting for upload.
+   *
+   * This checks only `PENDING` chunks. Retryable `ERROR` chunks are covered by
+   * the pending scheduling helpers instead.
+   */
   hasQueuedChunks(): boolean {
     return this.chunks.some((chunk) => chunk.status === 'PENDING');
   }

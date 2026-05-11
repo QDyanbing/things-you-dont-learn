@@ -49,6 +49,7 @@ const failedChunkIndexes = coordinator.getFailedChunkIndexes();
 const firstFailedChunkIndex = coordinator.getFirstFailedChunkIndex();
 const shouldShowRetry = coordinator.hasFailedChunks();
 const firstChunkStatus = coordinator.getChunkStatus(0);
+const firstChunkByteRange = coordinator.getChunkByteRange(0);
 ```
 
 常规接入更推荐调用 `upload()`，让 SDK 按 `concurrency` 自动调度整轮上传；`uploadChunk(index)` 更适合调试、单片补传或外层已经自行管理调度队列的场景。
@@ -153,6 +154,8 @@ new FileCoordinator(file, options)
 
 `getChunkProgress(index)` 使用同一套字节统计口径，只是把范围限制在单个分片上；无效下标会返回 `null`。
 
+`getChunkByteRange(index)` 只返回分片的起止字节和大小，适合只需要定位服务端分片范围、不需要读取分片 `Blob` 的场景。
+
 `remainingBytes` 是基于当前本地快照派生出的 `totalBytes - uploadedBytes`，不会额外查询服务端状态。
 
 当前上传过程中如果请求层响应了 `signal` 中断，SDK 会把被取消中的分片恢复回 `PENDING`，这样后续重新调用 `upload()` 时还能继续调度这些分片。
@@ -164,6 +167,14 @@ new FileCoordinator(file, options)
 | `index` | 当前分片的下标，从 `0` 开始 | `number` | - |
 | `chunkIdentity` | 当前分片的唯一标识 | `FileCoordinatorChunkIdentity` | - |
 | `type` | 当前分片继承的文件 MIME type | `string` | - |
+| `start` | 当前分片的起始字节位置，包含当前值 | `number` | - |
+| `end` | 当前分片的结束字节位置，不包含当前值 | `number` | - |
+| `size` | 当前分片的字节大小 | `number` | - |
+
+### FileCoordinatorChunkByteRange
+
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
 | `start` | 当前分片的起始字节位置，包含当前值 | `number` | - |
 | `end` | 当前分片的结束字节位置，不包含当前值 | `number` | - |
 | `size` | 当前分片的字节大小 | `number` | - |

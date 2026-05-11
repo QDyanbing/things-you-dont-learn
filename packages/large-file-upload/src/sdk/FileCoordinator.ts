@@ -728,6 +728,11 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['PENDING']);
   }
 
+  /** Returns whether any chunk is strictly waiting for upload. */
+  hasQueuedChunks(): boolean {
+    return this.chunks.some((chunk) => chunk.status === 'PENDING');
+  }
+
   /**
    * Returns the first chunk index that is strictly waiting for upload.
    *

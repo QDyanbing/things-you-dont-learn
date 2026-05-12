@@ -805,7 +805,12 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['UPLOADING']);
   }
 
-  /** Returns whether any chunk is currently running inside the upload flow. */
+  /**
+   * Returns whether any chunk is currently running inside the upload flow.
+   *
+   * This checks only chunks currently marked as `UPLOADING`; it does not infer
+   * upload activity from the coordinator status alone.
+   */
   hasUploadingChunks(): boolean {
     return this.chunks.some((chunk) => chunk.status === 'UPLOADING');
   }

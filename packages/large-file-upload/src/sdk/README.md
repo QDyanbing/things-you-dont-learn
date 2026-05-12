@@ -46,6 +46,7 @@ const lastUploadedChunkIndex = coordinator.getLastUploadedChunkIndex();
 const queuedChunkIndexes = coordinator.getQueuedChunkIndexes();
 const hasQueuedChunks = coordinator.hasQueuedChunks();
 const firstQueuedChunkIndex = coordinator.getFirstQueuedChunkIndex();
+const lastQueuedChunkIndex = coordinator.getLastQueuedChunkIndex();
 const hasUploadingChunks = coordinator.hasUploadingChunks();
 const failedChunkIndexes = coordinator.getFailedChunkIndexes();
 const firstFailedChunkIndex = coordinator.getFirstFailedChunkIndex();
@@ -123,6 +124,8 @@ new FileCoordinator(file, options)
 `hasQueuedChunks()` 是严格等待上传列表的布尔视角，不代表当前一定可以调用 `upload()`；上传按钮是否可用仍建议使用 `canUpload()`。
 
 `getFirstQueuedChunkIndex()` 复用严格等待上传口径，只会从 `PENDING` 分片里返回下标最靠前的一块；没有排队分片时返回 `null`。
+
+`getLastQueuedChunkIndex()` 同样复用严格等待上传口径，只会从 `PENDING` 分片里返回下标最后的一块；它不会把 `ERROR` 分片当作排队分片。
 
 `getNextPendingChunkIndex()` 复用 `getPendingChunkIndexes()` 的调度口径，会从 `PENDING` 和 `ERROR` 分片里返回下标最靠前的一块。
 

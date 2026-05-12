@@ -38,6 +38,7 @@ export default function App() {
   const [queuedChunkIndexes, setQueuedChunkIndexes] = useState("");
   const [hasQueuedChunks, setHasQueuedChunks] = useState(false);
   const [firstQueuedChunkIndex, setFirstQueuedChunkIndex] = useState("");
+  const [lastQueuedChunkIndex, setLastQueuedChunkIndex] = useState("");
   const [pendingChunkIndexes, setPendingChunkIndexes] = useState("");
   const [remainingChunkCount, setRemainingChunkCount] = useState(0);
   const [nextPendingChunkIndex, setNextPendingChunkIndex] = useState("");
@@ -139,6 +140,7 @@ export default function App() {
               setQueuedChunkIndexes("");
               setHasQueuedChunks(false);
               setFirstQueuedChunkIndex("");
+              setLastQueuedChunkIndex("");
               setPendingChunkIndexes("");
               setRemainingChunkCount(0);
               setNextPendingChunkIndex("");
@@ -220,6 +222,7 @@ export default function App() {
               const currentQueuedChunkIndexes = coordinator.getQueuedChunkIndexes();
               const currentHasQueuedChunks = coordinator.hasQueuedChunks();
               const currentFirstQueuedChunkIndex = coordinator.getFirstQueuedChunkIndex();
+              const currentLastQueuedChunkIndex = coordinator.getLastQueuedChunkIndex();
               const currentPendingChunkIndexes = coordinator.getPendingChunkIndexes();
               const currentRemainingChunkCount = coordinator.getRemainingChunkCount();
               const currentNextPendingChunkIndex = coordinator.getNextPendingChunkIndex();
@@ -254,6 +257,11 @@ export default function App() {
                 currentFirstQueuedChunkIndex === null
                   ? ""
                   : String(currentFirstQueuedChunkIndex),
+              );
+              setLastQueuedChunkIndex(
+                currentLastQueuedChunkIndex === null
+                  ? ""
+                  : String(currentLastQueuedChunkIndex),
               );
               setPendingChunkIndexes(currentPendingChunkIndexes.join(","));
               setRemainingChunkCount(currentRemainingChunkCount);
@@ -346,6 +354,7 @@ export default function App() {
         <div>queuedChunkIndexes: {queuedChunkIndexes}</div>
         <div>hasQueuedChunks: {String(hasQueuedChunks)}</div>
         <div>firstQueuedChunkIndex: {firstQueuedChunkIndex}</div>
+        <div>lastQueuedChunkIndex: {lastQueuedChunkIndex}</div>
         <div>pendingChunkIndexes: {pendingChunkIndexes}</div>
         <div>remainingChunkCount: {remainingChunkCount}</div>
         <div>nextPendingChunkIndex: {nextPendingChunkIndex}</div>

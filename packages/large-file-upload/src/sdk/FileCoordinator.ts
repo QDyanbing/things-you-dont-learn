@@ -777,7 +777,12 @@ export class FileCoordinator {
     return this.getQueuedChunkIndexes()[0] ?? null;
   }
 
-  /** Returns the last chunk index that is strictly waiting for upload. */
+  /**
+   * Returns the last chunk index that is strictly waiting for upload.
+   *
+   * Failed chunks are intentionally excluded here; this mirrors
+   * `getQueuedChunkIndexes()` instead of the broader pending scheduling list.
+   */
   getLastQueuedChunkIndex(): number | null {
     const queuedChunkIndexes = this.getQueuedChunkIndexes();
 

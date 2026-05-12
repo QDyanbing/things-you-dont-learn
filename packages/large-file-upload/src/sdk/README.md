@@ -277,6 +277,7 @@ new FileCoordinator(file, options)
 | `getUploadedChunkCount()` | 获取当前已经上传完成的分片数量；当前只统计状态为 `SUCCESS` 的分片 | `number` |
 | `getCompletionRatio()` | 获取当前已成功分片数量占总分片数量的比例；未准备分片时返回 `0` | `number` |
 | `getUploadedChunkIndexes()` | 获取当前已经上传完成的分片下标列表；当前只返回状态为 `SUCCESS` 的分片 | `number[]` |
+| `getFirstUploadedChunkIndex()` | 获取第一块已成功上传的分片下标；还没有成功分片时返回 `null` | `number \| null` |
 | `getLastUploadedChunkIndex()` | 获取最后一块已成功上传的分片下标；还没有成功分片时返回 `null` | `number \| null` |
 | `getProgress()` | 获取当前文件的聚合上传进度快照；会返回总字节数、已计入进度的上传字节数、整体百分比和已完成分片数量 | `FileCoordinatorProgress` |
 | `getChunkProgress(index)` | 按下标获取单个分片的进度快照；分片不存在或尚未 `prepare()` 时返回 `null` | `FileCoordinatorChunkProgress \| null` |

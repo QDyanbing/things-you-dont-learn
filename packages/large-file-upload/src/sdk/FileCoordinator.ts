@@ -682,6 +682,11 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['SUCCESS']);
   }
 
+  /** Returns the first chunk index that has been uploaded successfully. */
+  getFirstUploadedChunkIndex(): number | null {
+    return this.getUploadedChunkIndexes()[0] ?? null;
+  }
+
   /**
    * Returns the last chunk index that has been uploaded successfully.
    *

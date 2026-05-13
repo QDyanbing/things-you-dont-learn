@@ -839,7 +839,12 @@ export class FileCoordinator {
     return this.chunks.some((chunk) => chunk.status === 'UPLOADING');
   }
 
-  /** Returns the first chunk index currently running inside the upload flow. */
+  /**
+   * Returns the first chunk index currently running inside the upload flow.
+   *
+   * The value is derived from the local `UPLOADING` snapshot and returns
+   * `null` when no chunk is currently running.
+   */
   getFirstUploadingChunkIndex(): number | null {
     return this.getUploadingChunkIndexes()[0] ?? null;
   }

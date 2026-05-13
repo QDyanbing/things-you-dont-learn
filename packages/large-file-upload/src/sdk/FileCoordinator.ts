@@ -682,7 +682,12 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['SUCCESS']);
   }
 
-  /** Returns whether any chunk has been uploaded successfully. */
+  /**
+   * Returns whether any chunk has been uploaded successfully.
+   *
+   * This checks only the current local `SUCCESS` chunk snapshot and does not
+   * query the remote upload state.
+   */
   hasUploadedChunks(): boolean {
     return this.chunks.some((chunk) => chunk.status === 'SUCCESS');
   }

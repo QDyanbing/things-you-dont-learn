@@ -682,6 +682,11 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['SUCCESS']);
   }
 
+  /** Returns whether any chunk has been uploaded successfully. */
+  hasUploadedChunks(): boolean {
+    return this.chunks.some((chunk) => chunk.status === 'SUCCESS');
+  }
+
   /**
    * Returns the first chunk index that has been uploaded successfully.
    *

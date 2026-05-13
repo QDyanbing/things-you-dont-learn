@@ -863,7 +863,12 @@ export class FileCoordinator {
     return this.getFailedChunkIndexes()[0] ?? null;
   }
 
-  /** Returns the last chunk index currently marked as failed. */
+  /**
+   * Returns the last chunk index currently marked as failed.
+   *
+   * The value is derived from the local `ERROR` snapshot and returns `null`
+   * when there are no failed chunks.
+   */
   getLastFailedChunkIndex(): number | null {
     const failedChunkIndexes = this.getFailedChunkIndexes();
 

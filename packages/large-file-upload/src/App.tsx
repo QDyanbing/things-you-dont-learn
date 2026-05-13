@@ -33,6 +33,7 @@ export default function App() {
   const [isFirstChunkUploaded, setIsFirstChunkUploaded] = useState(false);
   const [restoredChunkCount, setRestoredChunkCount] = useState(0);
   const [uploadedChunkIndexes, setUploadedChunkIndexes] = useState("");
+  const [hasUploadedChunks, setHasUploadedChunks] = useState(false);
   const [firstUploadedChunkIndex, setFirstUploadedChunkIndex] = useState("");
   const [lastUploadedChunkIndex, setLastUploadedChunkIndex] = useState("");
   const [queuedChunkIndexes, setQueuedChunkIndexes] = useState("");
@@ -135,6 +136,7 @@ export default function App() {
               setIsFirstChunkUploaded(false);
               setRestoredChunkCount(0);
               setUploadedChunkIndexes("");
+              setHasUploadedChunks(false);
               setFirstUploadedChunkIndex("");
               setLastUploadedChunkIndex("");
               setQueuedChunkIndexes("");
@@ -192,6 +194,7 @@ export default function App() {
               const hasPreparedFirstChunk = coordinator.hasChunk(0);
               const currentRestoredChunkCount = coordinator.setUploadedChunks([0]);
               const currentUploadedChunkIndexes = coordinator.getUploadedChunkIndexes();
+              const currentHasUploadedChunks = coordinator.hasUploadedChunks();
               const currentFirstUploadedChunkIndex = coordinator.getFirstUploadedChunkIndex();
               const currentLastUploadedChunkIndex = coordinator.getLastUploadedChunkIndex();
               const currentCompletionRatio = coordinator.getCompletionRatio();
@@ -241,6 +244,7 @@ export default function App() {
               setIsFirstChunkUploaded(firstChunkUploaded);
               setRestoredChunkCount(currentRestoredChunkCount);
               setUploadedChunkIndexes(currentUploadedChunkIndexes.join(","));
+              setHasUploadedChunks(currentHasUploadedChunks);
               setFirstUploadedChunkIndex(
                 currentFirstUploadedChunkIndex === null
                   ? ""
@@ -349,6 +353,7 @@ export default function App() {
         <div>isFirstChunkUploaded: {String(isFirstChunkUploaded)}</div>
         <div>restoredChunkCount: {restoredChunkCount}</div>
         <div>uploadedChunkIndexes: {uploadedChunkIndexes}</div>
+        <div>hasUploadedChunks: {String(hasUploadedChunks)}</div>
         <div>firstUploadedChunkIndex: {firstUploadedChunkIndex}</div>
         <div>lastUploadedChunkIndex: {lastUploadedChunkIndex}</div>
         <div>queuedChunkIndexes: {queuedChunkIndexes}</div>

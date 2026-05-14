@@ -849,6 +849,15 @@ export class FileCoordinator {
     return this.getUploadingChunkIndexes()[0] ?? null;
   }
 
+  /** Returns the last chunk index currently running inside the upload flow. */
+  getLastUploadingChunkIndex(): number | null {
+    const uploadingChunkIndexes = this.getUploadingChunkIndexes();
+
+    return uploadingChunkIndexes.length > 0
+      ? uploadingChunkIndexes[uploadingChunkIndexes.length - 1]
+      : null;
+  }
+
   /**
    * Returns how many chunks are currently running inside the upload flow.
    */

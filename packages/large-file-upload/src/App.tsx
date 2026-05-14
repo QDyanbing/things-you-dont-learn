@@ -41,6 +41,7 @@ export default function App() {
   const [firstQueuedChunkIndex, setFirstQueuedChunkIndex] = useState("");
   const [lastQueuedChunkIndex, setLastQueuedChunkIndex] = useState("");
   const [pendingChunkIndexes, setPendingChunkIndexes] = useState("");
+  const [hasPendingChunks, setHasPendingChunks] = useState(false);
   const [remainingChunkCount, setRemainingChunkCount] = useState(0);
   const [nextPendingChunkIndex, setNextPendingChunkIndex] = useState("");
   const [uploadingChunkIndexes, setUploadingChunkIndexes] = useState("");
@@ -147,6 +148,7 @@ export default function App() {
               setFirstQueuedChunkIndex("");
               setLastQueuedChunkIndex("");
               setPendingChunkIndexes("");
+              setHasPendingChunks(false);
               setRemainingChunkCount(0);
               setNextPendingChunkIndex("");
               setUploadingChunkIndexes("");
@@ -236,6 +238,7 @@ export default function App() {
               const currentFirstQueuedChunkIndex = coordinator.getFirstQueuedChunkIndex();
               const currentLastQueuedChunkIndex = coordinator.getLastQueuedChunkIndex();
               const currentPendingChunkIndexes = coordinator.getPendingChunkIndexes();
+              const currentHasPendingChunks = coordinator.hasPendingChunks();
               const currentRemainingChunkCount = coordinator.getRemainingChunkCount();
               const currentNextPendingChunkIndex = coordinator.getNextPendingChunkIndex();
               const progress = coordinator.getProgress();
@@ -277,6 +280,7 @@ export default function App() {
                   : String(currentLastQueuedChunkIndex),
               );
               setPendingChunkIndexes(currentPendingChunkIndexes.join(","));
+              setHasPendingChunks(currentHasPendingChunks);
               setRemainingChunkCount(currentRemainingChunkCount);
               setNextPendingChunkIndex(
                 currentNextPendingChunkIndex === null
@@ -385,6 +389,7 @@ export default function App() {
         <div>firstQueuedChunkIndex: {firstQueuedChunkIndex}</div>
         <div>lastQueuedChunkIndex: {lastQueuedChunkIndex}</div>
         <div>pendingChunkIndexes: {pendingChunkIndexes}</div>
+        <div>hasPendingChunks: {String(hasPendingChunks)}</div>
         <div>remainingChunkCount: {remainingChunkCount}</div>
         <div>nextPendingChunkIndex: {nextPendingChunkIndex}</div>
         <div>uploadingChunkIndexes: {uploadingChunkIndexes}</div>

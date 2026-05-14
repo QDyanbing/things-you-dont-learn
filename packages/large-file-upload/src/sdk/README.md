@@ -50,6 +50,7 @@ const firstQueuedChunkIndex = coordinator.getFirstQueuedChunkIndex();
 const lastQueuedChunkIndex = coordinator.getLastQueuedChunkIndex();
 const hasUploadingChunks = coordinator.hasUploadingChunks();
 const firstUploadingChunkIndex = coordinator.getFirstUploadingChunkIndex();
+const lastUploadingChunkIndex = coordinator.getLastUploadingChunkIndex();
 const failedChunkIndexes = coordinator.getFailedChunkIndexes();
 const firstFailedChunkIndex = coordinator.getFirstFailedChunkIndex();
 const lastFailedChunkIndex = coordinator.getLastFailedChunkIndex();
@@ -147,6 +148,8 @@ new FileCoordinator(file, options)
 `hasUploadingChunks()` 是上传中分片列表的布尔视角，只看当前分片状态；是否可以取消或暂停整轮任务仍应使用 `canCancel()` 和 `canPause()`。
 
 `getFirstUploadingChunkIndex()` 复用上传中分片列表的顺序，适合在并发上传时快速展示当前第一块正在执行的分片。
+
+`getLastUploadingChunkIndex()` 同样复用上传中分片列表的顺序，适合观察当前并发窗口尾部正在执行的分片。
 
 `getUploadingChunkCount()` 是上传中分片列表的数量视角，适合展示当前并发占用情况。
 

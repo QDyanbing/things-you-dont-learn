@@ -48,6 +48,7 @@ const queuedChunkIndexes = coordinator.getQueuedChunkIndexes();
 const hasQueuedChunks = coordinator.hasQueuedChunks();
 const firstQueuedChunkIndex = coordinator.getFirstQueuedChunkIndex();
 const lastQueuedChunkIndex = coordinator.getLastQueuedChunkIndex();
+const hasPendingChunks = coordinator.hasPendingChunks();
 const hasUploadingChunks = coordinator.hasUploadingChunks();
 const firstUploadingChunkIndex = coordinator.getFirstUploadingChunkIndex();
 const lastUploadingChunkIndex = coordinator.getLastUploadingChunkIndex();
@@ -132,6 +133,8 @@ new FileCoordinator(file, options)
 `getLastQueuedChunkIndex()` 同样复用严格等待上传口径，只会从 `PENDING` 分片里返回下标最后的一块；它不会把 `ERROR` 分片当作排队分片。
 
 `getNextPendingChunkIndex()` 复用 `getPendingChunkIndexes()` 的调度口径，会从 `PENDING` 和 `ERROR` 分片里返回下标最靠前的一块。
+
+`hasPendingChunks()` 是待调度列表的布尔视角，会把可重试的 `ERROR` 分片也算进去；如果只想看严格排队中的新分片，应使用 `hasQueuedChunks()`。
 
 `getUploadedChunkIndexes()` 和 `getUploadedChunkCount()` 使用同一套成功口径，只有当前状态为 `SUCCESS` 的分片会被计入。
 

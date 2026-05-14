@@ -808,6 +808,13 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['PENDING', 'ERROR']);
   }
 
+  /** Returns whether any chunk still needs upload scheduling. */
+  hasPendingChunks(): boolean {
+    return this.chunks.some((chunk) => {
+      return chunk.status === 'PENDING' || chunk.status === 'ERROR';
+    });
+  }
+
   /**
    * Returns how many chunks still need upload scheduling.
    */

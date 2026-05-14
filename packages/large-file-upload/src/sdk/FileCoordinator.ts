@@ -585,6 +585,13 @@ export class FileCoordinator {
     return this.chunks.length;
   }
 
+  /** Returns the summed byte size of all prepared chunks. */
+  getPreparedByteSize(): number {
+    return this.chunks.reduce((preparedByteSize, chunk) => {
+      return preparedByteSize + chunk.size;
+    }, 0);
+  }
+
   /**
    * Returns whether one prepared chunk exists at the provided index.
    */

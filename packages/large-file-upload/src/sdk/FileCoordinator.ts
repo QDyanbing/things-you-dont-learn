@@ -757,6 +757,11 @@ export class FileCoordinator {
     };
   }
 
+  /** Returns the uploaded byte count from the local progress snapshot. */
+  getUploadedByteSize(): number {
+    return this.getProgress().uploadedBytes;
+  }
+
   /**
    * Returns the current local upload progress snapshot of one prepared chunk.
    */

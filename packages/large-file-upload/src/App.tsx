@@ -64,6 +64,7 @@ export default function App() {
   const [firstChunkRemainingBytes, setFirstChunkRemainingBytes] = useState(0);
   const [status, setStatus] = useState("");
   const [chunkCount, setChunkCount] = useState(0);
+  const [preparedChunkIndexes, setPreparedChunkIndexes] = useState("");
   const [preparedByteSize, setPreparedByteSize] = useState(0);
   const [uploadedChunkCount, setUploadedChunkCount] = useState(0);
   const [completionRatio, setCompletionRatio] = useState(0);
@@ -172,6 +173,7 @@ export default function App() {
               setFirstChunkRemainingBytes(0);
               setStatus(coordinator.getStatus());
               setChunkCount(coordinator.getChunkCount());
+              setPreparedChunkIndexes("");
               setPreparedByteSize(0);
               setUploadedChunkCount(0);
               setCompletionRatio(0);
@@ -202,6 +204,7 @@ export default function App() {
               const latestPrepareResult = coordinator.getPrepareResult();
               const prepared = coordinator.isPrepared();
               const hasPreparedFirstChunk = coordinator.hasChunk(0);
+              const currentPreparedChunkIndexes = coordinator.getPreparedChunkIndexes();
               const currentPreparedByteSize = coordinator.getPreparedByteSize();
               const currentRestoredChunkCount = coordinator.setUploadedChunks([0]);
               const currentUploadedChunkIndexes = coordinator.getUploadedChunkIndexes();
@@ -346,6 +349,7 @@ export default function App() {
               setFirstChunkRemainingBytes(firstChunkProgress?.remainingBytes ?? 0);
               setStatus(coordinator.getStatus());
               setChunkCount(prepareResult.chunkCount);
+              setPreparedChunkIndexes(currentPreparedChunkIndexes.join(","));
               setPreparedByteSize(currentPreparedByteSize);
               setUploadedChunkCount(coordinator.getUploadedChunkCount());
               setCompletionRatio(currentCompletionRatio);
@@ -416,6 +420,7 @@ export default function App() {
         <div>firstChunkRemainingBytes: {firstChunkRemainingBytes}</div>
         {status ? <div>status: {status}</div> : null}
         <div>chunkCount: {chunkCount}</div>
+        <div>preparedChunkIndexes: {preparedChunkIndexes}</div>
         <div>preparedByteSize: {preparedByteSize}</div>
         <div>uploadedChunkCount: {uploadedChunkCount}</div>
         <div>completionRatio: {completionRatio}</div>

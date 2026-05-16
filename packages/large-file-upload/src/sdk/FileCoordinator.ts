@@ -855,6 +855,15 @@ export class FileCoordinator {
     return this.getPendingChunkIndexes()[0] ?? null;
   }
 
+  /** Returns the last chunk index that still needs upload scheduling. */
+  getLastPendingChunkIndex(): number | null {
+    const pendingChunkIndexes = this.getPendingChunkIndexes();
+
+    return pendingChunkIndexes.length > 0
+      ? pendingChunkIndexes[pendingChunkIndexes.length - 1]
+      : null;
+  }
+
   /**
    * Returns chunk indexes that are currently running inside the upload flow.
    */

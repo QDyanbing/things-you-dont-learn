@@ -36,6 +36,7 @@ const coordinator = new FileCoordinator(file, {
 });
 const prepareResult = await coordinator.prepare();
 const preparedByteSize = coordinator.getPreparedByteSize();
+const preparedChunkIndexes = coordinator.getPreparedChunkIndexes();
 const restoredChunkCount = coordinator.setUploadedChunks([0, 3, 5]);
 const completionRatio = coordinator.getCompletionRatio();
 await coordinator.upload();
@@ -76,6 +77,8 @@ const firstChunkByteRange = coordinator.getChunkByteRange(0);
 `canUpload()` 是开始上传前的轻量判断，适合控制上传按钮；真正执行时仍应调用 `upload()`，由 SDK 内部复用或校验当前上传任务。
 
 `getPreparedByteSize()` 会把当前本地已经准备好的分片大小加总；它只反映本地切片结果，不代表已经上传到服务端的字节数。
+
+`getPreparedChunkIndexes()` 只返回当前本地已经准备出的分片下标，适合调试切片结果或在 UI 上展示可检查的分片范围。
 
 ## API
 

@@ -41,6 +41,7 @@ const restoredChunkCount = coordinator.setUploadedChunks([0, 3, 5]);
 const completionRatio = coordinator.getCompletionRatio();
 await coordinator.upload();
 const progress = coordinator.getProgress();
+const uploadedByteSize = coordinator.getUploadedByteSize();
 const remainingBytes = progress.remainingBytes;
 const statusCounts = coordinator.getChunkStatusCounts();
 const hasUploadedChunks = coordinator.hasUploadedChunks();
@@ -184,6 +185,8 @@ new FileCoordinator(file, options)
 `resetFailedChunks()` 是更窄的状态整理方法，只会处理当前为 `ERROR` 的分片；它同样不会主动发起上传，调用方可以在清理失败态后再次调用 `upload()`。
 
 `getProgress()` 的 `uploadedBytes` 统计口径是：`SUCCESS` 分片按整片大小计入，`UPLOADING` 分片按最近一次 `reportProgress` 回传值计入，`PENDING` 和 `ERROR` 分片默认不计入整体进度。
+
+`getUploadedByteSize()` 是 `getProgress().uploadedBytes` 的轻量读取入口，适合只需要上传字节数而不需要完整进度对象的场景。
 
 `getChunkProgress(index)` 使用同一套字节统计口径，只是把范围限制在单个分片上；无效下标会返回 `null`。
 

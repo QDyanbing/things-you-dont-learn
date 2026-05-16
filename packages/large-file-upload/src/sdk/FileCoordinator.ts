@@ -597,7 +597,11 @@ export class FileCoordinator {
     }, 0);
   }
 
-  /** Returns indexes of all prepared chunks. */
+  /**
+   * Returns indexes of all chunks prepared in the current local chunk list.
+   *
+   * Before `prepare()` runs this returns an empty list.
+   */
   getPreparedChunkIndexes(): number[] {
     return this.chunks.map((chunk) => chunk.index);
   }

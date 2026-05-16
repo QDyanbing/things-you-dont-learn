@@ -597,6 +597,11 @@ export class FileCoordinator {
     }, 0);
   }
 
+  /** Returns indexes of all prepared chunks. */
+  getPreparedChunkIndexes(): number[] {
+    return this.chunks.map((chunk) => chunk.index);
+  }
+
   /**
    * Returns whether one prepared chunk exists at the provided index.
    */

@@ -44,6 +44,7 @@ export default function App() {
   const [hasPendingChunks, setHasPendingChunks] = useState(false);
   const [remainingChunkCount, setRemainingChunkCount] = useState(0);
   const [nextPendingChunkIndex, setNextPendingChunkIndex] = useState("");
+  const [lastPendingChunkIndex, setLastPendingChunkIndex] = useState("");
   const [uploadingChunkIndexes, setUploadingChunkIndexes] = useState("");
   const [hasUploadingChunks, setHasUploadingChunks] = useState(false);
   const [firstUploadingChunkIndex, setFirstUploadingChunkIndex] = useState("");
@@ -153,6 +154,7 @@ export default function App() {
               setHasPendingChunks(false);
               setRemainingChunkCount(0);
               setNextPendingChunkIndex("");
+              setLastPendingChunkIndex("");
               setUploadingChunkIndexes("");
               setHasUploadingChunks(false);
               setFirstUploadingChunkIndex("");
@@ -247,6 +249,7 @@ export default function App() {
               const currentHasPendingChunks = coordinator.hasPendingChunks();
               const currentRemainingChunkCount = coordinator.getRemainingChunkCount();
               const currentNextPendingChunkIndex = coordinator.getNextPendingChunkIndex();
+              const currentLastPendingChunkIndex = coordinator.getLastPendingChunkIndex();
               const progress = coordinator.getProgress();
               const statusCounts = coordinator.getChunkStatusCounts();
               const firstChunkInfo = coordinator.getChunkInfo(0);
@@ -292,6 +295,11 @@ export default function App() {
                 currentNextPendingChunkIndex === null
                   ? ""
                   : String(currentNextPendingChunkIndex),
+              );
+              setLastPendingChunkIndex(
+                currentLastPendingChunkIndex === null
+                  ? ""
+                  : String(currentLastPendingChunkIndex),
               );
               setUploadingChunkIndexes(currentUploadingChunkIndexes.join(","));
               setHasUploadingChunks(currentHasUploadingChunks);
@@ -400,6 +408,7 @@ export default function App() {
         <div>hasPendingChunks: {String(hasPendingChunks)}</div>
         <div>remainingChunkCount: {remainingChunkCount}</div>
         <div>nextPendingChunkIndex: {nextPendingChunkIndex}</div>
+        <div>lastPendingChunkIndex: {lastPendingChunkIndex}</div>
         <div>uploadingChunkIndexes: {uploadingChunkIndexes}</div>
         <div>hasUploadingChunks: {String(hasUploadingChunks)}</div>
         <div>firstUploadingChunkIndex: {firstUploadingChunkIndex}</div>

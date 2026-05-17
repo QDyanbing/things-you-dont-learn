@@ -805,6 +805,11 @@ export class FileCoordinator {
     return this.getChunkIndexesByStatus(['PENDING']);
   }
 
+  /** Returns how many chunks are strictly waiting for upload. */
+  getQueuedChunkCount(): number {
+    return this.getQueuedChunkIndexes().length;
+  }
+
   /**
    * Returns whether any chunk is strictly waiting for upload.
    *

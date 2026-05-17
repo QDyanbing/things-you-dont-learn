@@ -49,6 +49,7 @@ const hasUploadedChunks = coordinator.hasUploadedChunks();
 const firstUploadedChunkIndex = coordinator.getFirstUploadedChunkIndex();
 const lastUploadedChunkIndex = coordinator.getLastUploadedChunkIndex();
 const queuedChunkIndexes = coordinator.getQueuedChunkIndexes();
+const queuedChunkCount = coordinator.getQueuedChunkCount();
 const hasQueuedChunks = coordinator.hasQueuedChunks();
 const firstQueuedChunkIndex = coordinator.getFirstQueuedChunkIndex();
 const lastQueuedChunkIndex = coordinator.getLastQueuedChunkIndex();
@@ -134,6 +135,8 @@ new FileCoordinator(file, options)
 `getRemainingChunkCount()` 使用同一套“仍需调度”口径，适合只需要数量而不关心具体下标的 UI。
 
 `getQueuedChunkIndexes()` 面向“严格等待上传”的视角，只返回 `PENDING` 分片；如果调用方需要把失败分片也纳入下一轮调度，应继续使用 `getPendingChunkIndexes()`。
+
+`getQueuedChunkCount()` 是严格等待上传列表的数量视角，适合只展示队列数量而不关心具体下标的 UI。
 
 `hasQueuedChunks()` 是严格等待上传列表的布尔视角，不代表当前一定可以调用 `upload()`；上传按钮是否可用仍建议使用 `canUpload()`。
 

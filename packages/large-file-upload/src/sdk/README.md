@@ -61,6 +61,7 @@ const lastUploadingChunkIndex = coordinator.getLastUploadingChunkIndex();
 const failedChunkIndexes = coordinator.getFailedChunkIndexes();
 const firstFailedChunkIndex = coordinator.getFirstFailedChunkIndex();
 const lastFailedChunkIndex = coordinator.getLastFailedChunkIndex();
+const failedByteSize = coordinator.getFailedByteSize();
 const shouldShowRetry = coordinator.hasFailedChunks();
 const firstChunkStatus = coordinator.getChunkStatus(0);
 const firstChunkByteRange = coordinator.getChunkByteRange(0);
@@ -177,6 +178,8 @@ new FileCoordinator(file, options)
 `getLastFailedChunkIndex()` 同样复用失败分片列表的顺序，适合需要展示失败范围边界或最后一次失败位置的场景。
 
 `getFailedChunkCount()` 是失败分片列表的数量视角，适合只需要展示失败数量或徽标的场景。
+
+`getFailedByteSize()` 是失败分片列表的字节视角，只统计当前本地状态为 `ERROR` 的分片大小，适合展示失败体量或估算重试成本。
 
 `getChunkStatusCounts()` 会按当前本地分片状态聚合计数，状态口径和各个 `get*ChunkIndexes()` 方法保持一致。
 

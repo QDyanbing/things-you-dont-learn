@@ -55,6 +55,7 @@ export default function App() {
   const [firstFailedChunkIndex, setFirstFailedChunkIndex] = useState("");
   const [lastFailedChunkIndex, setLastFailedChunkIndex] = useState("");
   const [failedChunkCount, setFailedChunkCount] = useState(0);
+  const [failedByteSize, setFailedByteSize] = useState(0);
   const [hasFailedChunks, setHasFailedChunks] = useState(false);
   const [chunkStatusCounts, setChunkStatusCounts] = useState("");
   const [firstChunkRange, setFirstChunkRange] = useState("");
@@ -168,6 +169,7 @@ export default function App() {
               setFirstFailedChunkIndex("");
               setLastFailedChunkIndex("");
               setFailedChunkCount(0);
+              setFailedByteSize(0);
               setHasFailedChunks(false);
               setChunkStatusCounts("");
               setFirstChunkRange("");
@@ -241,6 +243,7 @@ export default function App() {
               const currentFirstFailedChunkIndex = coordinator.getFirstFailedChunkIndex();
               const currentLastFailedChunkIndex = coordinator.getLastFailedChunkIndex();
               const currentFailedChunkCount = coordinator.getFailedChunkCount();
+              const currentFailedByteSize = coordinator.getFailedByteSize();
               const currentHasFailedChunks = coordinator.hasFailedChunks();
               const currentResetFailedChunkCount = coordinator.resetFailedChunks();
               const currentCanResetUploadProgress = coordinator.canResetUploadProgress();
@@ -336,6 +339,7 @@ export default function App() {
                   : String(currentLastFailedChunkIndex),
               );
               setFailedChunkCount(currentFailedChunkCount);
+              setFailedByteSize(currentFailedByteSize);
               setHasFailedChunks(currentHasFailedChunks);
               setChunkStatusCounts(
                 [
@@ -431,6 +435,7 @@ export default function App() {
         <div>firstFailedChunkIndex: {firstFailedChunkIndex}</div>
         <div>lastFailedChunkIndex: {lastFailedChunkIndex}</div>
         <div>failedChunkCount: {failedChunkCount}</div>
+        <div>failedByteSize: {failedByteSize}</div>
         <div>hasFailedChunks: {String(hasFailedChunks)}</div>
         <div>chunkStatusCounts: {chunkStatusCounts}</div>
         {firstChunkRange ? <div>firstChunkRange: {firstChunkRange}</div> : null}

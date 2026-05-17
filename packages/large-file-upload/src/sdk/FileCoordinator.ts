@@ -983,6 +983,9 @@ export class FileCoordinator {
 
   /**
    * Returns the total byte size of chunks currently marked as failed.
+   *
+   * This uses the local `ERROR` snapshot and does not include queued,
+   * uploading, or successful chunks.
    */
   getFailedByteSize(): number {
     return this.chunks.reduce((failedByteSize, chunk) => {

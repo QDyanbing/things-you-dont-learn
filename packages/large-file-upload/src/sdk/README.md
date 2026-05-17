@@ -347,6 +347,7 @@ new FileCoordinator(file, options)
 | `getFirstFailedChunkIndex()` | 获取第一块上传失败的分片下标；没有失败分片时返回 `null` | `number \| null` |
 | `getLastFailedChunkIndex()` | 获取最后一块上传失败的分片下标；没有失败分片时返回 `null` | `number \| null` |
 | `getFailedChunkCount()` | 获取当前上传失败的分片数量；当前和 `getFailedChunkIndexes().length` 口径一致 | `number` |
+| `getFailedByteSize()` | 获取当前上传失败分片的合计字节数；当前只统计状态为 `ERROR` 的分片 | `number` |
 | `getChunkStatusCounts()` | 获取当前所有分片按运行时状态聚合后的数量快照 | `FileCoordinatorChunkStatusCounts` |
 | `hasFailedChunks()` | 判断当前是否存在上传失败的分片；当前只要存在状态为 `ERROR` 的分片就返回 `true` | `boolean` |
 | `resetUploadProgress()` | 清空当前已准备分片的上传运行态；会把分片恢复为 `PENDING`，把实例状态恢复为 `READY`，并返回实际发生变化的分片数量 | `number` |

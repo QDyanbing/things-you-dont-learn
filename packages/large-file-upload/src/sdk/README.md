@@ -326,6 +326,7 @@ new FileCoordinator(file, options)
 | `getRemainingByteSize()` | 获取当前尚未计入本地聚合进度的剩余字节数；口径和 `getProgress().remainingBytes` 一致 | `number` |
 | `getChunkProgress(index)` | 按下标获取单个分片的进度快照；分片不存在或尚未 `prepare()` 时返回 `null` | `FileCoordinatorChunkProgress \| null` |
 | `getQueuedChunkIndexes()` | 获取当前处于严格等待上传状态的分片下标列表；当前只返回状态为 `PENDING` 的分片 | `number[]` |
+| `getQueuedChunkCount()` | 获取当前严格等待上传的分片数量；当前和 `getQueuedChunkIndexes().length` 口径一致 | `number` |
 | `hasQueuedChunks()` | 判断当前是否存在严格等待上传的分片；当前只观察状态为 `PENDING` 的分片 | `boolean` |
 | `getFirstQueuedChunkIndex()` | 获取第一块严格等待上传的分片下标；没有 `PENDING` 分片时返回 `null` | `number \| null` |
 | `getLastQueuedChunkIndex()` | 获取最后一块严格等待上传的分片下标；没有 `PENDING` 分片时返回 `null` | `number \| null` |

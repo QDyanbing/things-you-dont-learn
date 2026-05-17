@@ -81,6 +81,7 @@ export default function App() {
   const [resumeResult, setResumeResult] = useState(false);
   const [canUpload, setCanUpload] = useState(false);
   const [uploadedByteSize, setUploadedByteSize] = useState(0);
+  const [remainingByteSize, setRemainingByteSize] = useState(0);
   const [progressUploadedBytes, setProgressUploadedBytes] = useState(0);
   const [progressTotalBytes, setProgressTotalBytes] = useState(0);
   const [progressRemainingBytes, setProgressRemainingBytes] = useState(0);
@@ -192,6 +193,7 @@ export default function App() {
               setResumeResult(false);
               setCanUpload(false);
               setUploadedByteSize(0);
+              setRemainingByteSize(0);
               setProgressUploadedBytes(0);
               setProgressTotalBytes(0);
               setProgressRemainingBytes(0);
@@ -254,6 +256,7 @@ export default function App() {
               const currentLastPendingChunkIndex = coordinator.getLastPendingChunkIndex();
               const progress = coordinator.getProgress();
               const currentUploadedByteSize = coordinator.getUploadedByteSize();
+              const currentRemainingByteSize = coordinator.getRemainingByteSize();
               const statusCounts = coordinator.getChunkStatusCounts();
               const firstChunkInfo = coordinator.getChunkInfo(0);
               const firstChunkByteRangeSnapshot = coordinator.getChunkByteRange(0);
@@ -376,6 +379,7 @@ export default function App() {
               setResumeResult(currentResumeResult);
               setCanUpload(currentCanUpload);
               setUploadedByteSize(currentUploadedByteSize);
+              setRemainingByteSize(currentRemainingByteSize);
               setProgressUploadedBytes(progress.uploadedBytes);
               setProgressTotalBytes(progress.totalBytes);
               setProgressRemainingBytes(progress.remainingBytes);
@@ -449,6 +453,7 @@ export default function App() {
         <div>resumeResult: {String(resumeResult)}</div>
         <div>canUpload: {String(canUpload)}</div>
         <div>uploadedByteSize: {uploadedByteSize}</div>
+        <div>remainingByteSize: {remainingByteSize}</div>
         <div>progressUploadedBytes: {progressUploadedBytes}</div>
         <div>progressTotalBytes: {progressTotalBytes}</div>
         <div>progressRemainingBytes: {progressRemainingBytes}</div>

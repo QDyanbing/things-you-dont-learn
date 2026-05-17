@@ -982,6 +982,15 @@ export class FileCoordinator {
   }
 
   /**
+   * Returns the total byte size of chunks currently marked as failed.
+   */
+  getFailedByteSize(): number {
+    return this.chunks.reduce((failedByteSize, chunk) => {
+      return failedByteSize + (chunk.status === 'ERROR' ? chunk.size : 0);
+    }, 0);
+  }
+
+  /**
    * Returns prepared chunk counts grouped by runtime status.
    */
   getChunkStatusCounts(): FileCoordinatorChunkStatusCounts {

@@ -42,6 +42,7 @@ const completionRatio = coordinator.getCompletionRatio();
 await coordinator.upload();
 const progress = coordinator.getProgress();
 const uploadedByteSize = coordinator.getUploadedByteSize();
+const remainingByteSize = coordinator.getRemainingByteSize();
 const remainingBytes = progress.remainingBytes;
 const statusCounts = coordinator.getChunkStatusCounts();
 const hasUploadedChunks = coordinator.hasUploadedChunks();
@@ -187,6 +188,8 @@ new FileCoordinator(file, options)
 `getProgress()` 的 `uploadedBytes` 统计口径是：`SUCCESS` 分片按整片大小计入，`UPLOADING` 分片按最近一次 `reportProgress` 回传值计入，`PENDING` 和 `ERROR` 分片默认不计入整体进度。
 
 `getUploadedByteSize()` 是 `getProgress().uploadedBytes` 的轻量读取入口，适合只需要上传字节数而不需要完整进度对象的场景。
+
+`getRemainingByteSize()` 是 `getProgress().remainingBytes` 的轻量读取入口，适合只需要剩余字节数而不需要完整进度对象的场景。
 
 `getChunkProgress(index)` 使用同一套字节统计口径，只是把范围限制在单个分片上；无效下标会返回 `null`。
 

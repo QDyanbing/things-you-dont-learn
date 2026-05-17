@@ -766,7 +766,11 @@ export class FileCoordinator {
     return this.getProgress().uploadedBytes;
   }
 
-  /** Returns the remaining byte count from the local progress snapshot. */
+  /**
+   * Returns the remaining byte count from the local progress snapshot.
+   *
+   * This uses the same aggregation rules as `getProgress().remainingBytes`.
+   */
   getRemainingByteSize(): number {
     return this.getProgress().remainingBytes;
   }

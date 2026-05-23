@@ -971,6 +971,15 @@ export class FileCoordinator {
   }
 
   /**
+   * Returns the total byte size of chunks currently running inside the upload flow.
+   */
+  getUploadingByteSize(): number {
+    return this.chunks.reduce((uploadingByteSize, chunk) => {
+      return uploadingByteSize + (chunk.status === 'UPLOADING' ? chunk.size : 0);
+    }, 0);
+  }
+
+  /**
    * Returns chunk indexes that failed during the latest upload attempts.
    */
   getFailedChunkIndexes(): number[] {

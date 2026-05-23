@@ -341,6 +341,7 @@ new FileCoordinator(file, options)
 | `getFirstQueuedChunkIndex()` | 获取第一块严格等待上传的分片下标；没有 `PENDING` 分片时返回 `null` | `number \| null` |
 | `getLastQueuedChunkIndex()` | 获取最后一块严格等待上传的分片下标；没有 `PENDING` 分片时返回 `null` | `number \| null` |
 | `getPendingChunkIndexes()` | 获取当前仍需要继续进入上传流程的分片下标列表；当前会返回状态为 `PENDING` 或 `ERROR` 的分片 | `number[]` |
+| `getPendingByteSize()` | 获取当前仍需要进入上传流程的分片合计字节数；当前会统计状态为 `PENDING` 或 `ERROR` 的分片 | `number` |
 | `hasPendingChunks()` | 判断当前是否存在仍需调度的分片；当前会观察状态为 `PENDING` 或 `ERROR` 的分片 | `boolean` |
 | `getRemainingChunkCount()` | 获取当前仍需要进入上传流程的分片数量；当前和 `getPendingChunkIndexes().length` 口径一致 | `number` |
 | `getNextPendingChunkIndex()` | 获取下一块仍需要进入上传流程的分片下标；没有待调度分片时返回 `null` | `number \| null` |

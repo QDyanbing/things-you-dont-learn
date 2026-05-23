@@ -354,6 +354,7 @@ new FileCoordinator(file, options)
 | `getFirstUploadingChunkIndex()` | 获取第一块上传中的分片下标；没有上传中分片时返回 `null` | `number \| null` |
 | `getLastUploadingChunkIndex()` | 获取最后一块上传中的分片下标；没有上传中分片时返回 `null` | `number \| null` |
 | `getUploadingChunkCount()` | 获取当前处于 `UPLOADING` 状态的分片数量；当前和 `getUploadingChunkIndexes().length` 口径一致 | `number` |
+| `getUploadingByteSize()` | 获取当前上传中分片的合计字节数；当前只统计状态为 `UPLOADING` 的分片总大小 | `number` |
 | `getFailedChunkIndexes()` | 获取当前上传失败的分片下标列表；当前只会返回状态为 `ERROR` 的分片 | `number[]` |
 | `getFirstFailedChunkIndex()` | 获取第一块上传失败的分片下标；没有失败分片时返回 `null` | `number \| null` |
 | `getLastFailedChunkIndex()` | 获取最后一块上传失败的分片下标；没有失败分片时返回 `null` | `number \| null` |

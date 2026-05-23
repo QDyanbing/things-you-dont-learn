@@ -53,6 +53,7 @@ export default function App() {
   const [firstUploadingChunkIndex, setFirstUploadingChunkIndex] = useState("");
   const [lastUploadingChunkIndex, setLastUploadingChunkIndex] = useState("");
   const [uploadingChunkCount, setUploadingChunkCount] = useState(0);
+  const [uploadingByteSize, setUploadingByteSize] = useState(0);
   const [failedChunkIndexes, setFailedChunkIndexes] = useState("");
   const [firstFailedChunkIndex, setFirstFailedChunkIndex] = useState("");
   const [lastFailedChunkIndex, setLastFailedChunkIndex] = useState("");
@@ -169,6 +170,7 @@ export default function App() {
               setFirstUploadingChunkIndex("");
               setLastUploadingChunkIndex("");
               setUploadingChunkCount(0);
+              setUploadingByteSize(0);
               setFailedChunkIndexes("");
               setFirstFailedChunkIndex("");
               setLastFailedChunkIndex("");
@@ -235,6 +237,7 @@ export default function App() {
               const currentFirstUploadingChunkIndex = coordinator.getFirstUploadingChunkIndex();
               const currentLastUploadingChunkIndex = coordinator.getLastUploadingChunkIndex();
               const currentUploadingChunkCount = coordinator.getUploadingChunkCount();
+              const currentUploadingByteSize = coordinator.getUploadingByteSize();
               const currentPauseResult = coordinator.pause();
               const currentCanResume = coordinator.canResume();
               await uploadTask.catch(() => undefined);
@@ -335,6 +338,7 @@ export default function App() {
                   : String(currentLastUploadingChunkIndex),
               );
               setUploadingChunkCount(currentUploadingChunkCount);
+              setUploadingByteSize(currentUploadingByteSize);
               setFailedChunkIndexes(currentFailedChunkIndexes.join(","));
               setFirstFailedChunkIndex(
                 currentFirstFailedChunkIndex === null
@@ -441,6 +445,7 @@ export default function App() {
         <div>firstUploadingChunkIndex: {firstUploadingChunkIndex}</div>
         <div>lastUploadingChunkIndex: {lastUploadingChunkIndex}</div>
         <div>uploadingChunkCount: {uploadingChunkCount}</div>
+        <div>uploadingByteSize: {uploadingByteSize}</div>
         <div>failedChunkIndexes: {failedChunkIndexes}</div>
         <div>firstFailedChunkIndex: {firstFailedChunkIndex}</div>
         <div>lastFailedChunkIndex: {lastFailedChunkIndex}</div>

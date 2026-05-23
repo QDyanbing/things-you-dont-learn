@@ -55,6 +55,7 @@ const hasQueuedChunks = coordinator.hasQueuedChunks();
 const firstQueuedChunkIndex = coordinator.getFirstQueuedChunkIndex();
 const lastQueuedChunkIndex = coordinator.getLastQueuedChunkIndex();
 const hasPendingChunks = coordinator.hasPendingChunks();
+const pendingByteSize = coordinator.getPendingByteSize();
 const lastPendingChunkIndex = coordinator.getLastPendingChunkIndex();
 const hasUploadingChunks = coordinator.hasUploadingChunks();
 const firstUploadingChunkIndex = coordinator.getFirstUploadingChunkIndex();
@@ -133,6 +134,8 @@ new FileCoordinator(file, options)
 | `ERROR` | 分片上传失败 | `'ERROR'` | - |
 
 `getPendingChunkIndexes()` 面向“下一轮仍需调度”的视角，会包含 `PENDING` 和 `ERROR`，不会把已经处于 `UPLOADING` 的分片再次返回出来。
+
+`getPendingByteSize()` 使用同一套待调度口径，会把可重试的 `ERROR` 分片字节数也纳入统计，适合估算下一轮上传或重试还剩多少数据量。
 
 `getRemainingChunkCount()` 使用同一套“仍需调度”口径，适合只需要数量而不关心具体下标的 UI。
 

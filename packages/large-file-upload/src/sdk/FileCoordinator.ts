@@ -972,6 +972,9 @@ export class FileCoordinator {
 
   /**
    * Returns the total byte size of chunks currently running inside the upload flow.
+   *
+   * This uses the local `UPLOADING` snapshot and reports the full size of each
+   * active chunk, not the already-transferred bytes inside those chunks.
    */
   getUploadingByteSize(): number {
     return this.chunks.reduce((uploadingByteSize, chunk) => {

@@ -816,6 +816,9 @@ export class FileCoordinator {
 
   /**
    * Returns the total byte size of chunks strictly waiting for upload.
+   *
+   * This follows the same strict queue view as `getQueuedChunkIndexes()` and
+   * includes only chunks currently marked as `PENDING`.
    */
   getQueuedByteSize(): number {
     return this.chunks.reduce((queuedByteSize, chunk) => {

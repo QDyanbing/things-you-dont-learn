@@ -815,6 +815,15 @@ export class FileCoordinator {
   }
 
   /**
+   * Returns the total byte size of chunks strictly waiting for upload.
+   */
+  getQueuedByteSize(): number {
+    return this.chunks.reduce((queuedByteSize, chunk) => {
+      return queuedByteSize + (chunk.status === 'PENDING' ? chunk.size : 0);
+    }, 0);
+  }
+
+  /**
    * Returns whether any chunk is strictly waiting for upload.
    *
    * This checks only `PENDING` chunks. Retryable `ERROR` chunks are covered by

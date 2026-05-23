@@ -38,6 +38,7 @@ export default function App() {
   const [lastUploadedChunkIndex, setLastUploadedChunkIndex] = useState("");
   const [queuedChunkIndexes, setQueuedChunkIndexes] = useState("");
   const [queuedChunkCount, setQueuedChunkCount] = useState(0);
+  const [queuedByteSize, setQueuedByteSize] = useState(0);
   const [hasQueuedChunks, setHasQueuedChunks] = useState(false);
   const [firstQueuedChunkIndex, setFirstQueuedChunkIndex] = useState("");
   const [lastQueuedChunkIndex, setLastQueuedChunkIndex] = useState("");
@@ -152,6 +153,7 @@ export default function App() {
               setLastUploadedChunkIndex("");
               setQueuedChunkIndexes("");
               setQueuedChunkCount(0);
+              setQueuedByteSize(0);
               setHasQueuedChunks(false);
               setFirstQueuedChunkIndex("");
               setLastQueuedChunkIndex("");
@@ -252,6 +254,7 @@ export default function App() {
               const firstChunkUploaded = coordinator.isChunkUploaded(0);
               const currentQueuedChunkIndexes = coordinator.getQueuedChunkIndexes();
               const currentQueuedChunkCount = coordinator.getQueuedChunkCount();
+              const currentQueuedByteSize = coordinator.getQueuedByteSize();
               const currentHasQueuedChunks = coordinator.hasQueuedChunks();
               const currentFirstQueuedChunkIndex = coordinator.getFirstQueuedChunkIndex();
               const currentLastQueuedChunkIndex = coordinator.getLastQueuedChunkIndex();
@@ -290,6 +293,7 @@ export default function App() {
               );
               setQueuedChunkIndexes(currentQueuedChunkIndexes.join(","));
               setQueuedChunkCount(currentQueuedChunkCount);
+              setQueuedByteSize(currentQueuedByteSize);
               setHasQueuedChunks(currentHasQueuedChunks);
               setFirstQueuedChunkIndex(
                 currentFirstQueuedChunkIndex === null
@@ -418,6 +422,7 @@ export default function App() {
         <div>lastUploadedChunkIndex: {lastUploadedChunkIndex}</div>
         <div>queuedChunkIndexes: {queuedChunkIndexes}</div>
         <div>queuedChunkCount: {queuedChunkCount}</div>
+        <div>queuedByteSize: {queuedByteSize}</div>
         <div>hasQueuedChunks: {String(hasQueuedChunks)}</div>
         <div>firstQueuedChunkIndex: {firstQueuedChunkIndex}</div>
         <div>lastQueuedChunkIndex: {lastQueuedChunkIndex}</div>

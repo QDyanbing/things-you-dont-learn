@@ -44,6 +44,7 @@ export default function App() {
   const [lastQueuedChunkIndex, setLastQueuedChunkIndex] = useState("");
   const [pendingChunkIndexes, setPendingChunkIndexes] = useState("");
   const [hasPendingChunks, setHasPendingChunks] = useState(false);
+  const [pendingByteSize, setPendingByteSize] = useState(0);
   const [remainingChunkCount, setRemainingChunkCount] = useState(0);
   const [nextPendingChunkIndex, setNextPendingChunkIndex] = useState("");
   const [lastPendingChunkIndex, setLastPendingChunkIndex] = useState("");
@@ -159,6 +160,7 @@ export default function App() {
               setLastQueuedChunkIndex("");
               setPendingChunkIndexes("");
               setHasPendingChunks(false);
+              setPendingByteSize(0);
               setRemainingChunkCount(0);
               setNextPendingChunkIndex("");
               setLastPendingChunkIndex("");
@@ -260,6 +262,7 @@ export default function App() {
               const currentLastQueuedChunkIndex = coordinator.getLastQueuedChunkIndex();
               const currentPendingChunkIndexes = coordinator.getPendingChunkIndexes();
               const currentHasPendingChunks = coordinator.hasPendingChunks();
+              const currentPendingByteSize = coordinator.getPendingByteSize();
               const currentRemainingChunkCount = coordinator.getRemainingChunkCount();
               const currentNextPendingChunkIndex = coordinator.getNextPendingChunkIndex();
               const currentLastPendingChunkIndex = coordinator.getLastPendingChunkIndex();
@@ -307,6 +310,7 @@ export default function App() {
               );
               setPendingChunkIndexes(currentPendingChunkIndexes.join(","));
               setHasPendingChunks(currentHasPendingChunks);
+              setPendingByteSize(currentPendingByteSize);
               setRemainingChunkCount(currentRemainingChunkCount);
               setNextPendingChunkIndex(
                 currentNextPendingChunkIndex === null
@@ -428,6 +432,7 @@ export default function App() {
         <div>lastQueuedChunkIndex: {lastQueuedChunkIndex}</div>
         <div>pendingChunkIndexes: {pendingChunkIndexes}</div>
         <div>hasPendingChunks: {String(hasPendingChunks)}</div>
+        <div>pendingByteSize: {pendingByteSize}</div>
         <div>remainingChunkCount: {remainingChunkCount}</div>
         <div>nextPendingChunkIndex: {nextPendingChunkIndex}</div>
         <div>lastPendingChunkIndex: {lastPendingChunkIndex}</div>

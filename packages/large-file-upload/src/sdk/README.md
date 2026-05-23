@@ -60,6 +60,7 @@ const lastPendingChunkIndex = coordinator.getLastPendingChunkIndex();
 const hasUploadingChunks = coordinator.hasUploadingChunks();
 const firstUploadingChunkIndex = coordinator.getFirstUploadingChunkIndex();
 const lastUploadingChunkIndex = coordinator.getLastUploadingChunkIndex();
+const uploadingByteSize = coordinator.getUploadingByteSize();
 const failedChunkIndexes = coordinator.getFailedChunkIndexes();
 const firstFailedChunkIndex = coordinator.getFirstFailedChunkIndex();
 const lastFailedChunkIndex = coordinator.getLastFailedChunkIndex();
@@ -176,6 +177,8 @@ new FileCoordinator(file, options)
 `getLastUploadingChunkIndex()` 同样复用上传中分片列表的顺序，适合观察当前并发窗口尾部正在执行的分片。
 
 `getUploadingChunkCount()` 是上传中分片列表的数量视角，适合展示当前并发占用情况。
+
+`getUploadingByteSize()` 是上传中分片列表的字节视角，统计当前 `UPLOADING` 分片的完整大小；它不等同于实时已传字节，实时进度仍应读取 `getProgress()` 或 `getChunkProgress(index)`。
 
 `getFailedChunkIndexes()` 只观察当前状态为 `ERROR` 的分片；这些分片仍会被 `getPendingChunkIndexes()` 返回，并能在下一次 `upload()` 调用里继续参与调度。
 

@@ -869,6 +869,18 @@ export class FileCoordinator {
   }
 
   /**
+   * Returns the total byte size of chunks still needing upload scheduling.
+   */
+  getPendingByteSize(): number {
+    return this.chunks.reduce((pendingByteSize, chunk) => {
+      return pendingByteSize
+        + (chunk.status === 'PENDING' || chunk.status === 'ERROR'
+          ? chunk.size
+          : 0);
+    }, 0);
+  }
+
+  /**
    * Returns whether any chunk still needs upload scheduling.
    *
    * This uses the broader scheduling view and includes both `PENDING` chunks

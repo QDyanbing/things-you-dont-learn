@@ -344,6 +344,7 @@ new FileCoordinator(file, options)
 | `getLastUploadedChunkIndex()` | 获取最后一块已成功上传的分片下标；还没有成功分片时返回 `null` | `number \| null` |
 | `getUnfinishedChunkIndexes()` | 获取当前尚未成功完成的分片下标列表；当前会返回状态为 `PENDING`、`UPLOADING` 或 `ERROR` 的分片 | `number[]` |
 | `getUnfinishedChunkCount()` | 获取当前尚未成功完成的分片数量；当前和 `getUnfinishedChunkIndexes().length` 口径一致 | `number` |
+| `getUnfinishedByteSize()` | 获取当前尚未成功完成分片的合计字节数；当前会统计状态不是 `SUCCESS` 的分片完整大小 | `number` |
 | `getProgress()` | 获取当前文件的聚合上传进度快照；会返回总字节数、已计入进度的上传字节数、整体百分比和已完成分片数量 | `FileCoordinatorProgress` |
 | `getUploadedByteSize()` | 获取当前已经计入本地聚合进度的上传字节数；口径和 `getProgress().uploadedBytes` 一致 | `number` |
 | `getRemainingByteSize()` | 获取当前尚未计入本地聚合进度的剩余字节数；口径和 `getProgress().remainingBytes` 一致 | `number` |

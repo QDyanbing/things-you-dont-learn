@@ -748,6 +748,13 @@ export class FileCoordinator {
   }
 
   /**
+   * Returns how many chunks have not reached the successful state yet.
+   */
+  getUnfinishedChunkCount(): number {
+    return this.getUnfinishedChunkIndexes().length;
+  }
+
+  /**
    * Returns the current local aggregated upload progress snapshot.
    */
   getProgress(): FileCoordinatorProgress {

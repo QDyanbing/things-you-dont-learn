@@ -757,6 +757,15 @@ export class FileCoordinator {
   }
 
   /**
+   * Returns the total byte size of chunks that have not reached success yet.
+   */
+  getUnfinishedByteSize(): number {
+    return this.chunks.reduce((unfinishedByteSize, chunk) => {
+      return unfinishedByteSize + (chunk.status !== 'SUCCESS' ? chunk.size : 0);
+    }, 0);
+  }
+
+  /**
    * Returns the current local aggregated upload progress snapshot.
    */
   getProgress(): FileCoordinatorProgress {

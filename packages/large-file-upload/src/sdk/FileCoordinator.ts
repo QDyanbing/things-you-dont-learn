@@ -749,6 +749,8 @@ export class FileCoordinator {
 
   /**
    * Returns how many chunks have not reached the successful state yet.
+   *
+   * This is the count view of `getUnfinishedChunkIndexes()`.
    */
   getUnfinishedChunkCount(): number {
     return this.getUnfinishedChunkIndexes().length;

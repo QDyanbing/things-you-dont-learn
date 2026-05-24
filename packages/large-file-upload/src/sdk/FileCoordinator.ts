@@ -758,6 +758,9 @@ export class FileCoordinator {
 
   /**
    * Returns the total byte size of chunks that have not reached success yet.
+   *
+   * This reports full chunk sizes for non-`SUCCESS` chunks. It is not reduced
+   * by partial progress already reported from `UPLOADING` chunks.
    */
   getUnfinishedByteSize(): number {
     return this.chunks.reduce((unfinishedByteSize, chunk) => {

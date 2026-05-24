@@ -738,6 +738,13 @@ export class FileCoordinator {
   }
 
   /**
+   * Returns chunk indexes that have not reached the successful state yet.
+   */
+  getUnfinishedChunkIndexes(): number[] {
+    return this.getChunkIndexesByStatus(['PENDING', 'UPLOADING', 'ERROR']);
+  }
+
+  /**
    * Returns the current local aggregated upload progress snapshot.
    */
   getProgress(): FileCoordinatorProgress {

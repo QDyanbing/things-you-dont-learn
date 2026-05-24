@@ -50,6 +50,7 @@ const firstUploadedChunkIndex = coordinator.getFirstUploadedChunkIndex();
 const lastUploadedChunkIndex = coordinator.getLastUploadedChunkIndex();
 const unfinishedChunkIndexes = coordinator.getUnfinishedChunkIndexes();
 const unfinishedChunkCount = coordinator.getUnfinishedChunkCount();
+const unfinishedByteSize = coordinator.getUnfinishedByteSize();
 const queuedChunkIndexes = coordinator.getQueuedChunkIndexes();
 const queuedChunkCount = coordinator.getQueuedChunkCount();
 const queuedByteSize = coordinator.getQueuedByteSize();
@@ -171,6 +172,8 @@ new FileCoordinator(file, options)
 `getUnfinishedChunkIndexes()` 是成功口径的反向视角，会返回当前还没有到达 `SUCCESS` 的分片，包含等待、上传中和失败状态。
 
 `getUnfinishedChunkCount()` 是未完成分片列表的数量视角，适合展示还没有成功完成的总体分片数量。
+
+`getUnfinishedByteSize()` 是未完成分片列表的字节视角，统计非 `SUCCESS` 分片的完整大小；如果需要扣除上传中分片的已传字节，应使用 `getProgress().remainingBytes`。
 
 `getCompletionRatio()` 也是基于 `SUCCESS` 分片数量计算，返回值范围是 `0` 到 `1`；它适合展示分片完成度，字节级百分比仍应使用 `getProgress().percent`。
 

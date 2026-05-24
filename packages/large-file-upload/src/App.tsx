@@ -36,6 +36,7 @@ export default function App() {
   const [hasUploadedChunks, setHasUploadedChunks] = useState(false);
   const [firstUploadedChunkIndex, setFirstUploadedChunkIndex] = useState("");
   const [lastUploadedChunkIndex, setLastUploadedChunkIndex] = useState("");
+  const [unfinishedChunkIndexes, setUnfinishedChunkIndexes] = useState("");
   const [queuedChunkIndexes, setQueuedChunkIndexes] = useState("");
   const [queuedChunkCount, setQueuedChunkCount] = useState(0);
   const [queuedByteSize, setQueuedByteSize] = useState(0);
@@ -153,6 +154,7 @@ export default function App() {
               setHasUploadedChunks(false);
               setFirstUploadedChunkIndex("");
               setLastUploadedChunkIndex("");
+              setUnfinishedChunkIndexes("");
               setQueuedChunkIndexes("");
               setQueuedChunkCount(0);
               setQueuedByteSize(0);
@@ -227,6 +229,7 @@ export default function App() {
               const currentHasUploadedChunks = coordinator.hasUploadedChunks();
               const currentFirstUploadedChunkIndex = coordinator.getFirstUploadedChunkIndex();
               const currentLastUploadedChunkIndex = coordinator.getLastUploadedChunkIndex();
+              const currentUnfinishedChunkIndexes = coordinator.getUnfinishedChunkIndexes();
               const currentCompletionRatio = coordinator.getCompletionRatio();
               const currentCanUpload = coordinator.canUpload();
               const uploadTask = coordinator.upload();
@@ -297,6 +300,7 @@ export default function App() {
                   ? ""
                   : String(currentLastUploadedChunkIndex),
               );
+              setUnfinishedChunkIndexes(currentUnfinishedChunkIndexes.join(","));
               setQueuedChunkIndexes(currentQueuedChunkIndexes.join(","));
               setQueuedChunkCount(currentQueuedChunkCount);
               setQueuedByteSize(currentQueuedByteSize);
@@ -428,6 +432,7 @@ export default function App() {
         <div>hasUploadedChunks: {String(hasUploadedChunks)}</div>
         <div>firstUploadedChunkIndex: {firstUploadedChunkIndex}</div>
         <div>lastUploadedChunkIndex: {lastUploadedChunkIndex}</div>
+        <div>unfinishedChunkIndexes: {unfinishedChunkIndexes}</div>
         <div>queuedChunkIndexes: {queuedChunkIndexes}</div>
         <div>queuedChunkCount: {queuedChunkCount}</div>
         <div>queuedByteSize: {queuedByteSize}</div>

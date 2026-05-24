@@ -37,6 +37,7 @@ export default function App() {
   const [firstUploadedChunkIndex, setFirstUploadedChunkIndex] = useState("");
   const [lastUploadedChunkIndex, setLastUploadedChunkIndex] = useState("");
   const [unfinishedChunkIndexes, setUnfinishedChunkIndexes] = useState("");
+  const [unfinishedChunkCount, setUnfinishedChunkCount] = useState(0);
   const [queuedChunkIndexes, setQueuedChunkIndexes] = useState("");
   const [queuedChunkCount, setQueuedChunkCount] = useState(0);
   const [queuedByteSize, setQueuedByteSize] = useState(0);
@@ -155,6 +156,7 @@ export default function App() {
               setFirstUploadedChunkIndex("");
               setLastUploadedChunkIndex("");
               setUnfinishedChunkIndexes("");
+              setUnfinishedChunkCount(0);
               setQueuedChunkIndexes("");
               setQueuedChunkCount(0);
               setQueuedByteSize(0);
@@ -230,6 +232,7 @@ export default function App() {
               const currentFirstUploadedChunkIndex = coordinator.getFirstUploadedChunkIndex();
               const currentLastUploadedChunkIndex = coordinator.getLastUploadedChunkIndex();
               const currentUnfinishedChunkIndexes = coordinator.getUnfinishedChunkIndexes();
+              const currentUnfinishedChunkCount = coordinator.getUnfinishedChunkCount();
               const currentCompletionRatio = coordinator.getCompletionRatio();
               const currentCanUpload = coordinator.canUpload();
               const uploadTask = coordinator.upload();
@@ -301,6 +304,7 @@ export default function App() {
                   : String(currentLastUploadedChunkIndex),
               );
               setUnfinishedChunkIndexes(currentUnfinishedChunkIndexes.join(","));
+              setUnfinishedChunkCount(currentUnfinishedChunkCount);
               setQueuedChunkIndexes(currentQueuedChunkIndexes.join(","));
               setQueuedChunkCount(currentQueuedChunkCount);
               setQueuedByteSize(currentQueuedByteSize);
@@ -433,6 +437,7 @@ export default function App() {
         <div>firstUploadedChunkIndex: {firstUploadedChunkIndex}</div>
         <div>lastUploadedChunkIndex: {lastUploadedChunkIndex}</div>
         <div>unfinishedChunkIndexes: {unfinishedChunkIndexes}</div>
+        <div>unfinishedChunkCount: {unfinishedChunkCount}</div>
         <div>queuedChunkIndexes: {queuedChunkIndexes}</div>
         <div>queuedChunkCount: {queuedChunkCount}</div>
         <div>queuedByteSize: {queuedByteSize}</div>

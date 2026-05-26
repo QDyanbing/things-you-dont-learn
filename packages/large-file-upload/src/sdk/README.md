@@ -272,9 +272,9 @@ new FileCoordinator(file, options)
 | 属性 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | `totalBytes` | 当前文件总字节数 | `number` | - |
-| `uploadedBytes` | 当前已经计入聚合进度的上传字节数 | `number` | - |
-| `remainingBytes` | 当前尚未计入聚合进度的剩余字节数 | `number` | - |
-| `percent` | 当前整体上传百分比，范围为 `0` 到 `100` | `number` | - |
+| `uploadedBytes` | 当前本地快照里已经计入聚合进度的上传字节数 | `number` | - |
+| `remainingBytes` | 当前本地快照里尚未计入聚合进度的剩余字节数 | `number` | - |
+| `percent` | 基于当前本地快照计算的整体上传百分比，范围为 `0` 到 `100` | `number` | - |
 | `chunkCount` | 当前文件分片总数 | `number` | - |
 | `uploadedChunkCount` | 当前状态已经是 `SUCCESS` 的分片数量 | `number` | - |
 
@@ -285,8 +285,8 @@ new FileCoordinator(file, options)
 | `index` | 当前分片下标 | `number` | - |
 | `status` | 当前分片运行时状态 | `FileCoordinatorChunkStatus` | - |
 | `totalBytes` | 当前分片总字节数 | `number` | - |
-| `uploadedBytes` | 当前分片已经计入进度的上传字节数 | `number` | - |
-| `remainingBytes` | 当前分片尚未计入进度的剩余字节数 | `number` | - |
+| `uploadedBytes` | 当前分片在本地快照里已经计入进度的上传字节数 | `number` | - |
+| `remainingBytes` | 当前分片在本地快照里尚未计入进度的剩余字节数 | `number` | - |
 | `percent` | 当前分片上传百分比，范围为 `0` 到 `100` | `number` | - |
 
 ### FileCoordinatorChunkStatusCounts

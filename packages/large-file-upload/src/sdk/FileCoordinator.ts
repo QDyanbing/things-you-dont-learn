@@ -400,19 +400,19 @@ export interface FileCoordinatorChunkProgress {
  */
 export interface FileCoordinatorChunkStatusCounts {
   /**
-   * Count of chunks currently waiting for upload.
+   * Count of chunks currently marked as `PENDING`.
    */
   pending: number;
   /**
-   * Count of chunks currently running inside the upload flow.
+   * Count of chunks currently marked as `UPLOADING`.
    */
   uploading: number;
   /**
-   * Count of chunks uploaded successfully.
+   * Count of chunks currently marked as `SUCCESS`.
    */
   success: number;
   /**
-   * Count of chunks that failed during upload.
+   * Count of chunks currently marked as `ERROR`.
    */
   error: number;
 }

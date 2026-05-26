@@ -1214,7 +1214,10 @@ export class FileCoordinator {
   }
 
   /**
-   * Returns whether the current coordinator can start upload scheduling.
+   * Returns whether the current coordinator can start a new upload pass.
+   *
+   * The check requires a completed preparation result, no active upload task,
+   * and at least one retryable or queued chunk.
    */
   canUpload(): boolean {
     return (
@@ -1225,7 +1228,10 @@ export class FileCoordinator {
   }
 
   /**
-   * Uploads every pending chunk through the configured concurrent scheduler.
+   * Uploads every chunk returned by the current pending scheduling view.
+   *
+   * The scheduling view includes queued `PENDING` chunks and retryable `ERROR`
+   * chunks, but skips chunks already marked as `UPLOADING` or `SUCCESS`.
    */
   async upload(): Promise<void> {
     this.ensurePreparedForUpload();

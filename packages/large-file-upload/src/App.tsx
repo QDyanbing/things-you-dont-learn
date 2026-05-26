@@ -3,7 +3,10 @@ import { Button, ConfigProvider, Upload } from "antd";
 import { FileCoordinator } from "./sdk/FileCoordinator";
 
 /**
- * Temporarily marks one chunk as failed so the demo can show the failed-index getter.
+ * Marks one prepared chunk as failed so the demo can preview failed-state getters.
+ *
+ * The caller resets failed chunks later in the demo flow, so this helper keeps
+ * the preview focused on the local `ERROR` snapshot.
  */
 function readFailedChunkIndexesPreview(
   coordinator: FileCoordinator,

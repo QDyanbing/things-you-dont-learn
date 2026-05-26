@@ -738,17 +738,17 @@ export class FileCoordinator {
   }
 
   /**
-   * Returns chunk indexes that have not reached the successful state yet.
+   * Returns chunk indexes whose current status is not `SUCCESS`.
    *
-   * This includes queued, uploading, and failed chunks. It is broader than the
-   * pending scheduling view because active `UPLOADING` chunks are included.
+   * This is the inverse of the successful chunk view and includes queued,
+   * uploading, and failed chunks.
    */
   getUnfinishedChunkIndexes(): number[] {
     return this.getChunkIndexesByStatus(['PENDING', 'UPLOADING', 'ERROR']);
   }
 
   /**
-   * Returns how many chunks have not reached the successful state yet.
+   * Returns how many chunks currently have a non-`SUCCESS` status.
    *
    * This is the count view of `getUnfinishedChunkIndexes()`.
    */

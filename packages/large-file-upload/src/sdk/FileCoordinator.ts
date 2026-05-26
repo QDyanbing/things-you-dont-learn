@@ -336,7 +336,7 @@ export interface FileCoordinatorPrepareResult {
 }
 
 /**
- * Aggregated upload progress snapshot of the current file.
+ * Aggregated progress snapshot derived from the current local chunk states.
  */
 export interface FileCoordinatorProgress {
   /**
@@ -348,11 +348,11 @@ export interface FileCoordinatorProgress {
    */
   uploadedBytes: number;
   /**
-   * Byte count not yet included in the aggregated uploaded progress.
+   * Byte count not yet included in the aggregated upload progress.
    */
   remainingBytes: number;
   /**
-   * Aggregated upload percent from 0 to 100.
+   * Aggregated upload percent from 0 to 100 based on local progress only.
    */
   percent: number;
   /**

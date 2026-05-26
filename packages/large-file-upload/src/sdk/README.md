@@ -137,6 +137,14 @@ new FileCoordinator(file, options)
 | `SUCCESS` | 分片已经上传成功 | `'SUCCESS'` | - |
 | `ERROR` | 分片上传失败 | `'ERROR'` | - |
 
+### Status Views
+
+| 视角 | 包含状态 | 适合场景 |
+| --- | --- | --- |
+| queued | `PENDING` | 展示严格等待首次上传的队列 |
+| pending | `PENDING`、`ERROR` | 计算下一轮上传调度范围 |
+| unfinished | `PENDING`、`UPLOADING`、`ERROR` | 展示还没有成功完成的总体范围 |
+
 `getPendingChunkIndexes()` 面向“下一轮仍需调度”的视角，会包含 `PENDING` 和 `ERROR`，不会把已经处于 `UPLOADING` 的分片再次返回出来。
 
 `getPendingByteSize()` 使用同一套待调度口径，会把可重试的 `ERROR` 分片字节数也纳入统计，适合估算下一轮上传或重试还剩多少数据量。

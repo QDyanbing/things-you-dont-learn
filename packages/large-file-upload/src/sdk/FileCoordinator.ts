@@ -366,7 +366,7 @@ export interface FileCoordinatorProgress {
 }
 
 /**
- * Upload progress snapshot of one prepared chunk.
+ * Progress snapshot of one prepared chunk from the local runtime state.
  */
 export interface FileCoordinatorChunkProgress {
   /**
@@ -378,15 +378,15 @@ export interface FileCoordinatorChunkProgress {
    */
   status: FileCoordinatorChunkStatus;
   /**
-   * Total byte size of the chunk.
+   * Full byte size of the chunk.
    */
   totalBytes: number;
   /**
-   * Byte count currently included in this chunk progress.
+   * Byte count currently included in this chunk's local progress.
    */
   uploadedBytes: number;
   /**
-   * Byte count not yet included in this chunk progress.
+   * Byte count not yet included in this chunk's local progress.
    */
   remainingBytes: number;
   /**

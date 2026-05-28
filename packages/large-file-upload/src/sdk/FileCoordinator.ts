@@ -1647,6 +1647,9 @@ export class FileCoordinator {
 
   /**
    * Stores the latest uploaded byte count of one prepared chunk.
+   *
+   * Reported values are clamped to a valid byte range before they are used by
+   * public progress snapshots.
    */
   private updateChunkUploadedBytes(
     index: number,
@@ -1668,6 +1671,9 @@ export class FileCoordinator {
 
   /**
    * Returns the current byte contribution of one chunk in the public progress snapshot.
+   *
+   * Completed chunks contribute their full size, active chunks contribute their
+   * last reported loaded bytes, and inactive chunks contribute zero.
    */
   private getChunkUploadedBytesForProgress(
     chunk: FileCoordinatorChunkRecord,

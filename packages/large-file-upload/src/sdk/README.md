@@ -93,6 +93,8 @@ const firstChunkByteRange = coordinator.getChunkByteRange(0);
 
 `getPreparedChunkIndexes()` 只返回当前本地已经准备出的分片下标，适合调试切片结果或在 UI 上展示可检查的分片范围。
 
+在 `uploadChunk` 处理器里调用 `reportProgress(loaded, total)` 可以把单片上传进度交回 SDK 聚合；`loaded` 会被限制在 `0`、`total` 和当前分片大小之间，因此调用方可以直接传请求库返回的已上传字节数。
+
 ## API
 
 ### Constructor

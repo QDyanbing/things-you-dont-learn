@@ -156,6 +156,15 @@ new FileCoordinator(file, options)
 | pending | `PENDING`、`ERROR` | 计算下一轮上传调度范围 |
 | unfinished | `PENDING`、`UPLOADING`、`ERROR` | 展示还没有成功完成的总体范围 |
 
+### Byte Views
+
+| 方法 | 字节口径 |
+| --- | --- |
+| `getPreparedByteSize()` | 当前已经准备出的所有分片大小 |
+| `getUploadedByteSize()` | 当前聚合进度里已经计入上传完成或上传中的字节数 |
+| `getRemainingByteSize()` | 当前聚合进度里尚未计入上传的字节数 |
+| `getUnfinishedByteSize()` | 当前所有非 `SUCCESS` 分片的完整大小 |
+
 `getPendingChunkIndexes()` 面向“下一轮仍需调度”的视角，会包含 `PENDING` 和 `ERROR`，不会把已经处于 `UPLOADING` 的分片再次返回出来。
 
 `getPendingByteSize()` 使用同一套待调度口径，会把可重试的 `ERROR` 分片字节数也纳入统计，适合估算下一轮上传或重试还剩多少数据量。

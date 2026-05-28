@@ -796,6 +796,9 @@ export class FileCoordinator {
 
   /**
    * Returns the current local aggregated upload progress snapshot.
+   *
+   * The snapshot is derived only from prepared chunk status and locally reported
+   * bytes; it does not query the server for resume state.
    */
   getProgress(): FileCoordinatorProgress {
     const uploadedBytes = this.chunks.reduce((currentUploadedBytes, chunk) => {
@@ -834,6 +837,8 @@ export class FileCoordinator {
 
   /**
    * Returns the current local upload progress snapshot of one prepared chunk.
+   *
+   * Invalid or not-yet-prepared indexes return `null` instead of throwing.
    */
   getChunkProgress(index: number): FileCoordinatorChunkProgress | null {
     const chunk = this.findChunk(index);

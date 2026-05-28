@@ -927,7 +927,10 @@ export class FileCoordinator {
   }
 
   /**
-   * Returns chunk indexes that still need to enter the upload flow.
+   * Returns chunk indexes that should be considered by the next upload pass.
+   *
+   * This scheduling view includes brand-new `PENDING` chunks and retryable
+   * `ERROR` chunks.
    */
   getPendingChunkIndexes(): number[] {
     return this.getChunkIndexesByStatus(['PENDING', 'ERROR']);
@@ -962,6 +965,8 @@ export class FileCoordinator {
 
   /**
    * Returns how many chunks still need upload scheduling.
+   *
+   * This is the count view of `getPendingChunkIndexes()`.
    */
   getRemainingChunkCount(): number {
     return this.getPendingChunkIndexes().length;
@@ -969,6 +974,8 @@ export class FileCoordinator {
 
   /**
    * Returns the first chunk index that still needs upload scheduling.
+   *
+   * This returns the earliest chunk in the current pending scheduling view.
    */
   getNextPendingChunkIndex(): number | null {
     return this.getPendingChunkIndexes()[0] ?? null;

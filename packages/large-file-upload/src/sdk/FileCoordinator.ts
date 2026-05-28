@@ -533,6 +533,7 @@ export class FileCoordinator {
    *
    * Changing the chunk size clears prepared chunks and moves the status back
    * to `INIT` so the caller can run `prepare()` again with the new setting.
+   * Existing upload progress is discarded together with the previous chunk list.
    */
   setChunkSize(chunkSize: number): number {
     const normalizedChunkSize = normalizeChunkSize(chunkSize);
@@ -568,6 +569,7 @@ export class FileCoordinator {
    *
    * Repeated calls are safe. When a preparation task is already running,
    * later callers reuse the same promise instead of starting a new run.
+   * A new preparation pass rebuilds the chunk list from the current `chunkSize`.
    *
    * Returns a lightweight summary of the prepared file metadata.
    */

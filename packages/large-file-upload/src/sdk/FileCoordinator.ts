@@ -862,7 +862,9 @@ export class FileCoordinator {
   }
 
   /**
-   * Returns chunk indexes that are strictly waiting for upload.
+   * Returns chunk indexes that are strictly waiting for their first upload try.
+   *
+   * Retryable failed chunks are intentionally excluded from this queue view.
    */
   getQueuedChunkIndexes(): number[] {
     return this.getChunkIndexesByStatus(['PENDING']);
@@ -871,7 +873,7 @@ export class FileCoordinator {
   /**
    * Returns how many chunks are strictly waiting for upload.
    *
-   * This is the count view of `getQueuedChunkIndexes()`.
+   * This is the count view of the strict `PENDING` queue.
    */
   getQueuedChunkCount(): number {
     return this.getQueuedChunkIndexes().length;
@@ -880,8 +882,8 @@ export class FileCoordinator {
   /**
    * Returns the total byte size of chunks strictly waiting for upload.
    *
-   * This follows the same strict queue view as `getQueuedChunkIndexes()` and
-   * includes only chunks currently marked as `PENDING`.
+   * This follows the same strict queue view and includes only chunks currently
+   * marked as `PENDING`.
    */
   getQueuedByteSize(): number {
     return this.chunks.reduce((queuedByteSize, chunk) => {

@@ -192,10 +192,17 @@ export interface FileCoordinatorOptions {
   concurrency?: number;
   /**
    * Custom file identity generator used to override the default short id.
+   *
+   * Use this when the server already has a business id or content hash for the
+   * selected file.
    */
   createFileIdentity?: FileCoordinatorCreateFileIdentity;
   /**
    * Caller-provided uploader responsible for sending one prepared chunk.
+   *
+   * The SDK owns chunk selection, status changes, abort signals, and progress
+   * aggregation; the handler owns transport details such as URL, headers, and
+   * request body shape.
    */
   uploadChunk?: FileCoordinatorUploadChunkHandler;
 }

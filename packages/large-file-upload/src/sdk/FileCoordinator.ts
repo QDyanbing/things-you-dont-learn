@@ -995,7 +995,10 @@ export class FileCoordinator {
   }
 
   /**
-   * Returns chunk indexes that are currently running inside the upload flow.
+   * Returns chunk indexes whose local status is currently `UPLOADING`.
+   *
+   * This is a chunk-state view and does not infer activity from coordinator
+   * status alone.
    */
   getUploadingChunkIndexes(): number[] {
     return this.getChunkIndexesByStatus(['UPLOADING']);
@@ -1055,7 +1058,10 @@ export class FileCoordinator {
   }
 
   /**
-   * Returns chunk indexes that failed during the latest upload attempts.
+   * Returns chunk indexes whose local status is currently `ERROR`.
+   *
+   * Failed chunks remain part of the broader pending scheduling view so they
+   * can be retried by a later `upload()` call.
    */
   getFailedChunkIndexes(): number[] {
     return this.getChunkIndexesByStatus(['ERROR']);

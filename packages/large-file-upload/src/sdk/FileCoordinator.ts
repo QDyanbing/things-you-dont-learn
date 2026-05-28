@@ -72,6 +72,9 @@ export type FileCoordinatorFileIdentity = string;
 
 /**
  * Stable identity string of one prepared chunk.
+ *
+ * Like the file identity, this is derived from metadata and byte range rather
+ * than chunk content.
  */
 export type FileCoordinatorChunkIdentity = string;
 
@@ -99,7 +102,7 @@ export type FileCoordinatorUploadChunkHandler = (
 ) => Promise<void>;
 
 /**
- * Returns the relative path attached by directory uploads when available.
+ * Returns the relative path attached by browser directory uploads when available.
  */
 function getFileRelativePath(file: File): string {
   return 'webkitRelativePath' in file ? file.webkitRelativePath ?? '' : '';
@@ -147,6 +150,9 @@ function createDefaultFileIdentity(file: File): FileCoordinatorFileIdentity {
 
 /**
  * Creates the default short identity string for one prepared chunk.
+ *
+ * The generated value combines file identity, chunk index, and byte range so
+ * callers can correlate retry records without reading the chunk bytes.
  */
 function createChunkIdentity(
   fileIdentity: FileCoordinatorFileIdentity,

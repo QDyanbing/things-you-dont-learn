@@ -642,6 +642,9 @@ export class FileCoordinator {
 
   /**
    * Updates the current runtime status of one prepared chunk by index.
+   *
+   * Moving a chunk back to `PENDING` clears local progress, while moving it to
+   * `SUCCESS` marks the whole chunk as uploaded.
    */
   setChunkStatus(
     index: number,
@@ -668,6 +671,9 @@ export class FileCoordinator {
 
   /**
    * Marks a batch of prepared chunks as uploaded by index.
+   *
+   * Duplicate indexes are collapsed and missing chunks are ignored, which keeps
+   * server-side resume records easy to pass through directly.
    */
   setUploadedChunks(indexes: number[]): number {
     const uniqueIndexes = [...new Set(indexes)];

@@ -139,6 +139,15 @@ new FileCoordinator(file, options)
 | `SUCCESS` | 分片已经上传成功 | `'SUCCESS'` | - |
 | `ERROR` | 分片上传失败 | `'ERROR'` | - |
 
+### Lifecycle Quick Reference
+
+| 阶段 | 常用入口 | 说明 |
+| --- | --- | --- |
+| 准备分片 | `prepare()` | 按当前 `chunkSize` 重建本地分片列表 |
+| 调度上传 | `upload()` | 按待调度口径处理 `PENDING` 和 `ERROR` 分片 |
+| 暂停/恢复 | `pause()` / `resume()` | 暂停会把活跃分片恢复到可再次调度状态 |
+| 清理状态 | `resetFailedChunks()` / `resetUploadProgress()` | 分别处理失败态和全部上传运行态 |
+
 ### Status Views
 
 | 视角 | 包含状态 | 适合场景 |

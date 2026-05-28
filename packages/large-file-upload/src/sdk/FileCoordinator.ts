@@ -9,14 +9,19 @@ const DEFAULT_CHUNK_SIZE = 5 * 1024 * 1024;
 const DEFAULT_CONCURRENCY = 1;
 
 /**
- * Normalizes the public chunk size into the effective runtime value.
+ * Normalizes caller-provided chunk size into the effective runtime value.
+ *
+ * The coordinator keeps the value at least 1 byte so chunk creation can always
+ * make forward progress.
  */
 function normalizeChunkSize(chunkSize?: number): number {
   return Math.max(1, chunkSize ?? DEFAULT_CHUNK_SIZE);
 }
 
 /**
- * Normalizes the public concurrency into the effective runtime value.
+ * Normalizes caller-provided concurrency into the effective runtime value.
+ *
+ * The value is floored first because worker counts must be whole numbers.
  */
 function normalizeConcurrency(concurrency?: number): number {
   return Math.max(1, Math.floor(concurrency ?? DEFAULT_CONCURRENCY));

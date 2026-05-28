@@ -1540,6 +1540,10 @@ export class FileCoordinator {
 
   /**
    * Runs the caller-provided upload handler for one prepared chunk.
+   *
+   * This method owns SDK-side status transitions around the transport handler:
+   * `UPLOADING` before the call, `SUCCESS` after success, and `ERROR` for
+   * non-abort failures.
    */
   private async uploadPreparedChunk(
     index: number,
@@ -1590,6 +1594,9 @@ export class FileCoordinator {
 
   /**
    * Uploads a batch of prepared chunks with the configured concurrency.
+   *
+   * Workers share the pending index queue and stop early after the first error
+   * so the caller can surface the original failure.
    */
   private async uploadPendingChunks(
     indexes: number[],

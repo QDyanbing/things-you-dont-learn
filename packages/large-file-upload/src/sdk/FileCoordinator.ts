@@ -609,7 +609,8 @@ export class FileCoordinator {
    * Returns the summed byte size of all prepared chunks.
    *
    * Before `prepare()` runs this returns `0`; after preparation it should match
-   * the current file size unless the prepared chunk list is cleared.
+   * the current file size unless the prepared chunk list is cleared. This is a
+   * chunking view, not an upload progress view.
    */
   getPreparedByteSize(): number {
     return this.chunks.reduce((preparedByteSize, chunk) => {
@@ -820,7 +821,7 @@ export class FileCoordinator {
   /**
    * Returns the uploaded byte count from the local progress snapshot.
    *
-   * This uses the same aggregation rules as `getProgress().uploadedBytes`.
+   * This is a convenience wrapper around `getProgress().uploadedBytes`.
    */
   getUploadedByteSize(): number {
     return this.getProgress().uploadedBytes;
@@ -829,7 +830,7 @@ export class FileCoordinator {
   /**
    * Returns the remaining byte count from the local progress snapshot.
    *
-   * This uses the same aggregation rules as `getProgress().remainingBytes`.
+   * This is a convenience wrapper around `getProgress().remainingBytes`.
    */
   getRemainingByteSize(): number {
     return this.getProgress().remainingBytes;

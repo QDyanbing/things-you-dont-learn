@@ -278,6 +278,8 @@ new FileCoordinator(file, options)
 | `end` | 当前分片的结束字节位置，不包含当前值 | `number` | - |
 | `size` | 当前分片的字节大小 | `number` | - |
 
+分片范围使用半开区间 `[start, end)`，因此 `size` 等于 `end - start`。这和 `File.slice(start, end)` 的参数口径保持一致。
+
 ### FileCoordinatorUploadChunkParams
 
 | 属性 | 说明 | 类型 | 默认值 |

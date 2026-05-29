@@ -1385,6 +1385,8 @@ export class FileCoordinator {
 
   /**
    * Returns the stable identity of one prepared chunk by index.
+   *
+   * Invalid indexes and chunks not prepared yet return `null`.
    */
   getChunkIdentity(index: number): FileCoordinatorChunkIdentity | null {
     return this.findChunk(index)?.chunkIdentity ?? null;
@@ -1393,7 +1395,8 @@ export class FileCoordinator {
   /**
    * Returns the public metadata of one prepared chunk by index.
    *
-   * Use this when the caller only needs offsets and type information.
+   * Use this when the caller needs identity, offsets, and type information
+   * without allocating a chunk `Blob`.
    */
   getChunkInfo(index: number): FileCoordinatorChunkInfo | null {
     const chunk = this.findChunk(index);
@@ -1435,7 +1438,8 @@ export class FileCoordinator {
   /**
    * Returns the chunk blob selected by the provided prepared index.
    *
-   * The returned blob keeps the original file MIME type when available.
+   * The returned blob keeps the original file MIME type when available. Invalid
+   * indexes and chunks not prepared yet return `null`.
    */
   getChunk(index: number): Blob | null {
     const chunk = this.findChunk(index);

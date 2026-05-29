@@ -1453,6 +1453,9 @@ export class FileCoordinator {
 
   /**
    * Returns the latest successful preparation summary.
+   *
+   * The returned object is a copy so callers cannot mutate cached prepare
+   * metadata held by the coordinator.
    */
   getPrepareResult() {
     if (!this.prepareResult) {
@@ -1537,6 +1540,8 @@ export class FileCoordinator {
 
   /**
    * Finds one prepared chunk from the internal chunk list.
+   *
+   * This helper returns the mutable internal record, so it must stay private.
    */
   private findChunk(index: number): FileCoordinatorChunkRecord | null {
     const normalizedIndex = normalizeChunkIndex(index);
@@ -1550,6 +1555,8 @@ export class FileCoordinator {
 
   /**
    * Returns indexes of prepared chunks matching any of the provided statuses.
+   *
+   * The returned indexes preserve the current prepared chunk order.
    */
   private getChunkIndexesByStatus(
     statuses: readonly FileCoordinatorChunkStatus[],

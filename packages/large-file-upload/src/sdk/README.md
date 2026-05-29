@@ -132,6 +132,10 @@ new FileCoordinator(file, options)
 | --- | --- | --- | --- |
 | `-` | 基于文件标识、分片下标和分片范围压缩生成的短 id，用来唯一标记当前分片 | `string` | - |
 
+### Identity Notes
+
+默认文件 id 和分片 id 都是元数据派生的短标识，适合做请求关联、断点记录和日志排查；它们不是内容 hash。需要服务端可校验的内容 hash 时，应通过 `createFileIdentity` 或业务层额外计算。
+
 ### FileCoordinatorChunkStatus
 
 | 属性 | 说明 | 类型 | 默认值 |

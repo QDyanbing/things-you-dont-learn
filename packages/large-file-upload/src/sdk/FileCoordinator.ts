@@ -452,7 +452,10 @@ export interface FileCoordinatorChunkStatusCounts {
 }
 
 /**
- * Coordinates one file instance and prepares internal chunk metadata for later upload steps.
+ * Coordinates chunk preparation, upload scheduling, and local progress for one file.
+ *
+ * One coordinator instance intentionally owns one file only; multi-file upload
+ * orchestration should compose multiple coordinators outside this class.
  */
 export class FileCoordinator {
   /**
@@ -469,6 +472,8 @@ export class FileCoordinator {
   private readonly options: FileCoordinatorResolvedOptions;
   /**
    * Internal chunk list used by later upload scheduling logic.
+   *
+   * The list is rebuilt by `prepare()` and by chunk-size changes.
    */
   private chunks: FileCoordinatorChunkRecord[];
   /**
@@ -477,6 +482,9 @@ export class FileCoordinator {
   private preparePromise: Promise<FileCoordinatorPrepareResult> | null = null;
   /**
    * Active upload task reused by concurrent `upload()` calls.
+   *
+   * Single-chunk uploads are intentionally tracked through the abort controller
+   * instead of this shared batch promise.
    */
   private uploadPromise: Promise<void> | null = null;
   /**

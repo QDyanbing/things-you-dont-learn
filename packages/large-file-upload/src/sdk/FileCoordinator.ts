@@ -1741,6 +1741,9 @@ export class FileCoordinator {
 
   /**
    * Splits the current file into deterministic chunks based on `chunkSize`.
+   *
+   * Empty files still produce one zero-length chunk so callers have a stable
+   * chunk record to inspect and pass through the same upload flow.
    */
   private createChunks(): FileCoordinatorChunkRecord[] {
     const chunkSize = this.options.chunkSize;

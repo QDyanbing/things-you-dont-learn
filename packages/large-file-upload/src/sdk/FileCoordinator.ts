@@ -1359,6 +1359,9 @@ export class FileCoordinator {
 
   /**
    * Uploads one prepared chunk through the caller-provided upload handler.
+   *
+   * This is useful for manual repair or external schedulers. The regular
+   * `upload()` method remains the preferred path for SDK-managed concurrency.
    */
   async uploadChunk(index: number): Promise<void> {
     this.ensurePreparedForUpload();

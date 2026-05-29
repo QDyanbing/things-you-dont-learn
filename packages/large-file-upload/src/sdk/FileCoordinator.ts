@@ -307,10 +307,16 @@ export interface FileCoordinatorUploadChunkParams {
   chunk: Blob;
   /**
    * Abort signal controlled by the coordinator for the current upload task.
+   *
+   * Transport code should pass this signal into `fetch`, axios adapters, or any
+   * other request layer that can react to cancellation.
    */
   signal: AbortSignal;
   /**
    * Reports the latest uploaded byte count of the current chunk back to the SDK.
+   *
+   * `loaded` should be the bytes transferred for this chunk, while `total`
+   * defaults to the prepared chunk size when it is omitted.
    */
   reportProgress: (loaded: number, total?: number) => void;
 }

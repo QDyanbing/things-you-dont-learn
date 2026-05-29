@@ -231,6 +231,9 @@ export interface FileCoordinatorResolvedOptions {
 
 /**
  * Public metadata of one prepared chunk.
+ *
+ * The offsets use a half-open byte range: `start` is included and `end` is
+ * excluded, so `size` is always `end - start`.
  */
 export interface FileCoordinatorChunkInfo {
   /**
@@ -240,7 +243,8 @@ export interface FileCoordinatorChunkInfo {
   /**
    * Stable identity of the current chunk.
    *
-   * Useful for mapping upload records or retry state outside the SDK.
+   * Useful for mapping upload records or retry state outside the SDK without
+   * reading the chunk bytes again.
    */
   chunkIdentity: FileCoordinatorChunkIdentity;
   /**
@@ -258,7 +262,7 @@ export interface FileCoordinatorChunkInfo {
    */
   end: number;
   /**
-   * Byte length of the chunk.
+   * Byte length of the chunk derived from the prepared byte range.
    */
   size: number;
 }

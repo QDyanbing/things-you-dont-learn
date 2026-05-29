@@ -507,8 +507,8 @@ export class FileCoordinator {
   /**
    * Creates a coordinator bound to one selected file.
    *
-   * @param file File selected by the user.
-   * @param options Runtime configuration for the current file.
+   * @param file File selected by the user and kept for later `Blob` slicing.
+   * @param options Runtime configuration for chunk size, identity, and upload transport.
    */
   constructor(
     file: File,
@@ -530,6 +530,8 @@ export class FileCoordinator {
 
   /**
    * Returns the original `File` instance bound to the coordinator.
+   *
+   * The same object is used internally whenever a chunk `Blob` is requested.
    */
   getFile() {
     return this.file;
@@ -537,6 +539,9 @@ export class FileCoordinator {
 
   /**
    * Returns the stable identity string of the current file.
+   *
+   * This is generated once in the constructor and does not change after
+   * `setChunkSize()` or `prepare()`.
    */
   getFileIdentity() {
     return this.fileIdentity;
@@ -546,7 +551,8 @@ export class FileCoordinator {
    * Returns the normalized runtime options of the current coordinator.
    *
    * Unlike the input `FileCoordinatorOptions`, the returned object always
-   * contains the resolved `chunkSize` and `concurrency`.
+   * contains the resolved `chunkSize` and `concurrency`, and is returned as a
+   * shallow copy.
    */
   getOptions(): FileCoordinatorResolvedOptions {
     return { ...this.options };

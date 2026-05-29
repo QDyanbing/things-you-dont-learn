@@ -1474,6 +1474,9 @@ export class FileCoordinator {
 
   /**
    * Creates and stores the abort controller used by the current upload task.
+   *
+   * Only one active controller is tracked at a time because one coordinator
+   * owns one active upload flow.
    */
   private startUploadAbortController(): AbortController {
     const abortController = new AbortController();
@@ -1504,6 +1507,9 @@ export class FileCoordinator {
 
   /**
    * Converts the current abort reason into the public coordinator status.
+   *
+   * Pause requests become `PAUSED`; every other abort path is surfaced as
+   * `CANCELED`.
    */
   private getAbortStatus(): FileCoordinatorStatus {
     return this.uploadAbortReason === 'PAUSE' ? 'PAUSED' : 'CANCELED';

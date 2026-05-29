@@ -323,6 +323,9 @@ export interface FileCoordinatorUploadChunkParams {
 
 /**
  * Internal prepared chunk record with mutable upload runtime state.
+ *
+ * Public fields come from `FileCoordinatorChunkInfo`; runtime fields stay
+ * internal so callers cannot mutate scheduling state directly.
  */
 interface FileCoordinatorChunkRecord extends FileCoordinatorChunkInfo {
   /**
@@ -331,6 +334,9 @@ interface FileCoordinatorChunkRecord extends FileCoordinatorChunkInfo {
   status: FileCoordinatorChunkStatus;
   /**
    * Latest uploaded byte count reported for this chunk.
+   *
+   * This value is meaningful for `UPLOADING` chunks and is reset when the chunk
+   * returns to `PENDING`.
    */
   uploadedBytes: number;
 }

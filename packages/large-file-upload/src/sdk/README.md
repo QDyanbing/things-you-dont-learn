@@ -297,6 +297,8 @@ new FileCoordinator(file, options)
 | --- | --- | --- | --- |
 | `-` | 调用方传入的单分片上传处理函数；通常在这里接入鉴权、请求头、接口地址和表单结构 | `(params: FileCoordinatorUploadChunkParams) => Promise<void>` | - |
 
+上传处理器只需要关注“怎么把这一片传出去”。分片选择、状态切换、并发调度、取消信号和聚合进度都由 SDK 维护。
+
 ### FileCoordinatorProgress
 
 | 属性 | 说明 | 类型 | 默认值 |

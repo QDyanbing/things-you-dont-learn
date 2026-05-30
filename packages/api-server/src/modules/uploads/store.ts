@@ -132,6 +132,9 @@ export function putUploadPart(uploadId: string, payload: UploadPart) {
   return upload;
 }
 
+/**
+ * Marks an upload task as completed and indexes it by file hash.
+ */
 export function completeUpload(uploadId: string) {
   const upload = uploads.get(uploadId);
   if (!upload) {
@@ -147,6 +150,12 @@ export function completeUpload(uploadId: string) {
   return upload;
 }
 
+/**
+ * Removes a pending upload task from the demo store.
+ *
+ * If the removed task is also the completed hash entry, that index is cleared
+ * as well.
+ */
 export function abortUpload(uploadId: string) {
   const upload = uploads.get(uploadId);
   if (!upload) {

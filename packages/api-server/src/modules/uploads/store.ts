@@ -99,10 +99,16 @@ export function createUpload(input: CreateUploadInput) {
   };
 }
 
+/**
+ * Finds one upload task by id.
+ */
 export function getUpload(uploadId: string) {
   return uploads.get(uploadId) ?? null;
 }
 
+/**
+ * Lists uploaded parts in ascending part number order.
+ */
 export function listUploadedParts(uploadId: string) {
   const upload = uploads.get(uploadId);
   if (!upload) {
@@ -112,6 +118,9 @@ export function listUploadedParts(uploadId: string) {
   return Array.from(upload.uploadedParts.values()).sort((a, b) => a.partNumber - b.partNumber);
 }
 
+/**
+ * Inserts or replaces one uploaded part record.
+ */
 export function putUploadPart(uploadId: string, payload: UploadPart) {
   const upload = uploads.get(uploadId);
   if (!upload) {

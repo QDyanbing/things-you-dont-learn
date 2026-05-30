@@ -123,7 +123,13 @@ function ensureUploadAccess(
   return true;
 }
 
+/**
+ * Registers demo upload routes under the API prefix configured by the app.
+ */
 export const uploadRoutes: FastifyPluginAsync = async (fastify) => {
+  /**
+   * Lightweight health endpoint for checking that the upload plugin is mounted.
+   */
   fastify.get('/health', async () => ({ ok: true }));
 
   fastify.post<{ Body: CreateUploadBody }>('/uploads', async (request, reply) => {

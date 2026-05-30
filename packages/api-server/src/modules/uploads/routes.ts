@@ -7,6 +7,9 @@ import {
 } from '../demo-auth/constants.js';
 import { abortUpload, completeUpload, createUpload, getUpload, listUploadedParts, putUploadPart, toUploadResource } from './store.js';
 
+/**
+ * Request body used to create or resume an upload task.
+ */
 interface CreateUploadBody {
   fileName: string;
   fileHash: string;
@@ -14,11 +17,17 @@ interface CreateUploadBody {
   partSize: number;
 }
 
+/**
+ * Request body used to record a single uploaded part.
+ */
 interface PutPartBody {
   partHash: string;
   size: number;
 }
 
+/**
+ * Demo-only access modes used to exercise public, bearer, and cookie flows.
+ */
 type DemoUploadAccessMode = 'public' | 'bearer' | 'cookie';
 
 function resolveUploadAccessMode(headerValue: string | string[] | undefined): DemoUploadAccessMode {

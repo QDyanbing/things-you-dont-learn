@@ -242,6 +242,9 @@ export const uploadRoutes: FastifyPluginAsync = async (fastify) => {
     },
   );
 
+  /**
+   * Completes an upload once every expected part has been recorded.
+   */
   fastify.post<{ Params: { uploadId: string } }>('/uploads/:uploadId/complete', async (request, reply) => {
     const access = ensureUploadAccess(request, reply);
     if (access !== true) {
@@ -273,6 +276,9 @@ export const uploadRoutes: FastifyPluginAsync = async (fastify) => {
     };
   });
 
+  /**
+   * Aborts an upload task and removes its in-memory records.
+   */
   fastify.delete<{ Params: { uploadId: string } }>('/uploads/:uploadId', async (request, reply) => {
     const access = ensureUploadAccess(request, reply);
     if (access !== true) {

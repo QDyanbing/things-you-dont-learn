@@ -1,9 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { CreateUploadInput, Upload, UploadPart } from './types.js';
 
+/**
+ * Demo-only in-memory uploads keyed by upload id.
+ */
 const uploads = new Map<string, Upload>();
+/**
+ * Completed upload lookup keyed by client-provided file hash.
+ */
 const completedByHash = new Map<string, { uploadId: string; completedAt: string }>();
 
+/**
+ * Returns the current ISO timestamp used by demo upload records.
+ */
 function now() {
   return new Date().toISOString();
 }

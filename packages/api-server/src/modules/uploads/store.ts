@@ -17,6 +17,12 @@ function now() {
   return new Date().toISOString();
 }
 
+/**
+ * Converts an internal upload task into the JSON resource returned by routes.
+ *
+ * The in-memory Map is flattened into sorted part numbers so clients can diff
+ * resume state without knowing store internals.
+ */
 function toUploadResource(upload: Upload) {
   const uploadedPartNumbers = Array.from(upload.uploadedParts.keys()).sort((a, b) => a - b);
 

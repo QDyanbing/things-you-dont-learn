@@ -184,6 +184,9 @@ export const uploadRoutes: FastifyPluginAsync = async (fastify) => {
     };
   });
 
+  /**
+   * Lists uploaded parts for resume checks.
+   */
   fastify.get<{ Params: { uploadId: string } }>('/uploads/:uploadId/parts', async (request, reply) => {
     const access = ensureUploadAccess(request, reply);
     if (access !== true) {
@@ -202,6 +205,9 @@ export const uploadRoutes: FastifyPluginAsync = async (fastify) => {
     };
   });
 
+  /**
+   * Records or replaces one uploaded part for the current upload task.
+   */
   fastify.put<{ Params: { uploadId: string; partNumber: string }; Body: PutPartBody }>(
     '/uploads/:uploadId/parts/:partNumber',
     async (request, reply) => {

@@ -132,6 +132,9 @@ export const uploadRoutes: FastifyPluginAsync = async (fastify) => {
    */
   fastify.get('/health', async () => ({ ok: true }));
 
+  /**
+   * Creates a new upload task or returns an existing task for the same file hash.
+   */
   fastify.post<{ Body: CreateUploadBody }>('/uploads', async (request, reply) => {
     const access = ensureUploadAccess(request, reply);
     if (access !== true) {
@@ -160,6 +163,9 @@ export const uploadRoutes: FastifyPluginAsync = async (fastify) => {
     };
   });
 
+  /**
+   * Returns the current server-side state of one upload task.
+   */
   fastify.get<{ Params: { uploadId: string } }>('/uploads/:uploadId', async (request, reply) => {
     const access = ensureUploadAccess(request, reply);
     if (access !== true) {

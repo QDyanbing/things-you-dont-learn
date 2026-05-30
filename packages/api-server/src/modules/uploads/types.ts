@@ -62,9 +62,24 @@ export interface Upload {
   updatedAt: string;
 }
 
+/**
+ * Payload accepted by the store when a client starts or resumes an upload.
+ */
 export interface CreateUploadInput {
+  /**
+   * Original file name from the browser.
+   */
   fileName: string;
+  /**
+   * Client-provided file hash used as the resume lookup key.
+   */
   fileHash: string;
+  /**
+   * Original file size in bytes.
+   */
   fileSize: number;
+  /**
+   * Desired part size in bytes.
+   */
   partSize: number;
 }

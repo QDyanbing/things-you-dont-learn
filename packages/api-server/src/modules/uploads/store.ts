@@ -42,6 +42,12 @@ function toUploadResource(upload: Upload) {
   };
 }
 
+/**
+ * Creates a new upload task or returns an existing resumable/completed task.
+ *
+ * The demo store treats `fileHash` as the resume key: completed uploads are
+ * returned as completed, while non-completed uploads are reused as pending.
+ */
 export function createUpload(input: CreateUploadInput) {
   const totalParts = Math.max(1, Math.ceil(input.fileSize / input.partSize));
   const existingCompleted = completedByHash.get(input.fileHash);

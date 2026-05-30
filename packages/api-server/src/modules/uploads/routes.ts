@@ -30,6 +30,9 @@ interface PutPartBody {
  */
 type DemoUploadAccessMode = 'public' | 'bearer' | 'cookie';
 
+/**
+ * Resolves the requested demo access mode from the custom route header.
+ */
 function resolveUploadAccessMode(headerValue: string | string[] | undefined): DemoUploadAccessMode {
   const value = Array.isArray(headerValue) ? headerValue[0] : headerValue;
 
@@ -40,10 +43,16 @@ function resolveUploadAccessMode(headerValue: string | string[] | undefined): De
   return 'public';
 }
 
+/**
+ * Reads a single header value from Fastify's string-or-array header shape.
+ */
 function readHeaderValue(headerValue: string | string[] | undefined) {
   return Array.isArray(headerValue) ? headerValue[0] : headerValue;
 }
 
+/**
+ * Checks whether the demo upload session cookie is present in the request.
+ */
 function hasDemoSessionCookie(cookieHeader: string | undefined) {
   if (!cookieHeader) {
     return false;
@@ -55,6 +64,9 @@ function hasDemoSessionCookie(cookieHeader: string | undefined) {
     .some((item) => item === `${DEMO_UPLOAD_SESSION_COOKIE}=${DEMO_UPLOAD_SESSION_VALUE}`);
 }
 
+/**
+ * Applies the selected demo access mode and returns either `true` or an error body.
+ */
 function ensureUploadAccess(
   request: {
     headers: Record<string, string | string[] | undefined>;

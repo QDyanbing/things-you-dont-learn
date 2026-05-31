@@ -18,6 +18,9 @@ function buildSessionCookie(value: string, maxAgeSeconds: number) {
  * Registers small demo auth endpoints for bearer and cookie upload examples.
  */
 export const demoAuthRoutes: FastifyPluginAsync = async (fastify) => {
+  /**
+   * Returns a fixed bearer token so frontend demos can exercise token refresh.
+   */
   fastify.post('/token/refresh', async () => ({
     accessToken: DEMO_ACCESS_TOKEN,
     expiresIn: 3600,

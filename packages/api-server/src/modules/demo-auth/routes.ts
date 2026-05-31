@@ -26,6 +26,9 @@ export const demoAuthRoutes: FastifyPluginAsync = async (fastify) => {
     expiresIn: 3600,
   }));
 
+  /**
+   * Starts a cookie-auth demo session for upload requests.
+   */
   fastify.post('/session', async (_request, reply) => {
     reply.header('Set-Cookie', buildSessionCookie(DEMO_UPLOAD_SESSION_VALUE, 3600));
 

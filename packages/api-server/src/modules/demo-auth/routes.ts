@@ -38,6 +38,9 @@ export const demoAuthRoutes: FastifyPluginAsync = async (fastify) => {
     };
   });
 
+  /**
+   * Clears the cookie-auth demo session.
+   */
   fastify.delete('/session', async (_request, reply) => {
     reply.header('Set-Cookie', buildSessionCookie('', 0));
 

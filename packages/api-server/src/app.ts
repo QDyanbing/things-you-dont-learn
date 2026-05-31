@@ -20,6 +20,9 @@ export function createApp() {
     credentials: true,
   });
 
+  /**
+   * Demo auth routes issue fixed bearer tokens and cookie sessions.
+   */
   app.register(demoAuthRoutes, {
     prefix: '/api/demo-auth',
   });

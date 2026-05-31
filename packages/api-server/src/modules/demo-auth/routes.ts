@@ -14,6 +14,9 @@ function buildSessionCookie(value: string, maxAgeSeconds: number) {
   return `${DEMO_UPLOAD_SESSION_COOKIE}=${value}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAgeSeconds}`;
 }
 
+/**
+ * Registers small demo auth endpoints for bearer and cookie upload examples.
+ */
 export const demoAuthRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post('/token/refresh', async () => ({
     accessToken: DEMO_ACCESS_TOKEN,

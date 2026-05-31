@@ -12,6 +12,9 @@ import { uploadRoutes } from './modules/uploads/routes.js';
 export function createApp() {
   const app = Fastify({ logger: true });
 
+  /**
+   * Allows the local frontend demo to call authenticated upload endpoints.
+   */
   app.register(cors, {
     origin: true,
     credentials: true,

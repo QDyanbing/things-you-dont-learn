@@ -5,6 +5,11 @@ import {
   DEMO_UPLOAD_SESSION_VALUE,
 } from './constants.js';
 
+/**
+ * Builds the demo session cookie header used by cookie-auth examples.
+ *
+ * Passing an empty value with `Max-Age=0` clears the browser cookie.
+ */
 function buildSessionCookie(value: string, maxAgeSeconds: number) {
   return `${DEMO_UPLOAD_SESSION_COOKIE}=${value}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAgeSeconds}`;
 }

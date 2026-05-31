@@ -27,6 +27,9 @@ export function createApp() {
     prefix: '/api/demo-auth',
   });
 
+  /**
+   * Upload routes expose resumable upload task and part APIs.
+   */
   app.register(uploadRoutes, {
     prefix: '/api',
   });

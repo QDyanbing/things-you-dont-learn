@@ -11,3 +11,10 @@ API server used for upload coordination.
   file selection, queueing, upload progress, and user-facing upload state.
 - `packages/api-server`: Local Fastify server that provides demo authentication
   routes and upload coordination endpoints for the browser app.
+
+## Scripts
+
+- `pnpm dev`: Starts the API server and the large-file upload demo app together.
+- `pnpm dev:server`: Starts only the local API server.
+- `pnpm dev:large-file-upload`: Starts only the browser demo app.
+- `pnpm build`: Runs the workspace build across all packages.

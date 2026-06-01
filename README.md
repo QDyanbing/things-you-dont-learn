@@ -25,3 +25,10 @@ The upload demo is split so the browser package can stay focused on UI and SDK
 state, while the API package owns transport-facing behavior. This keeps examples
 small enough to inspect while still showing the handoff between client code and
 server routes.
+
+## Local Development
+
+Install dependencies with `pnpm install`, then run `pnpm dev` from the workspace
+root. The browser app expects the API server to be available during the demo
+flow, so running both packages together is the simplest way to exercise the
+project end to end.

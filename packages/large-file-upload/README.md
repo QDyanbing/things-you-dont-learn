@@ -22,3 +22,9 @@ when they should be reused, and keep display-only formatting in the app.
 The demo should make the main upload states easy to scan: waiting, uploading,
 completed, failed, and canceled. When adding SDK states, update the visible copy
 and visual indicators at the same time so the example remains readable.
+
+## Progress Display
+
+Progress values are derived from uploaded bytes and total file size. Prefer
+byte-based calculations over timer-only UI updates so the demo reflects actual
+upload progress when the transport layer becomes more realistic.

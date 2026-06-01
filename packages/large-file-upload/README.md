@@ -10,3 +10,9 @@ state, progress reporting, and local API calls.
   workspace root.
 - `pnpm --filter @workspace/large-file-upload build`: Runs TypeScript checking
   and creates the production build for this package.
+
+## SDK And Demo Roles
+
+The SDK layer owns reusable upload behavior, while the React app turns that
+behavior into a visible workflow. Keep transport and queue decisions in the SDK
+when they should be reused, and keep display-only formatting in the app.

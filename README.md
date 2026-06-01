@@ -18,3 +18,10 @@ API server used for upload coordination.
 - `pnpm dev:server`: Starts only the local API server.
 - `pnpm dev:large-file-upload`: Starts only the browser demo app.
 - `pnpm build`: Runs the workspace build across all packages.
+
+## Package Purpose
+
+The upload demo is split so the browser package can stay focused on UI and SDK
+state, while the API package owns transport-facing behavior. This keeps examples
+small enough to inspect while still showing the handoff between client code and
+server routes.

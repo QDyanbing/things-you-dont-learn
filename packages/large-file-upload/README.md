@@ -34,3 +34,9 @@ upload progress when the transport layer becomes more realistic.
 Run the API server while developing this package. The demo expects local upload
 coordination endpoints and demo authentication routes to be reachable, which
 keeps browser behavior aligned with the server examples in this workspace.
+
+## Extension Notes
+
+When adding features, prefer narrow SDK methods that the demo can call directly.
+Document new user-visible behavior in this README or the SDK README so future
+changes have a clear place to check expected behavior.

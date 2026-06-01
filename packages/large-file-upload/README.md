@@ -28,3 +28,9 @@ and visual indicators at the same time so the example remains readable.
 Progress values are derived from uploaded bytes and total file size. Prefer
 byte-based calculations over timer-only UI updates so the demo reflects actual
 upload progress when the transport layer becomes more realistic.
+
+## API Expectations
+
+Run the API server while developing this package. The demo expects local upload
+coordination endpoints and demo authentication routes to be reachable, which
+keeps browser behavior aligned with the server examples in this workspace.

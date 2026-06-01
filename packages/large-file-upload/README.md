@@ -16,3 +16,9 @@ state, progress reporting, and local API calls.
 The SDK layer owns reusable upload behavior, while the React app turns that
 behavior into a visible workflow. Keep transport and queue decisions in the SDK
 when they should be reused, and keep display-only formatting in the app.
+
+## Upload States
+
+The demo should make the main upload states easy to scan: waiting, uploading,
+completed, failed, and canceled. When adding SDK states, update the visible copy
+and visual indicators at the same time so the example remains readable.

@@ -38,3 +38,10 @@ project end to end.
 Use `pnpm build` before sharing changes. The command compiles every package in
 the workspace and is the quickest smoke test for TypeScript and package wiring
 regressions.
+
+## Upload Flow
+
+The large-file upload path starts in the demo app, passes selected files through
+the SDK coordinator, and then calls the API server routes that track upload
+metadata. The UI reflects queue state, progress, completion, and failure so the
+example stays useful while changing SDK behavior.

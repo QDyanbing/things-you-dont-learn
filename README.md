@@ -32,3 +32,9 @@ Install dependencies with `pnpm install`, then run `pnpm dev` from the workspace
 root. The browser app expects the API server to be available during the demo
 flow, so running both packages together is the simplest way to exercise the
 project end to end.
+
+## Build Check
+
+Use `pnpm build` before sharing changes. The command compiles every package in
+the workspace and is the quickest smoke test for TypeScript and package wiring
+regressions.

@@ -45,3 +45,10 @@ The large-file upload path starts in the demo app, passes selected files through
 the SDK coordinator, and then calls the API server routes that track upload
 metadata. The UI reflects queue state, progress, completion, and failure so the
 example stays useful while changing SDK behavior.
+
+## Demo Authentication
+
+The API server includes lightweight demo authentication routes. They are meant
+to support local examples and integration experiments, not production identity
+behavior. Keep real auth concerns outside this package unless the project grows
+into a dedicated server example.

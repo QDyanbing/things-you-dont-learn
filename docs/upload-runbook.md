@@ -36,3 +36,11 @@ the same checks can be reused while internals evolve.
   independently.
 - Confirm completion state is only shown after all prepared chunks reach a
   successful terminal state.
+
+## Progress Checks
+
+- Confirm uploaded bytes, remaining bytes, and total bytes stay internally
+  consistent while upload progress changes.
+- Confirm percent values are derived from byte totals and do not exceed 100.
+- Confirm chunk-level progress can be inspected separately from aggregate file
+  progress.

@@ -18,3 +18,12 @@ the same checks can be reused while internals evolve.
 - Use `pnpm dev:server` and `pnpm dev:large-file-upload` only when isolating a
   package-specific issue.
 - Confirm the browser app loads before testing upload state transitions.
+
+## File Selection Checks
+
+- Select a file and confirm the displayed name, byte size, and last modified
+  value update together.
+- Select a second file and confirm stale upload state from the first selection
+  is cleared before the new file is prepared.
+- Check that generated file identity remains stable for the selected file during
+  the current demo session.

@@ -27,3 +27,12 @@ the same checks can be reused while internals evolve.
   is cleared before the new file is prepared.
 - Check that generated file identity remains stable for the selected file during
   the current demo session.
+
+## State Checks
+
+- Confirm preparation moves the coordinator into a ready state before upload
+  starts.
+- Confirm queued, pending, uploading, uploaded, and failed counts can be read
+  independently.
+- Confirm completion state is only shown after all prepared chunks reach a
+  successful terminal state.

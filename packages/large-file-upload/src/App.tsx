@@ -24,6 +24,12 @@ function readFailedChunkIndexesPreview(
   return failedIndexes;
 }
 
+/**
+ * Renders the upload demo surface used to exercise `FileCoordinator` behavior.
+ *
+ * The component intentionally exposes many coordinator values so SDK changes
+ * can be verified from the browser without adding a separate inspector tool.
+ */
 export default function App() {
   const [fileName, setFileName] = useState("");
   const [fileSize, setFileSize] = useState(0);

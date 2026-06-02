@@ -44,3 +44,11 @@ the same checks can be reused while internals evolve.
 - Confirm percent values are derived from byte totals and do not exceed 100.
 - Confirm chunk-level progress can be inspected separately from aggregate file
   progress.
+
+## Failure Checks
+
+- Force one chunk into a failed state and confirm failed indexes and byte totals
+  reflect only that failed chunk.
+- Reset failed chunks and confirm they return to the pending set.
+- Confirm canceled uploads do not leave a stale uploading state visible in the
+  demo.

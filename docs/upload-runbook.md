@@ -52,3 +52,10 @@ the same checks can be reused while internals evolve.
 - Reset failed chunks and confirm they return to the pending set.
 - Confirm canceled uploads do not leave a stale uploading state visible in the
   demo.
+
+## Verification
+
+- Run `pnpm build` after behavior, TypeScript, or package wiring changes.
+- Recheck the browser path manually after SDK changes because the build cannot
+  prove user-visible state is complete.
+- Record any newly discovered edge case near the source or in this runbook.

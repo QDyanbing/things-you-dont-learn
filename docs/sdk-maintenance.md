@@ -26,3 +26,10 @@ state, or connecting the SDK to a more realistic transport layer.
   resolves.
 - Reset failed chunks back to pending before retrying so counts and byte totals
   stay consistent.
+
+## Progress Rules
+
+- Clamp reported uploaded bytes to the current chunk size.
+- Derive aggregate progress from chunk progress records and completed chunks.
+- Keep remaining bytes non-negative even when callers report progress more than
+  once for the same chunk.

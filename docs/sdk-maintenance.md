@@ -18,3 +18,11 @@ state, or connecting the SDK to a more realistic transport layer.
 - Keep `size` equal to `end - start` so byte accounting stays predictable.
 - Preserve zero-based chunk indexes because UI summaries and retry helpers rely
   on that convention.
+
+## Status Rules
+
+- Keep file-level status separate from chunk-level status.
+- Only move chunks to `SUCCESS` after the caller-provided upload handler
+  resolves.
+- Reset failed chunks back to pending before retrying so counts and byte totals
+  stay consistent.

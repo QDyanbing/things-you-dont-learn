@@ -11,3 +11,10 @@ state, or connecting the SDK to a more realistic transport layer.
 - Chunk identity should include file identity, chunk index, and byte range.
 - Treat default identities as metadata-derived ids, not cryptographic content
   hashes.
+
+## Chunk Range Rules
+
+- Keep chunk ranges half-open: `start` is included and `end` is excluded.
+- Keep `size` equal to `end - start` so byte accounting stays predictable.
+- Preserve zero-based chunk indexes because UI summaries and retry helpers rely
+  on that convention.

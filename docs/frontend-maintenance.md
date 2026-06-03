@@ -20,3 +20,10 @@ upload values so changes can be checked without adding a separate debug panel.
   state.
 - Add a visible field when a new SDK getter is meant to support user-facing
   behavior.
+
+## Progress Rendering
+
+- Show byte totals alongside percentages when progress behavior changes.
+- Keep chunk progress and aggregate file progress visually distinct.
+- Avoid timer-only progress indicators because they can drift away from SDK
+  state.

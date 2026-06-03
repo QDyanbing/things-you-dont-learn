@@ -18,3 +18,10 @@ large-file upload demo and its demo authentication flow.
 - Check that local configuration remains friendly for Vite development.
 - Avoid adding production-only assumptions to this demo server without a clear
   migration note.
+
+## Demo Auth Checks
+
+- Confirm demo sign-in responses stay deterministic enough for frontend examples.
+- Keep demo auth route names stable unless the browser package is updated in the
+  same change.
+- Document any new demo-only credential assumptions near the route definitions.

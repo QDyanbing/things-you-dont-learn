@@ -10,3 +10,11 @@ large-file upload demo and its demo authentication flow.
 - Run `pnpm dev` when checking the full browser-to-server path.
 - Confirm the server prints a listening address before testing routes from the
   demo app.
+
+## Configuration Checks
+
+- Keep host, port, and CORS expectations visible in the package README when
+  they change.
+- Check that local configuration remains friendly for Vite development.
+- Avoid adding production-only assumptions to this demo server without a clear
+  migration note.

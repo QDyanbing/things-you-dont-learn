@@ -39,6 +39,12 @@ Use `pnpm build` before sharing changes. The command compiles every package in
 the workspace and is the quickest smoke test for TypeScript and package wiring
 regressions.
 
+## Maintenance Docs
+
+Longer operational and maintenance notes live in `docs/`. Start there when
+checking upload behavior, API server behavior, frontend display expectations, or
+SDK behavior rules.
+
 ## Upload Flow
 
 The large-file upload path starts in the demo app, passes selected files through

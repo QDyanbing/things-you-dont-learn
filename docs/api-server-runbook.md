@@ -25,3 +25,10 @@ large-file upload demo and its demo authentication flow.
 - Keep demo auth route names stable unless the browser package is updated in the
   same change.
 - Document any new demo-only credential assumptions near the route definitions.
+
+## Upload Route Checks
+
+- Confirm upload metadata can be created and read back during one server
+  process.
+- Check duplicate upload identifiers before changing in-memory store behavior.
+- Keep route response shapes aligned with browser SDK expectations.

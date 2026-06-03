@@ -32,3 +32,9 @@ large-file upload demo and its demo authentication flow.
   process.
 - Check duplicate upload identifiers before changing in-memory store behavior.
 - Keep route response shapes aligned with browser SDK expectations.
+
+## Verification
+
+- Run `pnpm --filter @workspace/api-server build` for package-local checks.
+- Run `pnpm build` before handing off changes that touch shared workspace setup.
+- Revisit this runbook when adding a new API module so it stays useful.

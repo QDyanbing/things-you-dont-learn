@@ -11,3 +11,12 @@ upload values so changes can be checked without adding a separate debug panel.
 - Reset displayed values when a new file is selected to avoid stale state.
 - Keep empty values explicit instead of hiding them when the field helps debug a
   transition.
+
+## SDK Integration
+
+- Prefer reading values from `FileCoordinator` getters instead of duplicating
+  upload calculations in React state.
+- Keep demo-only previews isolated in helpers when they temporarily mutate SDK
+  state.
+- Add a visible field when a new SDK getter is meant to support user-facing
+  behavior.

@@ -27,3 +27,10 @@ upload values so changes can be checked without adding a separate debug panel.
 - Keep chunk progress and aggregate file progress visually distinct.
 - Avoid timer-only progress indicators because they can drift away from SDK
   state.
+
+## Manual Checks
+
+- Select a file after UI changes and confirm all summary fields reset first.
+- Exercise pause, resume, cancel, and retry previews when those controls change.
+- Run the browser demo with the API server whenever UI work depends on route
+  responses.

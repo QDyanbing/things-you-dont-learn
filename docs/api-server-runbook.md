@@ -4,3 +4,9 @@ Use this runbook when checking the local API server after route, store, or
 configuration changes. It focuses on the small Fastify service that supports the
 large-file upload demo and its demo authentication flow.
 
+## Startup Checks
+
+- Run `pnpm dev:server` when checking the API package by itself.
+- Run `pnpm dev` when checking the full browser-to-server path.
+- Confirm the server prints a listening address before testing routes from the
+  demo app.

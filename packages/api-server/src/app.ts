@@ -34,6 +34,9 @@ export function createApp() {
     prefix: '/api',
   });
 
+  /**
+   * Root health response used by humans and smoke checks outside the API prefix.
+   */
   app.get('/', async () => ({
     name: '@workspace/api-server',
     status: 'ok',

@@ -11,9 +11,21 @@ import { abortUpload, completeUpload, createUpload, getUpload, listUploadedParts
  * Request body used to create or resume an upload task.
  */
 interface CreateUploadBody {
+  /**
+   * Original file name displayed by the demo client.
+   */
   fileName: string;
+  /**
+   * Client-provided file hash used as the resume lookup key.
+   */
   fileHash: string;
+  /**
+   * Total file size in bytes used to compute the part count.
+   */
   fileSize: number;
+  /**
+   * Requested part size in bytes used by the current upload session.
+   */
   partSize: number;
 }
 

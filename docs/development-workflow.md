@@ -23,3 +23,11 @@ future work stays easy to review.
 - Use `docs/` for cross-package runbooks, maintenance rules, and checklists.
 - Keep JSDoc comments near the code path they explain, especially for public SDK
   types and route contracts.
+
+## Verification
+
+- Run `pnpm build` before ending a change set that touches TypeScript or package
+  wiring.
+- Run package-specific build commands when the change is isolated to one package.
+- Pair build checks with manual browser checks when the user-visible upload flow
+  changes.

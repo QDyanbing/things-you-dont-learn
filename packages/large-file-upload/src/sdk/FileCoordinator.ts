@@ -456,6 +456,8 @@ export interface FileCoordinatorChunkStatusCounts {
  *
  * One coordinator instance intentionally owns one file only; multi-file upload
  * orchestration should compose multiple coordinators outside this class.
+ * Transport concerns stay in the caller-provided upload handler so this class
+ * can focus on state, cancellation, retry, and byte accounting.
  */
 export class FileCoordinator {
   /**

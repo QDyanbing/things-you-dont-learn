@@ -35,3 +35,10 @@ check before changing SDK or API code.
   displayed by the SDK.
 - Check in-memory store behavior before assuming persistence exists between
   server restarts.
+
+## Pause Or Cancel Looks Wrong
+
+- Confirm abort signals reach the caller-provided upload handler.
+- Check that uploading chunks leave the uploading set after pause or cancel.
+- Re-read `canPause`, `canResume`, and `canCancel` values after each transition
+  instead of keeping cached UI assumptions.

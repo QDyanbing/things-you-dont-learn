@@ -45,6 +45,10 @@ Longer operational and maintenance notes live in `docs/`. Start there when
 checking upload behavior, API server behavior, frontend display expectations, or
 SDK behavior rules.
 
+The documentation set also includes the workspace development workflow and an
+upload troubleshooting guide for symptom-based checks before deeper code
+changes.
+
 ## Upload Flow
 
 The large-file upload path starts in the demo app, passes selected files through

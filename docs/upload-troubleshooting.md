@@ -26,3 +26,12 @@ check before changing SDK or API code.
 - Inspect chunk-level progress before changing aggregate progress helpers.
 - Check whether the upload handler reports progress more than once for the same
   chunk.
+
+## Resume Looks Wrong
+
+- Confirm the client uses the same file identity or hash when checking resume
+  state.
+- Compare uploaded part numbers returned by the API with uploaded chunk indexes
+  displayed by the SDK.
+- Check in-memory store behavior before assuming persistence exists between
+  server restarts.

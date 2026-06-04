@@ -19,3 +19,10 @@ check before changing SDK or API code.
 - Check `App.tsx` state resets when a newly added display field keeps an older
   value.
 - Confirm the SDK file identity is read from the active coordinator instance.
+
+## Progress Looks Wrong
+
+- Compare uploaded bytes, remaining bytes, total bytes, and percentage together.
+- Inspect chunk-level progress before changing aggregate progress helpers.
+- Check whether the upload handler reports progress more than once for the same
+  chunk.

@@ -7,7 +7,9 @@ single source comment but too specific for the root project overview.
 ## Available Guides
 
 - `api-server-runbook.md`: Operational checks for the local API server.
+- `development-workflow.md`: Small-change workflow notes for this workspace.
 - `frontend-maintenance.md`: Browser demo maintenance notes for UI and SDK
   integration work.
+- `upload-troubleshooting.md`: Symptom-based checks for upload demo issues.
 - `upload-runbook.md`: Operational checks for the large-file upload demo.
 - `sdk-maintenance.md`: SDK behavior notes for future upload changes.

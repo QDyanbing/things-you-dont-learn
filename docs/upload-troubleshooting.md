@@ -11,3 +11,11 @@ check before changing SDK or API code.
   together.
 - If only one side fails, run the package-specific dev command to isolate the
   failing package.
+
+## File Details Look Stale
+
+- Select a different file and confirm all displayed fields reset before the new
+  coordinator prepares chunks.
+- Check `App.tsx` state resets when a newly added display field keeps an older
+  value.
+- Confirm the SDK file identity is read from the active coordinator instance.

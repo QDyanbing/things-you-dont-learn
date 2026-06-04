@@ -31,3 +31,11 @@ future work stays easy to review.
 - Run package-specific build commands when the change is isolated to one package.
 - Pair build checks with manual browser checks when the user-visible upload flow
   changes.
+
+## Commit Hygiene
+
+- Write commit subjects that name the area first, such as `docs:`, `sdk:`, or
+  `api:`.
+- Commit after a coherent small change instead of holding unrelated edits
+  together.
+- Recheck `git status --short --branch` before the final handoff.

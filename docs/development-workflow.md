@@ -16,3 +16,10 @@ future work stays easy to review.
 - Prefer extending existing helpers before introducing new abstractions.
 - Leave generated build output untracked unless the project explicitly asks for
   it.
+
+## Documentation Updates
+
+- Update the closest README when a package-level workflow changes.
+- Use `docs/` for cross-package runbooks, maintenance rules, and checklists.
+- Keep JSDoc comments near the code path they explain, especially for public SDK
+  types and route contracts.

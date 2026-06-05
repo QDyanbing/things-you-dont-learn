@@ -27,3 +27,11 @@ without guessing at server behavior.
   return status `200`.
 - `GET /api/uploads/:uploadId` returns `{ upload }` or `404` when the in-memory
   task no longer exists.
+
+## Part Contracts
+
+- `GET /api/uploads/:uploadId/parts` returns uploaded part records in ascending
+  part number order.
+- `PUT /api/uploads/:uploadId/parts/:partNumber` records or replaces one part
+  using `partHash` and `size`.
+- Invalid part payloads return `400`, while missing upload tasks return `404`.

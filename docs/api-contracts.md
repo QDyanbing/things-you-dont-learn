@@ -35,3 +35,12 @@ without guessing at server behavior.
 - `PUT /api/uploads/:uploadId/parts/:partNumber` records or replaces one part
   using `partHash` and `size`.
 - Invalid part payloads return `400`, while missing upload tasks return `404`.
+
+## Completion And Abort
+
+- `POST /api/uploads/:uploadId/complete` succeeds only after every expected part
+  has been recorded.
+- Successful completion returns `{ upload, file }`, where `file.url` is derived
+  from the original file name.
+- `DELETE /api/uploads/:uploadId` removes the in-memory task and returns
+  `{ ok: true, upload }`.

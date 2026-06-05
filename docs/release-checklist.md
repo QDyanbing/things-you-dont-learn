@@ -16,3 +16,10 @@ verification matters more than a heavy release process.
 - Use package-specific build commands only when narrowing a failure.
 - Treat TypeScript errors as release blockers, even when the changed files are
   mostly documentation.
+
+## Upload Demo Review
+
+- Select a file and confirm the demo resets stale fields before preparing chunks.
+- Check queued, pending, uploading, failed, and completed summaries after SDK
+  display changes.
+- Revisit the upload runbook when behavior changes are more than cosmetic.

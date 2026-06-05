@@ -37,3 +37,9 @@ verification matters more than a heavy release process.
 - Keep root README references broad and package README references specific.
 - Prefer JSDoc for code-facing explanations that future callers will inspect in
   editors.
+
+## Handoff Notes
+
+- Summarize the files changed, the verification command, and the commit range.
+- Call out any manual check that was skipped or could not be reproduced locally.
+- Leave the working tree clean before reporting the final result.

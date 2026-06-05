@@ -30,3 +30,10 @@ verification matters more than a heavy release process.
 - Check demo authentication behavior when access mode handling changes.
 - Revisit the API server runbook after route prefixes, CORS, or server startup
   behavior changes.
+
+## Documentation Review
+
+- Check `docs/README.md` whenever a new guide is added.
+- Keep root README references broad and package README references specific.
+- Prefer JSDoc for code-facing explanations that future callers will inspect in
+  editors.

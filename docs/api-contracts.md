@@ -19,3 +19,11 @@ without guessing at server behavior.
   header and returns `MISSING_TOKEN`, `TOKEN_EXPIRED`, or `INVALID_TOKEN` errors.
 - `x-demo-upload-access: cookie` requires the demo session cookie and returns
   `MISSING_SESSION` when it is absent.
+
+## Upload Task Contracts
+
+- `POST /api/uploads` accepts `fileName`, `fileHash`, `fileSize`, and `partSize`.
+- New upload tasks return status `201`; existing resumable or completed tasks
+  return status `200`.
+- `GET /api/uploads/:uploadId` returns `{ upload }` or `404` when the in-memory
+  task no longer exists.

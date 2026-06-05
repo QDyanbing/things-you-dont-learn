@@ -23,3 +23,10 @@ verification matters more than a heavy release process.
 - Check queued, pending, uploading, failed, and completed summaries after SDK
   display changes.
 - Revisit the upload runbook when behavior changes are more than cosmetic.
+
+## API Review
+
+- Confirm route response shapes still match the browser demo expectations.
+- Check demo authentication behavior when access mode handling changes.
+- Revisit the API server runbook after route prefixes, CORS, or server startup
+  behavior changes.

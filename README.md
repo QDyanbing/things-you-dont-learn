@@ -49,6 +49,9 @@ The documentation set also includes the workspace development workflow and an
 upload troubleshooting guide for symptom-based checks before deeper code
 changes.
 
+Use the API contracts guide when route response shapes change, and the release
+checklist before handing off a larger batch of small commits.
+
 ## Upload Flow
 
 The large-file upload path starts in the demo app, passes selected files through

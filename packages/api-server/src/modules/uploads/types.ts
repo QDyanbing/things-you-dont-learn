@@ -18,6 +18,9 @@ export interface UploadPart {
 
 /**
  * In-memory upload task tracked by the demo API server.
+ *
+ * Records are process-local and disappear when the server restarts; the demo
+ * store is intentionally a coordination example rather than durable storage.
  */
 export interface Upload {
   /**

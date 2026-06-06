@@ -4,3 +4,9 @@ Use these scenarios when checking the large-file upload demo from a user's point
 of view. They complement the runbooks by describing the visible flow through the
 browser app.
 
+## File Selection
+
+- Select one file from the upload control.
+- Confirm file name, size, last modified time, and file identity update together.
+- Select another file and confirm the previous file's progress and chunk state
+  are cleared.

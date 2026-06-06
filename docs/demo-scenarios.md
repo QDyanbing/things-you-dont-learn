@@ -10,3 +10,9 @@ browser app.
 - Confirm file name, size, last modified time, and file identity update together.
 - Select another file and confirm the previous file's progress and chunk state
   are cleared.
+
+## Preparation
+
+- Confirm `prepare()` creates chunk metadata before upload starts.
+- Check the first chunk identity, status, type, range, byte range, and blob size.
+- Confirm prepared chunk count and prepared byte size match the selected file.

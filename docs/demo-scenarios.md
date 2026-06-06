@@ -30,3 +30,9 @@ browser app.
   state.
 - Confirm `canResume()` becomes true after pause.
 - Resume and confirm the upload can continue from the pending or unfinished set.
+
+## Failure Recovery
+
+- Force a failed chunk preview and confirm failed indexes and byte totals update.
+- Reset failed chunks and confirm they return to retryable state.
+- Cancel the upload and confirm stale uploading values are cleared afterward.

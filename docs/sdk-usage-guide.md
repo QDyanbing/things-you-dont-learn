@@ -17,3 +17,11 @@ transport details to the caller-provided upload handler.
   `end` is excluded.
 - Read chunk identity from the coordinator instead of deriving it again in UI
   code.
+
+## Progress Reads
+
+- Use `getProgress()` for aggregate uploaded, remaining, total, and percent
+  values.
+- Use chunk-level progress helpers when the UI needs to explain one active
+  chunk.
+- Prefer byte totals over timer-derived values when showing progress to users.

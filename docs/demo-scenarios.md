@@ -23,3 +23,10 @@ browser app.
 - Confirm aggregate uploaded bytes, remaining bytes, total bytes, and percent
   move together.
 - Compare first-chunk progress with the aggregate progress summary.
+
+## Pause And Resume
+
+- Pause during an active upload and confirm the coordinator leaves the uploading
+  state.
+- Confirm `canResume()` becomes true after pause.
+- Resume and confirm the upload can continue from the pending or unfinished set.

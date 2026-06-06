@@ -33,3 +33,11 @@ transport details to the caller-provided upload handler.
 - Reset failed chunks through SDK methods before retrying them.
 - Keep UI summaries aligned with status counts when adding a new diagnostic
   field.
+
+## Pause And Cancel Controls
+
+- Check `canPause()`, `canResume()`, and `canCancel()` after each transition.
+- Route cancel and pause behavior through the coordinator so abort signals stay
+  consistent.
+- Re-read progress and status after resuming because active chunk sets may have
+  changed.

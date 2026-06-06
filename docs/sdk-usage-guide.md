@@ -25,3 +25,11 @@ transport details to the caller-provided upload handler.
 - Use chunk-level progress helpers when the UI needs to explain one active
   chunk.
 - Prefer byte totals over timer-derived values when showing progress to users.
+
+## Queue And Failure Reads
+
+- Read pending, queued, uploading, uploaded, and failed sets through coordinator
+  getters.
+- Reset failed chunks through SDK methods before retrying them.
+- Keep UI summaries aligned with status counts when adding a new diagnostic
+  field.

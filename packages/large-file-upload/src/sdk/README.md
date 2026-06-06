@@ -2,6 +2,11 @@
 
 `FileCoordinator` 是当前 SDK 的单文件上传协调类，负责分片准备、上传调度、进度聚合和运行态查询。
 
+## Related Guides
+
+- `docs/sdk-usage-guide.md` 记录浏览器 demo 接入 SDK 时的公共调用习惯。
+- `docs/demo-scenarios.md` 记录从用户视角检查上传 demo 的主要场景。
+
 ## Design
 
 - 一个实例只处理一个文件

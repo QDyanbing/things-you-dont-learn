@@ -33,7 +33,13 @@ interface CreateUploadBody {
  * Request body used to record a single uploaded part.
  */
 interface PutPartBody {
+  /**
+   * Client-provided hash for the uploaded part payload.
+   */
   partHash: string;
+  /**
+   * Uploaded part size in bytes.
+   */
   size: number;
 }
 

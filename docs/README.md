@@ -8,10 +8,12 @@ single source comment but too specific for the root project overview.
 
 - `api-contracts.md`: Route response contracts used by the upload demo.
 - `api-server-runbook.md`: Operational checks for the local API server.
+- `demo-scenarios.md`: User-facing browser scenarios for the upload demo.
 - `development-workflow.md`: Small-change workflow notes for this workspace.
 - `frontend-maintenance.md`: Browser demo maintenance notes for UI and SDK
   integration work.
 - `release-checklist.md`: Final verification checklist for small change batches.
+- `sdk-usage-guide.md`: Practical usage notes for the upload SDK surface.
 - `upload-troubleshooting.md`: Symptom-based checks for upload demo issues.
 - `upload-runbook.md`: Operational checks for the large-file upload demo.
 - `sdk-maintenance.md`: SDK behavior notes for future upload changes.

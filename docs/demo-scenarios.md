@@ -16,3 +16,10 @@ browser app.
 - Confirm `prepare()` creates chunk metadata before upload starts.
 - Check the first chunk identity, status, type, range, byte range, and blob size.
 - Confirm prepared chunk count and prepared byte size match the selected file.
+
+## Upload Progress
+
+- Start upload and watch uploading chunk indexes appear before completion.
+- Confirm aggregate uploaded bytes, remaining bytes, total bytes, and percent
+  move together.
+- Compare first-chunk progress with the aggregate progress summary.

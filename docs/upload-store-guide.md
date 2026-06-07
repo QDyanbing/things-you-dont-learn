@@ -32,3 +32,10 @@ the browser upload flow.
 - Completed tasks remain readable by `uploadId` while the process is alive.
 - `abortUpload()` removes the active task and clears the completed hash index
   only when it points at the removed task.
+
+## Demo Limitations
+
+- Records are process-local and disappear when the API server restarts.
+- The store does not persist file bytes; it only tracks metadata and part records.
+- Add persistence behind the store boundary before treating the upload API as a
+  production resumable upload service.

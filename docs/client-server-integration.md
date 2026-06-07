@@ -25,3 +25,11 @@ when route behavior needs to be reflected in the UI.
 - The server returns whether the task already existed so the client can decide
   whether it is starting fresh or resuming.
 - The SDK should keep using its own file and chunk identities for local UI state.
+
+## Part Synchronization
+
+- Upload part numbers sent to the API are one-based.
+- SDK chunk indexes are zero-based, so browser glue code should convert between
+  the two conventions deliberately.
+- After recording parts, compare server part numbers with SDK uploaded chunk
+  indexes during resume checks.

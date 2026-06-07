@@ -33,3 +33,11 @@ when route behavior needs to be reflected in the UI.
   the two conventions deliberately.
 - After recording parts, compare server part numbers with SDK uploaded chunk
   indexes during resume checks.
+
+## Completion Handoff
+
+- Call the server completion endpoint only after every expected part is recorded.
+- Treat incomplete completion responses as recoverable UI errors rather than SDK
+  completion.
+- Use the returned file URL as a demo artifact, not as a durable storage
+  guarantee.

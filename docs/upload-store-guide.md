@@ -18,3 +18,10 @@ the browser upload flow.
   already indexed.
 - Existing non-completed records are reused so the demo can resume a pending
   upload instead of creating duplicate tasks.
+
+## Part Records
+
+- Uploaded parts are stored by one-based `partNumber`.
+- Recording the same part number again replaces the previous in-memory value.
+- `listUploadedParts()` returns parts sorted by part number so callers can compare
+  resume state predictably.

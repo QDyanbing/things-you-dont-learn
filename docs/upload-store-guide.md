@@ -25,3 +25,10 @@ the browser upload flow.
 - Recording the same part number again replaces the previous in-memory value.
 - `listUploadedParts()` returns parts sorted by part number so callers can compare
   resume state predictably.
+
+## Completion And Abort
+
+- `completeUpload()` marks the task as completed and records the file hash index.
+- Completed tasks remain readable by `uploadId` while the process is alive.
+- `abortUpload()` removes the active task and clears the completed hash index
+  only when it points at the removed task.

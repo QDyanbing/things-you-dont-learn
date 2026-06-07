@@ -22,6 +22,8 @@ function now() {
  *
  * The in-memory Map is flattened into sorted part numbers so clients can diff
  * resume state without knowing store internals.
+ * Keep this shape stable with `docs/api-contracts.md` because route handlers
+ * expose it directly to the browser demo.
  */
 function toUploadResource(upload: Upload) {
   const uploadedPartNumbers = Array.from(upload.uploadedParts.keys()).sort((a, b) => a - b);

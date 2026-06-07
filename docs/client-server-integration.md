@@ -17,3 +17,11 @@ when route behavior needs to be reflected in the UI.
 - Bearer demos should refresh the fixed demo token before protected upload calls.
 - Cookie demos should create the demo session before sending cookie-protected
   upload requests.
+
+## Upload Task Handshake
+
+- The client should send file name, hash, file size, and part size when creating
+  an upload task.
+- The server returns whether the task already existed so the client can decide
+  whether it is starting fresh or resuming.
+- The SDK should keep using its own file and chunk identities for local UI state.

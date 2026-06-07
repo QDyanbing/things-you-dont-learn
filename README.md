@@ -55,6 +55,9 @@ checklist before handing off a larger batch of small commits.
 Use the SDK usage guide for public coordinator calls, and the demo scenarios
 guide when checking the browser flow from a user's point of view.
 
+Use the client/server integration guide and upload store guide when work spans
+the browser package and local API server.
+
 ## Upload Flow
 
 The large-file upload path starts in the demo app, passes selected files through

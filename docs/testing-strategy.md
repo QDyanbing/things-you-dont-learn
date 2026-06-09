@@ -26,3 +26,10 @@ browser demo, and API server behavior.
 - Select a file, prepare chunks, start upload, and verify progress summaries.
 - Exercise pause, resume, cancel, and retry previews when coordinator state
   logic changes.
+
+## API Contract Checks
+
+- Revisit the API contracts guide when request bodies or response shapes change.
+- Check public, bearer, and cookie access modes when authentication routing
+  changes.
+- Compare server part numbers with SDK chunk indexes when resume behavior changes.

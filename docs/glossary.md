@@ -11,3 +11,9 @@ one guide.
 - Chunk index: Zero-based SDK index for one prepared file chunk.
 - Chunk identity: Metadata-derived id built from file identity, chunk index, and
   byte range.
+
+## API Terms
+
+- Upload id: Server-generated id for one in-memory upload task.
+- File hash: Client-provided resume key used by the demo API store.
+- Part number: One-based API number for one uploaded part record.

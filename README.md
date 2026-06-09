@@ -58,6 +58,9 @@ guide when checking the browser flow from a user's point of view.
 Use the client/server integration guide and upload store guide when work spans
 the browser package and local API server.
 
+Use the testing strategy guide before deciding verification scope, and the
+glossary when SDK, demo, and API terms need to stay aligned.
+
 ## Upload Flow
 
 The large-file upload path starts in the demo app, passes selected files through

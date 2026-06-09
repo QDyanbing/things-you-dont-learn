@@ -13,8 +13,10 @@ single source comment but too specific for the root project overview.
 - `development-workflow.md`: Small-change workflow notes for this workspace.
 - `frontend-maintenance.md`: Browser demo maintenance notes for UI and SDK
   integration work.
+- `glossary.md`: Shared terminology used across SDK, demo, and API docs.
 - `release-checklist.md`: Final verification checklist for small change batches.
 - `sdk-usage-guide.md`: Practical usage notes for the upload SDK surface.
+- `testing-strategy.md`: Verification scope guidance for workspace changes.
 - `upload-store-guide.md`: In-memory upload store behavior used by the API demo.
 - `upload-troubleshooting.md`: Symptom-based checks for upload demo issues.
 - `upload-runbook.md`: Operational checks for the large-file upload demo.

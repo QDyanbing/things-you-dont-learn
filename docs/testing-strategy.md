@@ -19,3 +19,10 @@ browser demo, and API server behavior.
 - Use `pnpm --filter @workspace/large-file-upload build` when narrowing browser
   app or SDK errors.
 - Return to the full workspace build before final handoff.
+
+## Manual Upload Checks
+
+- Use the demo scenarios guide when UI-visible upload behavior changes.
+- Select a file, prepare chunks, start upload, and verify progress summaries.
+- Exercise pause, resume, cancel, and retry previews when coordinator state
+  logic changes.

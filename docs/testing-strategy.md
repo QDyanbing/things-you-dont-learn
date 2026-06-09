@@ -11,3 +11,11 @@ browser demo, and API server behavior.
 - Treat build failures as blockers because both packages compile from the same
   workspace command.
 - Re-run the workspace build after adjusting commits or combining changes.
+
+## Package Checks
+
+- Use `pnpm --filter @workspace/api-server build` when narrowing API-only
+  TypeScript errors.
+- Use `pnpm --filter @workspace/large-file-upload build` when narrowing browser
+  app or SDK errors.
+- Return to the full workspace build before final handoff.

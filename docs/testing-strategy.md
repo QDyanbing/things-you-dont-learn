@@ -33,3 +33,10 @@ browser demo, and API server behavior.
 - Check public, bearer, and cookie access modes when authentication routing
   changes.
 - Compare server part numbers with SDK chunk indexes when resume behavior changes.
+
+## Regression Notes
+
+- Record newly found edge cases in the closest runbook or troubleshooting guide.
+- Add JSDoc near public SDK or route contract code when a regression depends on
+  a subtle behavior boundary.
+- Keep final handoff notes explicit about which checks were actually run.

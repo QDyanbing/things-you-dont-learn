@@ -10,3 +10,10 @@ API server.
 - The SDK owns single-file chunk preparation, scheduling, cancellation, retry,
   and progress accounting.
 - The API server owns demo auth routes and upload coordination endpoints.
+
+## Browser Demo Role
+
+- Renders file, chunk, progress, and lifecycle state for quick inspection.
+- Calls SDK getters directly instead of reimplementing upload calculations.
+- Keeps demo-only previews isolated so they do not become SDK behavior by
+  accident.

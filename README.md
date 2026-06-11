@@ -61,6 +61,9 @@ the browser package and local API server.
 Use the testing strategy guide before deciding verification scope, and the
 glossary when SDK, demo, and API terms need to stay aligned.
 
+Use the architecture overview to orient package responsibilities, and the
+security boundaries guide before changing demo auth or upload metadata behavior.
+
 ## Upload Flow
 
 The large-file upload path starts in the demo app, passes selected files through

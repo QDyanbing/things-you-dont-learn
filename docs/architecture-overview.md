@@ -17,3 +17,11 @@ API server.
 - Calls SDK getters directly instead of reimplementing upload calculations.
 - Keeps demo-only previews isolated so they do not become SDK behavior by
   accident.
+
+## SDK Role
+
+- Owns one selected file per `FileCoordinator` instance.
+- Tracks chunk status, aggregate progress, retryable failures, and active abort
+  signals.
+- Delegates request details, authentication, and request body shape to the
+  caller-provided upload handler.

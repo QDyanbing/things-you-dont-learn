@@ -32,3 +32,12 @@ API server.
 - Stores upload metadata in process memory for examples and resume checks.
 - Keeps durable file storage, production identity, and deployment concerns out of
   the current demo scope.
+
+## Change Path
+
+- Start in the SDK when a change affects chunk state, retry behavior, or progress
+  math.
+- Start in the browser demo when a change affects visible diagnostics or user
+  workflow.
+- Start in the API server when a change affects route contracts, auth modes, or
+  upload metadata coordination.

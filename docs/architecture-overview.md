@@ -25,3 +25,10 @@ API server.
   signals.
 - Delegates request details, authentication, and request body shape to the
   caller-provided upload handler.
+
+## API Server Role
+
+- Provides local route contracts for upload coordination and demo auth.
+- Stores upload metadata in process memory for examples and resume checks.
+- Keeps durable file storage, production identity, and deployment concerns out of
+  the current demo scope.

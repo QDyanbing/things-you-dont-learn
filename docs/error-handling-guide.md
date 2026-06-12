@@ -43,3 +43,11 @@ errors, retry behavior, or user-visible diagnostics.
 - Keep user-facing copy short, while retaining diagnostic fields in the demo
   surface for debugging.
 - Clear stale errors when a new file selection starts a fresh coordinator flow.
+
+## Handoff Notes
+
+- Mention which error paths were checked when handing off behavior changes.
+- Link related API contract or troubleshooting notes when an error path depends
+  on server behavior.
+- Add JSDoc near public helpers when callers need to understand a controlled
+  failure path.

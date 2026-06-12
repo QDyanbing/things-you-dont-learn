@@ -1,4 +1,10 @@
 /**
+ * Fixed credential values used only by the local demo authentication routes.
+ *
+ * These constants make auth examples deterministic and should not be treated as
+ * production secret material.
+ */
+/**
  * Demo bearer token returned by the refresh endpoint.
  */
 export const DEMO_ACCESS_TOKEN = 'demo-access-token';

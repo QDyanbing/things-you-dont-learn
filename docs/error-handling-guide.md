@@ -18,3 +18,11 @@ errors, retry behavior, or user-visible diagnostics.
 - Return `404` when an upload id does not exist in the in-memory store.
 - Keep validation messages aligned with the API contracts guide so browser error
   copy can stay predictable.
+
+## Auth Errors
+
+- Use `MISSING_TOKEN`, `TOKEN_EXPIRED`, and `INVALID_TOKEN` for bearer demo
+  failures.
+- Use `MISSING_SESSION` when cookie-protected upload calls do not include the
+  demo session.
+- Keep auth failures separate from upload validation failures in UI diagnostics.

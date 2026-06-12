@@ -35,3 +35,11 @@ errors, retry behavior, or user-visible diagnostics.
   interrupted upload.
 - Reset failed chunks before retrying so byte totals and status counts stay
   consistent.
+
+## UI Error Display
+
+- Show enough error context to distinguish auth, validation, transport, and SDK
+  state failures.
+- Keep user-facing copy short, while retaining diagnostic fields in the demo
+  surface for debugging.
+- Clear stale errors when a new file selection starts a fresh coordinator flow.

@@ -64,6 +64,9 @@ glossary when SDK, demo, and API terms need to stay aligned.
 Use the architecture overview to orient package responsibilities, and the
 security boundaries guide before changing demo auth or upload metadata behavior.
 
+Use the error handling and observability guides when adding failure states,
+diagnostics, or debugging notes.
+
 ## Upload Flow
 
 The large-file upload path starts in the demo app, passes selected files through

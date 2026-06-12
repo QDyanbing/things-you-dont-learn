@@ -26,3 +26,12 @@ errors, retry behavior, or user-visible diagnostics.
 - Use `MISSING_SESSION` when cookie-protected upload calls do not include the
   demo session.
 - Keep auth failures separate from upload validation failures in UI diagnostics.
+
+## Retry And Recovery
+
+- Retry SDK failures through failed or pending chunk helpers instead of rebuilding
+  the file selection.
+- Compare server part records with SDK uploaded indexes before resuming an
+  interrupted upload.
+- Reset failed chunks before retrying so byte totals and status counts stay
+  consistent.

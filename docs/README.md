@@ -12,9 +12,11 @@ single source comment but too specific for the root project overview.
 - `client-server-integration.md`: Browser-to-API handoff notes for upload flows.
 - `demo-scenarios.md`: User-facing browser scenarios for the upload demo.
 - `development-workflow.md`: Small-change workflow notes for this workspace.
+- `error-handling-guide.md`: Error handling expectations across SDK, UI, and API.
 - `frontend-maintenance.md`: Browser demo maintenance notes for UI and SDK
   integration work.
 - `glossary.md`: Shared terminology used across SDK, demo, and API docs.
+- `observability-guide.md`: Diagnostic signals for inspecting upload behavior.
 - `release-checklist.md`: Final verification checklist for small change batches.
 - `security-boundaries.md`: Local demo security assumptions and limits.
 - `sdk-usage-guide.md`: Practical usage notes for the upload SDK surface.

@@ -25,3 +25,10 @@ to debug client/server upload behavior.
 - Check chunk-level progress before changing aggregate progress helpers.
 - Treat completion ratio as a chunk-count signal and progress percent as a byte
   signal.
+
+## Debug Snapshots
+
+- Capture selected file metadata before comparing chunk state.
+- Record route response status and body when API behavior looks wrong.
+- Pair UI screenshots with the relevant SDK getters when debugging visible state
+  regressions.

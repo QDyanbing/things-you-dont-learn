@@ -18,3 +18,10 @@ to debug client/server upload behavior.
 - Track `uploadId` and `fileHash` together when comparing route responses with
   client state.
 - Check uploaded part numbers when resume state differs from SDK chunk indexes.
+
+## Progress Signals
+
+- Compare uploaded bytes, remaining bytes, total bytes, and percent together.
+- Check chunk-level progress before changing aggregate progress helpers.
+- Treat completion ratio as a chunk-count signal and progress percent as a byte
+  signal.

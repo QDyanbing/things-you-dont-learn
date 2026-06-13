@@ -11,3 +11,12 @@ store behavior, or workspace build time.
 - Keep scheduling decisions inside `FileCoordinator` so callers do not duplicate
   queue logic.
 - Prefer SDK progress aggregation over repeated UI-side byte calculations.
+
+## Browser Rendering
+
+- Keep diagnostic fields grouped so adding new values does not make the page hard
+  to scan.
+- Avoid deriving large arrays repeatedly in render paths when the SDK already
+  exposes a getter.
+- Reset stale state before preparing a new file so old diagnostics do not force
+  extra comparisons.

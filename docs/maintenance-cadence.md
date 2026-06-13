@@ -11,3 +11,10 @@ rewrites.
 - Update `docs/` guides when behavior spans SDK, browser demo, and API server
   boundaries.
 - Add troubleshooting notes when a bug teaches a reusable diagnostic path.
+
+## JSDoc Updates
+
+- Add JSDoc near public SDK types, route bodies, and exported helpers.
+- Prefer JSDoc when callers need editor-visible context before using a method.
+- Keep internal comments short and focused on behavior that is not obvious from
+  the code.

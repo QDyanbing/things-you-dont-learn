@@ -28,3 +28,12 @@ store behavior, or workspace build time.
 - Keep uploaded part lookups keyed by part number when adding resume-related
   helpers.
 - Add cleanup or persistence before modeling long-lived upload traffic.
+
+## Build Checks
+
+- Watch workspace build output when dependency or bundling changes affect the
+  browser package.
+- Treat unexpected bundle growth as a prompt to inspect imports before adding
+  more UI dependencies.
+- Keep package-specific builds for narrowing failures, not for replacing the
+  final workspace build.

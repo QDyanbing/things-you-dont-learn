@@ -20,3 +20,11 @@ store behavior, or workspace build time.
   exposes a getter.
 - Reset stale state before preparing a new file so old diagnostics do not force
   extra comparisons.
+
+## API Store
+
+- The in-memory store is fast enough for local examples but grows with active
+  upload task count.
+- Keep uploaded part lookups keyed by part number when adding resume-related
+  helpers.
+- Add cleanup or persistence before modeling long-lived upload traffic.

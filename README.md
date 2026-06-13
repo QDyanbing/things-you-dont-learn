@@ -67,6 +67,9 @@ security boundaries guide before changing demo auth or upload metadata behavior.
 Use the error handling and observability guides when adding failure states,
 diagnostics, or debugging notes.
 
+Use the performance guide for scheduling, rendering, and build-size concerns,
+and the maintenance cadence guide to keep docs and JSDoc close to changes.
+
 ## Upload Flow
 
 The large-file upload path starts in the demo app, passes selected files through

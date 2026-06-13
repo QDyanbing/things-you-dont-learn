@@ -37,3 +37,11 @@ store behavior, or workspace build time.
   more UI dependencies.
 - Keep package-specific builds for narrowing failures, not for replacing the
   final workspace build.
+
+## Handoff Notes
+
+- Mention `pnpm build` results when performance-sensitive files change.
+- Call out manual upload checks when progress rendering or scheduling behavior
+  changes.
+- Link related testing or observability notes when diagnosing slow or noisy
+  behavior.

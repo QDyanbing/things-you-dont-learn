@@ -29,3 +29,9 @@ without changing the user-visible upload flow.
 - Keep route response shapes aligned with `api-contracts.md`.
 - Preserve the upload store boundary when changing route handlers.
 - Keep demo auth helpers separate from upload metadata logic.
+
+## Refactor Verification
+
+- Run `pnpm build` after TypeScript, package, or import changes.
+- Use demo scenarios when refactors touch visible upload state.
+- Recheck API contracts when refactors move request or response handling.

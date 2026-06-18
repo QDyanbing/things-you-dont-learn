@@ -23,3 +23,9 @@ without changing the user-visible upload flow.
 - Keep file-selection resets close to the upload control flow.
 - Preserve visible diagnostic fields when extracting UI pieces.
 - Prefer grouping related SDK reads before introducing new React state.
+
+## API Refactors
+
+- Keep route response shapes aligned with `api-contracts.md`.
+- Preserve the upload store boundary when changing route handlers.
+- Keep demo auth helpers separate from upload metadata logic.

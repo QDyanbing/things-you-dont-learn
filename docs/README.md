@@ -15,11 +15,13 @@ single source comment but too specific for the root project overview.
 - `error-handling-guide.md`: Error handling expectations across SDK, UI, and API.
 - `frontend-maintenance.md`: Browser demo maintenance notes for UI and SDK
   integration work.
+- `future-work.md`: Scoped follow-up ideas for the upload demo workspace.
 - `glossary.md`: Shared terminology used across SDK, demo, and API docs.
 - `maintenance-cadence.md`: Guidance for keeping docs and JSDoc current.
 - `observability-guide.md`: Diagnostic signals for inspecting upload behavior.
 - `performance-guide.md`: Lightweight performance expectations for the upload
   demo.
+- `refactoring-guide.md`: Small refactor guidance for SDK, UI, and API changes.
 - `release-checklist.md`: Final verification checklist for small change batches.
 - `security-boundaries.md`: Local demo security assumptions and limits.
 - `sdk-usage-guide.md`: Practical usage notes for the upload SDK surface.

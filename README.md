@@ -70,6 +70,9 @@ diagnostics, or debugging notes.
 Use the performance guide for scheduling, rendering, and build-size concerns,
 and the maintenance cadence guide to keep docs and JSDoc close to changes.
 
+Use the refactoring guide before moving behavior across package boundaries, and
+the future work guide to park scoped follow-up ideas.
+
 ## Upload Flow
 
 The large-file upload path starts in the demo app, passes selected files through

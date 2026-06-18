@@ -10,3 +10,9 @@ implementation tasks.
 - Consider snapshot helpers for exporting coordinator state to diagnostics.
 - Keep future transport adapters outside `FileCoordinator` until a shared pattern
   is clear.
+
+## Demo And API Follow-Ups
+
+- Add smaller UI sections if the diagnostic surface becomes harder to scan.
+- Explore API persistence only after the in-memory store boundary stays stable.
+- Keep demo auth improvements separate from upload coordination changes.

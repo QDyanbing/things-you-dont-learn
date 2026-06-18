@@ -10,3 +10,10 @@ without changing the user-visible upload flow.
 - Start with the closest owning package before creating shared helpers.
 - Update nearby docs or JSDoc when moving behavior changes how future readers
   discover it.
+
+## SDK Refactors
+
+- Keep chunk status transitions inside `FileCoordinator`.
+- Keep progress aggregation in SDK helpers instead of duplicating byte math in
+  the browser demo.
+- Preserve abort signal ownership when simplifying pause or cancel paths.

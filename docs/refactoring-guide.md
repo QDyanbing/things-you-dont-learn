@@ -17,3 +17,9 @@ without changing the user-visible upload flow.
 - Keep progress aggregation in SDK helpers instead of duplicating byte math in
   the browser demo.
 - Preserve abort signal ownership when simplifying pause or cancel paths.
+
+## Frontend Refactors
+
+- Keep file-selection resets close to the upload control flow.
+- Preserve visible diagnostic fields when extracting UI pieces.
+- Prefer grouping related SDK reads before introducing new React state.

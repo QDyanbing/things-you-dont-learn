@@ -17,3 +17,10 @@ build failures.
 - Confirm stale values clear before new chunk preparation starts.
 - Compare visible diagnostics with the demo scenarios guide before changing
   component state.
+
+## SDK State Checks
+
+- Inspect chunk status counts before changing upload scheduling logic.
+- Compare progress bytes with chunk-level progress when percent values look
+  wrong.
+- Check failed and pending indexes before assuming retry state was lost.

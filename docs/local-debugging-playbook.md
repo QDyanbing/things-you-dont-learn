@@ -24,3 +24,9 @@ build failures.
 - Compare progress bytes with chunk-level progress when percent values look
   wrong.
 - Check failed and pending indexes before assuming retry state was lost.
+
+## API Route Checks
+
+- Check `/api/health` before debugging upload task behavior.
+- Track response status, `uploadId`, and `fileHash` together.
+- Compare route responses with `api-contracts.md` before changing client code.

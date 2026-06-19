@@ -21,3 +21,9 @@ near source code.
 - Wrap commands, package names, route paths, and code identifiers in backticks.
 - Prefer relative repository paths in docs so the notes stay portable.
 - Link related guides when a reader should check another behavior boundary.
+
+## JSDoc Style
+
+- Use JSDoc for exported helpers, public SDK types, and route request bodies.
+- Explain behavior boundaries rather than repeating obvious field names.
+- Keep JSDoc close to the code path a caller will inspect in an editor.

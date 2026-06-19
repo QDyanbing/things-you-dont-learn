@@ -12,11 +12,13 @@ single source comment but too specific for the root project overview.
 - `client-server-integration.md`: Browser-to-API handoff notes for upload flows.
 - `demo-scenarios.md`: User-facing browser scenarios for the upload demo.
 - `development-workflow.md`: Small-change workflow notes for this workspace.
+- `documentation-style-guide.md`: Style rules for docs and JSDoc updates.
 - `error-handling-guide.md`: Error handling expectations across SDK, UI, and API.
 - `frontend-maintenance.md`: Browser demo maintenance notes for UI and SDK
   integration work.
 - `future-work.md`: Scoped follow-up ideas for the upload demo workspace.
 - `glossary.md`: Shared terminology used across SDK, demo, and API docs.
+- `local-debugging-playbook.md`: Local-first debugging checks for upload issues.
 - `maintenance-cadence.md`: Guidance for keeping docs and JSDoc current.
 - `observability-guide.md`: Diagnostic signals for inspecting upload behavior.
 - `performance-guide.md`: Lightweight performance expectations for the upload

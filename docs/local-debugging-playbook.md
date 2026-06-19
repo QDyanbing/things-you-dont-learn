@@ -10,3 +10,10 @@ build failures.
 - Use `pnpm dev:server` or `pnpm dev:large-file-upload` only after narrowing the
   problem to one package.
 - Confirm both processes are listening before debugging upload behavior.
+
+## Browser State Checks
+
+- Select a fresh file before comparing UI state.
+- Confirm stale values clear before new chunk preparation starts.
+- Compare visible diagnostics with the demo scenarios guide before changing
+  component state.

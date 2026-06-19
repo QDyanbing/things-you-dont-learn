@@ -36,3 +36,10 @@ build failures.
 - Confirm the expected `x-demo-upload-access` mode before reading auth errors.
 - Refresh the demo bearer token when testing bearer-protected upload routes.
 - Create the demo cookie session before testing cookie-protected upload routes.
+
+## Build Failure Checks
+
+- Run package-specific builds only after `pnpm build` identifies the failing
+  package.
+- Check TypeScript errors before inspecting Vite output.
+- Re-run the full workspace build after fixing a package-local failure.

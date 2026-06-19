@@ -30,3 +30,9 @@ build failures.
 - Check `/api/health` before debugging upload task behavior.
 - Track response status, `uploadId`, and `fileHash` together.
 - Compare route responses with `api-contracts.md` before changing client code.
+
+## Auth Mode Checks
+
+- Confirm the expected `x-demo-upload-access` mode before reading auth errors.
+- Refresh the demo bearer token when testing bearer-protected upload routes.
+- Create the demo cookie session before testing cookie-protected upload routes.

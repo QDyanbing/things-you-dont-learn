@@ -73,6 +73,9 @@ and the maintenance cadence guide to keep docs and JSDoc close to changes.
 Use the refactoring guide before moving behavior across package boundaries, and
 the future work guide to park scoped follow-up ideas.
 
+Use the local debugging playbook for machine-specific issues, and the
+documentation style guide to keep future notes consistent.
+
 ## Upload Flow
 
 The large-file upload path starts in the demo app, passes selected files through

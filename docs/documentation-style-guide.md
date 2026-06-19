@@ -15,3 +15,9 @@ near source code.
 - Keep sections short enough to scan during debugging.
 - Lead with the practical rule before explaining background.
 - Use bullets for checklists and plain paragraphs for overview context.
+
+## References
+
+- Wrap commands, package names, route paths, and code identifiers in backticks.
+- Prefer relative repository paths in docs so the notes stay portable.
+- Link related guides when a reader should check another behavior boundary.

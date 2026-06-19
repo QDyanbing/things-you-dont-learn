@@ -1,5 +1,8 @@
 import { createApp } from './app.js';
 
+/**
+ * Fastify instance with routes registered before runtime listen options apply.
+ */
 const app = createApp();
 /**
  * Runtime port for the demo API server.

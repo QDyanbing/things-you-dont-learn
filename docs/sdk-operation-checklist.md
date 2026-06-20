@@ -9,3 +9,10 @@ checking after each phase.
 - Create one coordinator for the selected file.
 - Call `prepare()` before reading chunk metadata.
 - Check file identity, chunk count, first chunk range, and prepared byte size.
+
+## Upload Phase
+
+- Check `canUpload()` before starting a full upload.
+- Watch uploading indexes and status counts while work is active.
+- Compare uploaded bytes, remaining bytes, total bytes, and percent after
+  progress reports.

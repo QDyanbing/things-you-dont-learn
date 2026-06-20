@@ -10,3 +10,10 @@ contracts from a client point of view.
 - `POST /api/demo-auth/token/refresh` returns the fixed demo bearer token.
 - `POST /api/demo-auth/session` creates the demo cookie session for cookie-mode
   upload requests.
+
+## Create Upload
+
+- `POST /api/uploads` accepts `fileName`, `fileHash`, `fileSize`, and `partSize`.
+- A new upload task returns `201` with `{ upload, existed: false, completed: false }`.
+- A resumable task returns `200` with `{ upload, existed: true }` so the client
+  can continue from existing part records.

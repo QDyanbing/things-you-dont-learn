@@ -7,6 +7,7 @@ single source comment but too specific for the root project overview.
 ## Available Guides
 
 - `api-contracts.md`: Route response contracts used by the upload demo.
+- `api-examples.md`: Client-facing request and response examples for local APIs.
 - `api-server-runbook.md`: Operational checks for the local API server.
 - `architecture-overview.md`: High-level package and responsibility map.
 - `client-server-integration.md`: Browser-to-API handoff notes for upload flows.
@@ -26,6 +27,7 @@ single source comment but too specific for the root project overview.
 - `refactoring-guide.md`: Small refactor guidance for SDK, UI, and API changes.
 - `release-checklist.md`: Final verification checklist for small change batches.
 - `security-boundaries.md`: Local demo security assumptions and limits.
+- `sdk-operation-checklist.md`: Phase-by-phase checks for `FileCoordinator`.
 - `sdk-usage-guide.md`: Practical usage notes for the upload SDK surface.
 - `testing-strategy.md`: Verification scope guidance for workspace changes.
 - `upload-store-guide.md`: In-memory upload store behavior used by the API demo.

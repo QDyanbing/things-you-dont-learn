@@ -38,3 +38,10 @@ contracts from a client point of view.
 - Use `x-demo-upload-access: bearer` with `Authorization: Bearer demo-access-token`
   for bearer examples.
 - Use `x-demo-upload-access: cookie` after creating the demo cookie session.
+
+## Debug Usage
+
+- Pair route examples with `local-debugging-playbook.md` when reproducing issues.
+- Capture status code, response body, `uploadId`, and `fileHash` together.
+- Compare unexpected responses with `api-contracts.md` before changing client
+  behavior.

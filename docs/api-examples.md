@@ -31,3 +31,10 @@ contracts from a client point of view.
 - Successful completion returns `{ upload, file }` with a demo file URL.
 - `DELETE /api/uploads/:uploadId` returns `{ ok: true, upload }` after removing
   the in-memory task.
+
+## Access Mode Examples
+
+- Omit `x-demo-upload-access` for public upload route examples.
+- Use `x-demo-upload-access: bearer` with `Authorization: Bearer demo-access-token`
+  for bearer examples.
+- Use `x-demo-upload-access: cookie` after creating the demo cookie session.

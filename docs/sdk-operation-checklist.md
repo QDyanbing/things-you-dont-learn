@@ -16,3 +16,9 @@ checking after each phase.
 - Watch uploading indexes and status counts while work is active.
 - Compare uploaded bytes, remaining bytes, total bytes, and percent after
   progress reports.
+
+## Pause And Cancel
+
+- Check `canPause()` and `canCancel()` after upload starts.
+- Confirm pause returns active chunks to retryable state.
+- Confirm cancel clears the active upload task before starting a new attempt.

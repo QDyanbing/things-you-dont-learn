@@ -24,3 +24,10 @@ contracts from a client point of view.
 - The request body contains `partHash` and `size`.
 - `GET /api/uploads/:uploadId/parts` returns part records sorted by one-based
   part number.
+
+## Complete And Abort
+
+- `POST /api/uploads/:uploadId/complete` succeeds only when every part is recorded.
+- Successful completion returns `{ upload, file }` with a demo file URL.
+- `DELETE /api/uploads/:uploadId` returns `{ ok: true, upload }` after removing
+  the in-memory task.

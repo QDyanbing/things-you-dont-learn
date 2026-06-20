@@ -76,6 +76,9 @@ the future work guide to park scoped follow-up ideas.
 Use the local debugging playbook for machine-specific issues, and the
 documentation style guide to keep future notes consistent.
 
+Use the API examples guide when checking local route calls, and the SDK operation
+checklist when exercising `FileCoordinator` step by step.
+
 ## Upload Flow
 
 The large-file upload path starts in the demo app, passes selected files through

@@ -17,3 +17,10 @@ contracts from a client point of view.
 - A new upload task returns `201` with `{ upload, existed: false, completed: false }`.
 - A resumable task returns `200` with `{ upload, existed: true }` so the client
   can continue from existing part records.
+
+## Part Records
+
+- `PUT /api/uploads/:uploadId/parts/:partNumber` records one uploaded part.
+- The request body contains `partHash` and `size`.
+- `GET /api/uploads/:uploadId/parts` returns part records sorted by one-based
+  part number.

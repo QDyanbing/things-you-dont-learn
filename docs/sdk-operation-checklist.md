@@ -22,3 +22,9 @@ checking after each phase.
 - Check `canPause()` and `canCancel()` after upload starts.
 - Confirm pause returns active chunks to retryable state.
 - Confirm cancel clears the active upload task before starting a new attempt.
+
+## Failure Recovery
+
+- Check failed indexes, failed byte size, and status counts together.
+- Reset failed chunks before retrying them.
+- Compare unfinished indexes with uploaded indexes after recovery attempts.
